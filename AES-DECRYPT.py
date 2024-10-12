@@ -39,16 +39,13 @@ def read_from_nfc(nfc_tag):
     # Read encrypted data (ciphertext, tag, and nonce) from the NFC card.
     
     if nfc_tag.ndef:
-        ndef_message = nfc_tag.ndef.message  
-        encrypted_data = bytes(ndef_message[0].data)  # Extract raw bytes from the first NDEF record
+        # Simulating NFC tag read for now
+        encrypted_data = nfc_tag.ndef.message
+        return encrypted_data
 
         # 1st 16 bytes: tag 
         # Next 15 bytes: nonce 
         # Remaining bytes: ciphertext 
-
-        tag = encrypted_data[:16] 
-        nonce = encrypted_data[16:31]  
-        ciphertext = encrypted_data[31:]  
 
         return ciphertext, tag, nonce
 
