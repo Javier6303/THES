@@ -65,9 +65,9 @@ Define main function:
         Load the RSA private key from 'private.pem'.
         Read the RSA-encrypted AES session key, AES nonce, and AES tag from the binary file.
         Read the AES-encrypted ciphertext from the NFC tag.
-        Perform RSA+AES hybrid decryption using the RSA private key, nonce, tag, and ciphertext.
+        Perform RSA+AES hybrid decryption.
         Measure the time taken for decryption.
         If decryption is successful, write the decrypted data to a CSV file.
-        Display a success or failure message depending on the decryption outcome.
+        Display a success or failure message.
 
 main()
