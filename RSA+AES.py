@@ -56,7 +56,7 @@ Define main function:
         Load the RSA public key from 'public.pem'.
         Read the data from the CSV file.
         Perform RSA+AES hybrid encryption.
-        Measure the time taken for encryption.
+        Measure the time taken, memory utilization, and througput.
         Write the RSA-encrypted AES session key, AES nonce, and AES tag to a binary file.
         Write the AES-encrypted ciphertext to the NFC tag.
         Display a success or failure message.
@@ -66,7 +66,7 @@ Define main function:
         Read the RSA-encrypted AES session key, AES nonce, and AES tag from the binary file.
         Read the AES-encrypted ciphertext from the NFC tag.
         Perform RSA+AES hybrid decryption.
-        Measure the time taken for decryption.
+        Measure the time taken for decryption, memory utilization, and througput.
         If decryption is successful, write the decrypted data to a CSV file.
         Display a success or failure message.
 
