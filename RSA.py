@@ -43,7 +43,7 @@ Define main function:
     If encryption is chosen:
         Load the public key from a file.
         Prepare the data to be encrypted.
-        Encrypt the data using the RSA public key and measure the time taken.
+        Encrypt the data using the RSA public key and measure the time taken, memory utilization, and througput.
         Wait for the NFC tag to be tapped.
         Write the encrypted data to the NFC tag.      
 
@@ -51,7 +51,7 @@ Define main function:
         Load the private key from a file.
         Wait for the NFC tag to be tapped.
         Read the encrypted data from the NFC tag.
-        Decrypt the data using the RSA private key and measure the time taken.
+        Decrypt the data using the RSA private key and measure the time taken, memory utilization, and througput.
         Write the decrypted data to a CSV file.
       
 
