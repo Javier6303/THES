@@ -66,7 +66,7 @@ Define main function:
         Read the RSA-encrypted AES session key, AES nonce, and AES tag from the binary file.
         Read the AES-encrypted ciphertext from the NFC tag.
         Perform RSA+AES hybrid decryption.
-        Measure the time taken for decryption, memory utilization, and througput.
+        Measure the time taken, memory utilization, and througput.
         If decryption is successful, write the decrypted data to a CSV file.
         Display a success or failure message.
 
