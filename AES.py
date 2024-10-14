@@ -44,14 +44,14 @@ Define main function:
     If encryption:
         Read the data from the CSV file.
         Generate an AES key.
-        Encrypt the data and measure the time taken.
+        Encrypt the data and measure the time taken, memory utilization, and througput.
         Wait for the NFC tag and write the encrypted data to the NFC tag.
         Display a success or failure message.
     
     If decryption:
         Read the AES key from bin file.
         Wait for the NFC tag and read the encrypted data from it.
-        Decrypt the data and measure the time taken.
+        Decrypt the data and measure the time taken, memory utilization, and througput.
         Write the decrypted data to a CSV file.
         Display a success or failure message.
 
