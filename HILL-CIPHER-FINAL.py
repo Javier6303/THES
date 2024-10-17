@@ -8,14 +8,15 @@ Function: Read Data
   data ← file content
   Return: data
 
-Function: Generate or Load Key Matrix
+Function: Generate and Save Key Matrix
   key_matrix ← Define integer matrix (e.g., 2x2 or 3x3)
   Ensure key_matrix is invertible modulo 26
-  If key_matrix does not exist:
-    Save key_matrix to key_file
-  Else:
-    Load key_matrix from key_file
+  Save key_matrix to key_file
   Return: key_matrix
+
+Function: Load Key Matrix
+  If key_file exists:
+    Load key_matrix from key_file
 
 Function: Convert Letters to Numbers
   Input: text
@@ -62,11 +63,13 @@ operation ← Prompt user: "Encrypt or Decrypt?"
 key_matrix ← Generate or Load Key Matrix
 If operation = encryption:
   data ← Read data from data_file.csv
+  key_matrix ← Generate and Save Key Matrix
   ciphertext ← Encrypt data with key_matrix
   Measure encryption_time, memory_usage, throughput
   Write ciphertext to NFC tag
 If operation = decryption:
   ciphertext ← Read data from NFC tag
+  key_matrix ← Load Key Matrix
   decrypted_data ← Decrypt ciphertext with key_matrix
   Measure decryption_time, memory_usage, throughput
   Write decrypted_data to output_file.csv
