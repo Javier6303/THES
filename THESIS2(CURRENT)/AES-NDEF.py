@@ -1,10 +1,13 @@
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
-from smartcard.System import readers
 import csv
 import sys
 import pandas as pd
 import os
+import time
+import tracemalloc
+from smartcard.System import readers
+
 
 # ------------------- FILE LOCATION FIX -------------------
 
@@ -126,75 +129,83 @@ def read_from_nfc_card():
 
 # ------------------- AES ENCRYPTION -------------------
 
-def aes_encryption_with_ndef(output_file="encrypted.bin"):
-    csv_file = get_csv_path()
-    if not csv_file:
-        return  # Exit if CSV file is missing
+def aes_encryption_with_ndef(data, output_file="encrypted.bin"):
 
-    df = pd.read_csv(csv_file)
-    headers = df.columns.tolist()
-    first_row = df.iloc[0].tolist()
-
-    data = ",".join(map(str, first_row))
+    data_size = len(data.encode())
 
     aes_key = get_random_bytes(16)
     cipher = AES.new(aes_key, AES.MODE_OCB)
+
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
+
     ciphertext, tag = cipher.encrypt_and_digest(data.encode())
+
+    # Stop time measurement
+    end_time = time.perf_counter()
+    encryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    encryption_throughput = data_size / encryption_time
+
+    # Display performance metrics
+    print("\n[ENCRYPTION METRICS]")
+    print(f"Data Size in Bytes: {data_size} bytes")
+    print(f"Encryption Time: {encryption_time:.8f} seconds")
+    print(f"Encryption Throughput: {encryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage During Encryption: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
 
     with open(output_file, "wb") as f:
         f.write(aes_key)
         f.write(tag)
         f.write(cipher.nonce)
 
-    print(f"AES key, tag, and nonce saved to '{output_file}'.")
-
-    print("Writing ciphertext to NFC card as NDEF record...")
-    write_to_nfc_card_as_ndef(ciphertext)
-    print("Ciphertext successfully written to NFC as NDEF Text Record!")
-
-    return headers, aes_key, tag, cipher.nonce, ciphertext
+    return ciphertext
 
 # ------------------- AES DECRYPTION -------------------
 
-def aes_decryption_from_nfc(input_file="encrypted.bin", output_csv="decrypted_aes_data.csv"):
+def aes_decryption_from_nfc(ciphertext, input_file="encrypted.bin"):
+    """Decrypts ciphertext using AES and returns the plaintext."""
     try:
         with open(input_file, "rb") as f:
             aes_key = f.read(16)
             tag = f.read(16)
             nonce = f.read(15)
-
-        print("Reading ciphertext from NFC card...")
-        ciphertext = read_from_nfc_card()
-
-        print(f"Ciphertext length: {len(ciphertext)} bytes")
         if len(ciphertext) == 0:
             raise ValueError("No ciphertext found on NFC card.")
 
         cipher = AES.new(aes_key, AES.MODE_OCB, nonce=nonce)
+
+        # Start memory and time measurement
+        tracemalloc.start()
+        start_time = time.perf_counter()
+
         plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode()
-        print("Decryption successful!")
 
-        decrypted_data = plaintext.split(",")
-        print(f"Decrypted data: {decrypted_data}")
+        # Stop time measurement
+        end_time = time.perf_counter()
+        decryption_time = end_time - start_time
 
-        csv_file = get_csv_path()
-        if not csv_file:
-            return  # Exit if CSV file is missing
+        # Measure memory usage
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
 
-        df = pd.read_csv(csv_file)
-        headers = df.columns.tolist()
+        # Calculate throughput
+        data_size = len(ciphertext)  # Size of data in bytes
+        decryption_throughput = data_size / decryption_time
 
-        if len(headers) != len(decrypted_data):
-            decrypted_data = decrypted_data[:len(headers)]
+        print("\n[DECRYPTION METRICS]")
+        print(f"Data Size in Bytes: {data_size} bytes")
+        print(f"Decryption Time: {decryption_time:.8f} seconds")
+        print(f"Decryption Throughput: {decryption_throughput:.10f} bytes/second")
+        print(f"Memory Usage During Decryption: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
 
-        with open(output_csv, "w", newline="") as csvfile:
-            csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            csv_writer.writerow(headers)
-            csv_writer.writerow(decrypted_data)
-
-        print(f"Decrypted data saved to '{output_csv}'.")
-
-        return decrypted_data
+        return plaintext
 
     except ValueError as e:
         print(f"Decryption failed: {e}")
@@ -203,24 +214,67 @@ def aes_decryption_from_nfc(input_file="encrypted.bin", output_csv="decrypted_ae
         print(f"Error: File '{input_file}' not found.")
         sys.exit(1)
 
+
 # ------------------- MAIN FUNCTION -------------------
+def encrypt_csv():
+    csv_file = get_csv_path()
+    if not csv_file:
+        return  # Exit if CSV file is missing
+
+    df = pd.read_csv(csv_file)
+    headers = df.columns.tolist()
+    first_row = df.iloc[0].tolist()
+
+    plaintext  = ",".join(map(str, first_row))
+
+    ciphertext = aes_encryption_with_ndef(plaintext)
+
+    print("Writing ciphertext to NFC...")
+    write_to_nfc_card_as_ndef(ciphertext)
+
+    return headers, ciphertext
+
+def decrypt_csv(output_file="decrypted_aes_data.csv"):
+    """Decrypts data from NFC and restores original CSV format."""
+    print("Reading ciphertext from NFC card...")
+    ciphertext = read_from_nfc_card()
+
+    if not ciphertext:
+        print("Error: No data read from NFC.")
+        return
+
+    plaintext = aes_decryption_from_nfc(ciphertext)
+
+    decrypted_data = plaintext.split(",")  # Convert plaintext back to list format
+
+    csv_file = get_csv_path()
+    if not csv_file:
+        return  # Exit if CSV file is missing
+
+    df = pd.read_csv(csv_file)
+    headers = df.columns.tolist()
+
+    # Ensure the decrypted data matches the CSV header length
+    if len(headers) != len(decrypted_data):
+        decrypted_data = decrypted_data[:len(headers)]
+
+    output_path = os.path.join(os.getcwd(), output_file)
+    with open(output_path, "w", newline="") as csvfile:
+        csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        csv_writer.writerow(headers)
+        csv_writer.writerow(decrypted_data)
+
+    print(f"Decrypted data saved to '{output_path}'.")
+
 
 def main():
-    global headers
-
     operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
 
     if operation == "encryption":
-        headers, aes_key, tag, nonce, ciphertext = aes_encryption_with_ndef(output_file="encrypted.bin")
+        encrypt_csv()  # Calls the high-level function for encryption
 
     elif operation == "decryption":
-        if 'headers' not in globals():
-            csv_file = get_csv_path()
-            if csv_file:
-                df = pd.read_csv(csv_file)
-                headers = df.columns.tolist()
-
-        aes_decryption_from_nfc(input_file="encrypted.bin", output_csv="decrypted_aes_data.csv")
+        decrypt_csv(output_file="decrypted_aes_data.csv")  # Calls the high-level function for decryption
 
     else:
         print("Invalid operation. Please enter 'encryption' or 'decryption'.")

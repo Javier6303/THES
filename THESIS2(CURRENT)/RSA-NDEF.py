@@ -5,7 +5,8 @@ import csv
 import sys
 import pandas as pd
 import os
-
+import time
+import tracemalloc
 # ------------------- FILE LOCATION FIX -------------------
 
 def get_csv_path():
@@ -156,13 +157,35 @@ def rsa_encrypt(output_file="rsa_private.pem"):
     first_row = df.iloc[0].tolist()
 
     data = ",".join(map(str, first_row)).encode()
+    data_size = len(data)
 
     public_key = generate_rsa_keypair()
     public_key_obj = RSA.import_key(public_key)
     cipher = PKCS1_OAEP.new(public_key_obj)
+
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
+
     ciphertext = cipher.encrypt(data)
 
-    print(f"Ciphertext length after encryption: {len(ciphertext)} bytes")
+    # Stop time measurement
+    end_time = time.perf_counter()
+    encryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    encryption_throughput = data_size / encryption_time
+
+    # Display performance metrics
+    print("\n[ENCRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Encryption Time: {encryption_time:.8f} seconds")
+    print(f"Encryption Throughput: {encryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
 
     print("Writing ciphertext to NFC card...")
     write_to_nfc_card_as_ndef(ciphertext)
@@ -179,8 +202,31 @@ def rsa_decrypt(output_csv="decrypted_rsa_data.csv"):
             private_key = RSA.import_key(f.read())
 
         ciphertext = read_from_nfc_card()
+
+        # Start memory and time measurement
+        tracemalloc.start()
+        start_time = time.perf_counter()
+
         plaintext = PKCS1_OAEP.new(private_key).decrypt(ciphertext).decode()
-        print("Decryption successful!")
+
+        # Stop time measurement
+        end_time = time.perf_counter()
+        decryption_time = end_time - start_time
+
+        # Measure memory usage
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        # Calculate throughput
+        data_size = len(ciphertext)  # Size of encrypted data in bytes
+        decryption_throughput = data_size / decryption_time
+
+        # Display performance metrics
+        print("\n[DECRYPTION METRICS]")
+        print(f"Data Size: {data_size} bytes")
+        print(f"Decryption Time: {decryption_time:.8f} seconds")
+        print(f"Decryption Throughput: {decryption_throughput:.10f} bytes/second")
+        print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
 
         decrypted_data = plaintext.split(",")
 

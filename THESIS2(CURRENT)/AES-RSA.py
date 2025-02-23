@@ -5,6 +5,8 @@ import os
 import csv
 import sys
 import pandas as pd
+import time
+import tracemalloc
 from smartcard.System import readers
 
 # ------------------- FILE LOCATION FIX -------------------
@@ -47,7 +49,31 @@ def encrypt_with_rsa_aes(plaintext, rsa_public_key):
     enc_aes_key = cipher_rsa.encrypt(aes_key)  # Encrypt AES key with RSA
 
     cipher_aes = AES.new(aes_key, AES.MODE_OCB)
+
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
+
     ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext.encode())  # Encrypt with AES
+
+    # Stop time measurement
+    end_time = time.perf_counter()
+    encryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    data_size = len(plaintext.encode())  # Size of input data in bytes
+    encryption_throughput = data_size / encryption_time
+
+    # Display performance metrics
+    print("\n[ENCRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Encryption Time: {encryption_time:.8f} seconds")
+    print(f"Encryption Throughput: {encryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / (1024 * 1024):.10f} MB")
 
     enc_file_path = get_file_path("aes_rsa_encrypted.bin")
     with open(enc_file_path, "wb") as f:
@@ -78,7 +104,31 @@ def decrypt_with_rsa_aes(ciphertext):
     aes_key = cipher_rsa.decrypt(enc_aes_key)  # Decrypt AES key
 
     cipher_aes = AES.new(aes_key, AES.MODE_OCB, nonce=nonce)
+
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
+
     decrypted_text = cipher_aes.decrypt_and_verify(ciphertext, tag).decode()
+
+    # Stop time measurement
+    end_time = time.perf_counter()
+    decryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    data_size = len(ciphertext)  # Size of encrypted data in bytes
+    decryption_throughput = data_size / decryption_time
+
+    # Display performance metrics
+    print("\n[DECRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Decryption Time: {decryption_time:.8f} seconds")
+    print(f"Decryption Throughput: {decryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / (1024 * 1024):.10f} MB")
 
     return decrypted_text
 

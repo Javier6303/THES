@@ -7,6 +7,8 @@ import os
 import csv
 import pandas as pd
 import sys
+import time
+import tracemalloc
 
 # ------------------- FILE LOCATION -------------------
 
@@ -158,7 +160,30 @@ def ecc_xor_encrypt(public_key, plaintext):
         info=b"ecc-xor-key"
     ).derive(shared_secret)
 
+    data_size = len(plaintext.encode())
+
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
     encrypted_bytes = bytes(a ^ b for a, b in zip(plaintext.encode(), derived_key))
+
+    # Stop time measurement
+    end_time = time.perf_counter()
+    encryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    encryption_throughput = data_size / encryption_time
+
+    # Display performance metrics
+    print("\n[ENCRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Encryption Time: {encryption_time:.8f} seconds")
+    print(f"Encryption Throughput: {encryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
 
     # Save ephemeral public key
     ephemeral_public_path = get_file_path("ecc_ephemeral_public.pem")
@@ -189,6 +214,8 @@ def ecc_xor_decrypt(encrypted_text):
 
     shared_secret = private_key.exchange(ec.ECDH(), ephemeral_public_key)
 
+    data_size = len(encrypted_text)
+
     derived_key = HKDF(
         algorithm=hashes.SHA256(),
         length=len(encrypted_text),
@@ -196,8 +223,32 @@ def ecc_xor_decrypt(encrypted_text):
         info=b"ecc-xor-key"
     ).derive(shared_secret)
 
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
+
     decrypted_bytes = bytes(a ^ b for a, b in zip(base64.b64decode(encrypted_text), derived_key))
-    return decrypted_bytes.decode()
+    decrypted_text = decrypted_bytes.decode()
+
+    # Stop time measurement
+    end_time = time.perf_counter()
+    decryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    decryption_throughput = data_size / decryption_time
+
+    # Display performance metrics
+    print("\n[DECRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Decryption Time: {decryption_time:.8f} seconds")
+    print(f"Decryption Throughput: {decryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
+
+    return decrypted_text
 
 # ------------------- MAIN FUNCTION -------------------
 

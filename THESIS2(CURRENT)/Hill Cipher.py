@@ -3,6 +3,8 @@ import csv
 import sys
 import pandas as pd
 import os
+import time
+import tracemalloc
 from smartcard.System import readers
 
 # ------------------- DYNAMIC FILE PATH -------------------
@@ -44,9 +46,14 @@ def numbers_to_text(numbers):
 def hill_encrypt(plaintext, key_matrix):
     """Encrypts plaintext using Hill Cipher."""
     indexes = text_to_numbers(plaintext)
+    data_size = len(plaintext.encode())
 
     while len(indexes) % len(key_matrix) != 0:
         indexes.append(char_to_index(" "))  # Pad with space
+
+        # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
 
     ciphertext_indexes = []
     for i in range(0, len(indexes), len(key_matrix)):
@@ -54,11 +61,34 @@ def hill_encrypt(plaintext, key_matrix):
         encrypted_chunk = np.dot(key_matrix, chunk) % ALPHABET_SIZE
         ciphertext_indexes.extend(encrypted_chunk)
 
+    # Stop time measurement
+    end_time = time.perf_counter()
+    encryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    encryption_throughput = data_size / encryption_time
+
+    # Display performance metrics
+    print("\n[ENCRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Encryption Time: {encryption_time:.8f} seconds")
+    print(f"Encryption Throughput: {encryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
+
     return numbers_to_text(ciphertext_indexes)
 
 def hill_decrypt(ciphertext, key_matrix_inv):
     """Decrypts ciphertext using Hill Cipher."""
     indexes = text_to_numbers(ciphertext)
+    data_size = len(ciphertext.encode())
+
+    # Start memory and time measurement
+    tracemalloc.start()
+    start_time = time.perf_counter()
 
     decrypted_indexes = []
     for i in range(0, len(indexes), len(key_matrix_inv)):
@@ -66,7 +96,28 @@ def hill_decrypt(ciphertext, key_matrix_inv):
         decrypted_chunk = np.dot(key_matrix_inv, chunk) % ALPHABET_SIZE
         decrypted_indexes.extend(decrypted_chunk)
 
-    return numbers_to_text(decrypted_indexes).strip()
+    plaintext = numbers_to_text(decrypted_indexes).strip()
+
+    # Stop time measurement
+    end_time = time.perf_counter()
+    decryption_time = end_time - start_time
+
+    # Measure memory usage
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    # Calculate throughput
+    decryption_throughput = data_size / decryption_time
+
+    # Display performance metrics
+    print("\n[DECRYPTION METRICS]")
+    print(f"Data Size: {data_size} bytes")
+    print(f"Decryption Time: {decryption_time:.8f} seconds")
+    print(f"Decryption Throughput: {decryption_throughput:.10f} bytes/second")
+    print(f"Memory Usage: {current / 1024:.10f} KB; Peak: {peak / 1024:.10f} MB")
+
+    return plaintext
+
 
 def mod_inverse_matrix(matrix, mod=ALPHABET_SIZE):
     """Finds the modular inverse of a matrix under mod ALPHABET_SIZE."""
