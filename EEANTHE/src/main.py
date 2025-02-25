@@ -188,6 +188,7 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
 
     logger.info("Performance Metrics: %s", metrics)
     print("Performance Metrics:", metrics)
+    
     return metrics
 
 # ------------------- MAIN PROGRAM -------------------
