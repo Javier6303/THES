@@ -8,20 +8,25 @@ def aes_encryption(get_csv_path, write_to_nfc, output_file="aes_encrypted.bin"):
     """Encrypts CSV data with AES and writes to NFC."""
     csv_file = get_csv_path()
     if not csv_file:
-        return
+        return None  # Return None if no CSV file is found
+
     df = pd.read_csv(csv_file)
     first_row = df.iloc[0].tolist()
     data = ",".join(map(str, first_row))
     aes_key = get_random_bytes(16)
     cipher = AES.new(aes_key, AES.MODE_OCB)
     ciphertext, tag = cipher.encrypt_and_digest(data.encode())
+
     write_to_nfc(ciphertext)
     print("AES Encryption completed and written to NFC.")
 
+    # Save the encryption components to a file
     with open(output_file, "wb") as f:
         f.write(aes_key)
         f.write(tag)
         f.write(cipher.nonce)
+
+    return ciphertext  # Return the actual encrypted data for performance measurement
 
 
 def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv", input_file="aes_encrypted.bin"):
@@ -31,13 +36,14 @@ def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv",
 
     if not ciphertext:
         print("Error: No data read from NFC.")
-        return
+        return None
 
     try:
         with open(input_file, "rb") as f:
             aes_key = f.read(16)
             tag = f.read(16)
             nonce = f.read(15)
+
         if len(ciphertext) == 0:
             raise ValueError("No ciphertext found on NFC card.")
 
@@ -48,7 +54,7 @@ def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv",
 
         csv_file = get_csv_path()
         if not csv_file:
-            return  # Exit if CSV file is missing
+            return None  # Return None if CSV file is missing
 
         df = pd.read_csv(csv_file)
         headers = df.columns.tolist()
@@ -65,8 +71,11 @@ def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv",
 
         print(f"Decrypted data saved to '{output_path}'.")
 
+        return plaintext.encode()  # Return the decrypted plaintext as bytes for throughput calculation
+
     except ValueError as e:
         print(f"Decryption failed: {e}")
     except FileNotFoundError:
         print(f"Error: File '{input_file}' not found.")
-
+    
+    return None
