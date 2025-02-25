@@ -1,5 +1,7 @@
 import os
 import sys
+import tracemalloc
+import time
 from pathlib import Path
 from dotenv import load_dotenv
 from modules.aes_ndef import aes_encryption, aes_decryption
@@ -125,50 +127,68 @@ def read_from_nfc_card(asymmetric_mode=False):
         print(f"Error: {e}")
         sys.exit(1)
 
+def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func):
+    metrics = {}
+    data = "Sample Data for Encryption".encode()
+    
+    if operation == "1":
+        tracemalloc.start()
+        start_time = time.time()
+        encrypted_data = encryption_func(config_func, nfc_write_func)
+        encryption_time = time.time() - start_time
+        peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        
+        metrics["encryption_latency"] = encryption_time
+        metrics["encryption_throughput"] = len(data) / encryption_time if encryption_time > 0 else 0
+        metrics["encryption_memory_usage"] = peak
+        print(f"Encrypted Data: {encrypted_data}")
+    
+    elif operation == "2":
+        tracemalloc.start()
+        start_time = time.time()
+        decrypted_data = decryption_func(config_func, nfc_read_func)
+        decryption_time = time.time() - start_time
+        peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        
+        metrics["decryption_latency"] = decryption_time
+        metrics["decryption_throughput"] = len(data) / decryption_time if decryption_time > 0 else 0
+        metrics["decryption_memory_usage"] = peak
+        print(f"Decrypted Data: {decrypted_data}")
+    
+    print("Performance Metrics:", metrics)
+    return metrics
+
 # ------------------- MAIN PROGRAM -------------------
 def main():
-    print("Select Encryption Method:")
+    print("SELECT ENCRYPTION METHOD:")
     print("1. AES")
     print("2. RSA")
     print("3. AES-RSA")
     print("4. Hill Cipher")
     print("5. ECC")
 
-    choice = input("Enter choice (1, 2, 3, 4, or 5): ").strip()
+    choice = input("Enter Chosen method: ").strip()
 
-    if choice in {"1", "2", "3", "4", "5"}:
-        print("\nSelect Operation:")
+    encryption_methods = {
+        "1": (aes_encryption, aes_decryption),
+        "2": (rsa_encryption, rsa_decryption),
+        "3": (aes_rsa_encryption, aes_rsa_decryption),
+        "4": (hill_cipher_encryption, hill_cipher_decryption),
+        "5": (ecc_xor_encryption, ecc_xor_decryption)
+    }
+
+    if choice in encryption_methods:
+        encryption_func, decryption_func = encryption_methods[choice]
+        
+        print("SELECT OPERATION:")
         print("1. Encryption")
         print("2. Decryption")
-        operation = input("Enter operation (1 or 2): ").strip()
-
-        if operation == "1":
-            if choice == "1":
-                aes_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-            elif choice == "2":
-                rsa_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-            elif choice == "3":
-                aes_rsa_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-            elif choice == "4":
-                hill_cipher_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-            elif choice == "5":
-                ecc_xor_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-            else:
-                print("Invalid choice for encryption.")
-
-        elif operation == "2":
-            if choice == "1":
-                aes_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
-            elif choice == "2":
-                rsa_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
-            elif choice == "3":
-                aes_rsa_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
-            elif choice == "4":
-                hill_cipher_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
-            elif choice == "5":
-                ecc_xor_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
-            else:
-                print("Invalid choice for decryption.")
+        operation = input("Enter operation: ").strip()
+        
+        if operation in {"1", "2"}:
+            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card)
         else:
             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
     else:
