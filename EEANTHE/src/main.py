@@ -3,7 +3,11 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 from modules.aes_ndef import aes_encryption, aes_decryption
-from modules.aes_rsa import encrypt_with_rsa_aes, decrypt_with_rsa_aes
+from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
+from modules.rsa import rsa_encryption, rsa_decryption
+from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
+from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
+
 from smartcard.System import readers
 
 # ------------------- ENVIRONMENT CONFIGURATION -------------------
@@ -50,7 +54,45 @@ def write_to_nfc_card_as_ndef(ciphertext):
     except Exception as e:
         print(f"Error writing to NFC: {e}")
 
-def read_from_nfc_card():
+def parse_ndef_message(nfc_data, asymmetric_mode=False):
+    """Parse NDEF message and extract ciphertext."""
+    print(f"Raw NDEF data: {nfc_data.hex()}")
+
+    if len(nfc_data) < 10:
+        raise ValueError("Invalid NFC data length.")
+
+    if nfc_data[0] != 0x03:
+        raise ValueError("Invalid NDEF message format.")
+
+    if asymmetric_mode:
+        index = 2
+        while index < len(nfc_data) and nfc_data[index] != 0x54:
+            index += 1
+
+        if index >= len(nfc_data) - 1:
+            raise ValueError("Ciphertext not found in NFC data!")
+
+        language_code_length = nfc_data[index + 1]
+        ciphertext_start = index + 2 + language_code_length
+        ciphertext = nfc_data[ciphertext_start:]
+
+        if ciphertext.endswith(b'\xFE'):
+            ciphertext = ciphertext[:-1]
+
+    else:
+        payload_length = nfc_data[1]
+        language_code_length = nfc_data[6]
+        ciphertext_start = 7 + language_code_length
+        ciphertext_end = ciphertext_start + (payload_length - (3 + language_code_length))
+        ciphertext = nfc_data[ciphertext_start:ciphertext_end]
+
+        if ciphertext.endswith(b'\xFE'):
+            ciphertext = ciphertext[:-1]
+
+    print(f"Extracted Ciphertext (Hex): {ciphertext.hex()}")
+    return ciphertext
+
+def read_from_nfc_card(asymmetric_mode=False):
     """Reads encrypted text from NFC."""
     try:
         r = readers()
@@ -61,6 +103,7 @@ def read_from_nfc_card():
         reader = r[0]
         connection = reader.createConnection()
         connection.connect()
+
         print(f"NFC card detected using: {reader}")
 
         nfc_data = b""
@@ -70,38 +113,74 @@ def read_from_nfc_card():
             if sw1 == 0x90 and sw2 == 0x00:
                 nfc_data += bytes(response)
             else:
+                print(f"Failed to read page {page}. SW1: {sw1}, SW2: {sw2}")
                 break
 
-        return nfc_data.rstrip(b'\x00')
+        nfc_data = nfc_data.rstrip(b'\x00')
+        print("Successfully read data from NFC card.")
+
+        return parse_ndef_message(nfc_data, asymmetric_mode=asymmetric_mode)
+
     except Exception as e:
-        print(f"Error reading from NFC: {e}")
+        print(f"Error: {e}")
         sys.exit(1)
 
 # ------------------- MAIN PROGRAM -------------------
 def main():
     print("Select Encryption Method:")
-    print("1. AES-NDEF")
-    print("2. AES-RSA")
+    print("1. AES")
+    print("2. RSA")
+    print("3. AES-RSA")
+    print("4. Hill Cipher")
+    print("5. ECC")
 
-    choice = input("Enter choice (1 or 2): ").strip()
+    choice = input("Enter choice (1,2,3,4 OR 5): ").strip()
 
     if choice == "1":
         operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
         if operation == "encryption":
-            aes_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef)
+            aes_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef, )
         elif operation == "decryption":
-            aes_decryption(read_from_nfc_card)
+            aes_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
         else:
             print("Invalid operation.")
 
     elif choice == "2":
         operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
         if operation == "encryption":
-            encrypt_with_rsa_aes(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef)
+            rsa_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef)
         elif operation == "decryption":
-            decrypt_with_rsa_aes(read_from_nfc_card)
+            rsa_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
         else:
             print("Invalid operation.")
+
+    elif choice == "3":
+        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
+        if operation == "encryption":
+            aes_rsa_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef)
+        elif operation == "decryption":
+            aes_rsa_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
+        else:
+            print("Invalid operation.")
+
+    elif choice == "4":
+        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
+        if operation == "encryption":
+            hill_cipher_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+        elif operation == "decryption":
+            hill_cipher_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
+        else:
+            print("Invalid operation.")
+
+    elif choice == "5":
+        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
+        if operation == "encryption":
+            ecc_xor_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+        elif operation == "decryption":
+            ecc_xor_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
+        else:
+            print("Invalid operation.")
+        
     else:
         print("Invalid choice.")
 

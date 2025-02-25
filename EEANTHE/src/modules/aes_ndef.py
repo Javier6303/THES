@@ -1,8 +1,10 @@
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import pandas as pd
+import csv
+import os
 
-def aes_encryption(get_csv_path, write_to_nfc):
+def aes_encryption(get_csv_path, write_to_nfc, output_file="aes_encrypted.bin"):
     """Encrypts CSV data with AES and writes to NFC."""
     csv_file = get_csv_path()
     if not csv_file:
@@ -15,8 +17,56 @@ def aes_encryption(get_csv_path, write_to_nfc):
     ciphertext, tag = cipher.encrypt_and_digest(data.encode())
     write_to_nfc(ciphertext)
     print("AES Encryption completed and written to NFC.")
-    
-def aes_decryption(read_from_nfc):
-    """Decrypts data from NFC using AES."""
+
+    with open(output_file, "wb") as f:
+        f.write(aes_key)
+        f.write(tag)
+        f.write(cipher.nonce)
+
+
+def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv", input_file="aes_encrypted.bin"):
+    """Reads encrypted data from NFC, decrypts with AES, and restores the original CSV format."""
+    print("Reading ciphertext from NFC card...")
     ciphertext = read_from_nfc()
-    print("AES Decryption process initiated... (Further implementation required)")
+
+    if not ciphertext:
+        print("Error: No data read from NFC.")
+        return
+
+    try:
+        with open(input_file, "rb") as f:
+            aes_key = f.read(16)
+            tag = f.read(16)
+            nonce = f.read(15)
+        if len(ciphertext) == 0:
+            raise ValueError("No ciphertext found on NFC card.")
+
+        cipher = AES.new(aes_key, AES.MODE_OCB, nonce=nonce)
+        plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode()
+        
+        decrypted_data = plaintext.split(",")  # Convert plaintext back to list format
+
+        csv_file = get_csv_path()
+        if not csv_file:
+            return  # Exit if CSV file is missing
+
+        df = pd.read_csv(csv_file)
+        headers = df.columns.tolist()
+
+        # Ensure the decrypted data matches the CSV header length
+        if len(headers) != len(decrypted_data):
+            decrypted_data = decrypted_data[:len(headers)]
+
+        output_path = os.path.join(os.getcwd(), output_file)
+        with open(output_path, "w", newline="") as csvfile:
+            csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+            csv_writer.writerow(headers)
+            csv_writer.writerow(decrypted_data)
+
+        print(f"Decrypted data saved to '{output_path}'.")
+
+    except ValueError as e:
+        print(f"Decryption failed: {e}")
+    except FileNotFoundError:
+        print(f"Error: File '{input_file}' not found.")
+
