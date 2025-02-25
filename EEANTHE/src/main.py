@@ -2,6 +2,7 @@ import os
 import sys
 import tracemalloc
 import time
+import logging
 from pathlib import Path
 from dotenv import load_dotenv
 from modules.aes_ndef import aes_encryption, aes_decryption
@@ -11,6 +12,17 @@ from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 
 from smartcard.System import readers
+
+# ------------------- LOGGER CONFIGURATION -------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("encryption.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # ------------------- ENVIRONMENT CONFIGURATION -------------------
 SHOULD_DOTENV = os.getenv("SHOULD_DOTENV", "true").lower() == "true"
@@ -28,14 +40,14 @@ def write_to_nfc_card_as_ndef(ciphertext):
     try:
         r = readers()
         if not r:
-            print("No NFC readers found.")
+            logger.error("No NFC readers found.")
             return
         
         reader = r[0]
         connection = reader.createConnection()
         connection.connect()
 
-        print(f"NFC card detected using: {reader}")
+        logger.info(f"NFC card detected using: {reader}")
 
         #Build NDEF message
         ndef_message = [0x03, len(ciphertext) + 7, 0xD1, 0x01, len(ciphertext) + 3, 0x54, 2] + list("en".encode()) + list(ciphertext) + [0xFE]
@@ -46,15 +58,15 @@ def write_to_nfc_card_as_ndef(ciphertext):
         for i in range(0, len(ndef_message), 4):
             chunk = ndef_message[i:i + 4]
             WRITE_COMMAND = [0xFF, 0xD6, 0x00, page, 0x04] + chunk
-            response, sw1, sw2 = connection.transmit(WRITE_COMMAND)
+            sw1, sw2 = connection.transmit(WRITE_COMMAND)
             if sw1 != 0x90 or sw2 != 0x00:
-                print(f"Failed to write to page {page}. SW1: {sw1}, SW2: {sw2}")
+                logger.error(f"Failed to write to page {page}. SW1: {sw1}, SW2: {sw2}")
                 break
             page += 1
 
-        print("Write operation complete.")
+        logger.info("Write operation complete.")
     except Exception as e:
-        print(f"Error writing to NFC: {e}")
+        logger.exception(f"Error writing to NFC: {e}")
 
 def parse_ndef_message(nfc_data, asymmetric_mode=False):
     """Parse NDEF message and extract ciphertext."""
@@ -99,14 +111,14 @@ def read_from_nfc_card(asymmetric_mode=False):
     try:
         r = readers()
         if not r:
-            print("No NFC readers found.")
+            logger.error("No NFC readers found.")
             sys.exit(1)
 
         reader = r[0]
         connection = reader.createConnection()
         connection.connect()
 
-        print(f"NFC card detected using: {reader}")
+        logger.info(f"NFC card detected using: {reader}")
 
         nfc_data = b""
         for page in range(4, 222):
@@ -115,16 +127,16 @@ def read_from_nfc_card(asymmetric_mode=False):
             if sw1 == 0x90 and sw2 == 0x00:
                 nfc_data += bytes(response)
             else:
-                print(f"Failed to read page {page}. SW1: {sw1}, SW2: {sw2}")
+                logger.error(f"Failed to read page {page}. SW1: {sw1}, SW2: {sw2}")
                 break
 
         nfc_data = nfc_data.rstrip(b'\x00')
-        print("Successfully read data from NFC card.")
+        logger.info("Successfully read data from NFC card.")
 
         return parse_ndef_message(nfc_data, asymmetric_mode=asymmetric_mode)
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.exception(f"Error reading from NFC: {e}")
         sys.exit(1)
 
 def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func):
@@ -142,7 +154,8 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
         metrics["encryption_latency"] = encryption_time
         metrics["encryption_throughput"] = len(data) / encryption_time if encryption_time > 0 else 0
         metrics["encryption_memory_usage"] = peak
-        print(f"Encrypted Data: {encrypted_data}")
+        print(f"Encryption data: {encrypted_data}")
+        logger.info(f"Encryption completed. Time: {encryption_time}s, Memory Usage: {peak /1024:.2f} KB")
     
     elif operation == "2":
         tracemalloc.start()
@@ -155,13 +168,16 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
         metrics["decryption_latency"] = decryption_time
         metrics["decryption_throughput"] = len(data) / decryption_time if decryption_time > 0 else 0
         metrics["decryption_memory_usage"] = peak
-        print(f"Decrypted Data: {decrypted_data}")
+        print(f"Decryption data: {decrypted_data}")
+        logger.info(f"Encryption completed. Time: {decryption_time}s, Memory Usage: {peak /1024:.2f} KB")
     
-    print("Performance Metrics:", metrics)
+    logger.info("Performance Metrics:", metrics)
     return metrics
 
 # ------------------- MAIN PROGRAM -------------------
 def main():
+    logger.info("STARTING PROGRAM...") #removev nalang this one if ever
+
     print("SELECT ENCRYPTION METHOD:")
     print("1. AES")
     print("2. RSA")
