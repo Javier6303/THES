@@ -7,6 +7,7 @@ from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
 from modules.rsa import rsa_encryption, rsa_decryption
 from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
+from metrics import measure_performance
 
 from smartcard.System import readers
 
@@ -125,64 +126,51 @@ def read_from_nfc_card(asymmetric_mode=False):
         print(f"Error: {e}")
         sys.exit(1)
 
+
+
 # ------------------- MAIN PROGRAM -------------------
 def main():
-    print("Select Encryption Method:")
+    print("SELECT ENCRYPTION METHOD:")
     print("1. AES")
     print("2. RSA")
     print("3. AES-RSA")
     print("4. Hill Cipher")
     print("5. ECC")
 
-    choice = input("Enter choice (1,2,3,4 OR 5): ").strip()
+    choice = input("Enter Chosen method: ").strip()
 
-    if choice == "1":
-        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
-        if operation == "encryption":
-            aes_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef, )
-        elif operation == "decryption":
-            aes_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
-        else:
-            print("Invalid operation.")
+    encryption_methods = {
+        "1": (aes_encryption, aes_decryption),
+        "2": (rsa_encryption, rsa_decryption),
+        "3": (aes_rsa_encryption, aes_rsa_decryption),
+        "4": (hill_cipher_encryption, hill_cipher_decryption),
+        "5": (ecc_xor_encryption, ecc_xor_decryption)
+    }
 
-    elif choice == "2":
-        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
-        if operation == "encryption":
-            rsa_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef)
-        elif operation == "decryption":
-            rsa_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
-        else:
-            print("Invalid operation.")
-
-    elif choice == "3":
-        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
-        if operation == "encryption":
-            aes_rsa_encryption(lambda:CONFIG_PATH, write_to_nfc_card_as_ndef)
-        elif operation == "decryption":
-            aes_rsa_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
-        else:
-            print("Invalid operation.")
-
-    elif choice == "4":
-        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
-        if operation == "encryption":
-            hill_cipher_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-        elif operation == "decryption":
-            hill_cipher_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
-        else:
-            print("Invalid operation.")
-
-    elif choice == "5":
-        operation = input("Enter operation ('encryption' or 'decryption'): ").strip().lower()
-        if operation == "encryption":
-            ecc_xor_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
-        elif operation == "decryption":
-            ecc_xor_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
-        else:
-            print("Invalid operation.")
+    if choice in encryption_methods:
+        encryption_func, decryption_func = encryption_methods[choice]
         
+        print("SELECT OPERATION:")
+        print("1. Encryption")
+        print("2. Decryption")
+        operation = input("Enter operation: ").strip()
+        
+        if operation == "1":
+            measure_performance(
+                encryption_func, 
+                lambda: CONFIG_PATH, 
+                write_to_nfc_card_as_ndef
+            )
+        elif operation == "2":
+            measure_performance(
+                decryption_func, 
+                lambda: CONFIG_PATH, 
+                read_from_nfc_card
+            )
+        else:
+            print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
     else:
-        print("Invalid choice.")
+        print("Invalid encryption method choice. Choose a number between 1 and 5.")
 
 if __name__ == "__main__":
     main()
