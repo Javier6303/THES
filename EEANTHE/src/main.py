@@ -201,26 +201,41 @@ def main():
     print("4. Hill Cipher")
     print("5. ECC")
 
-    choice = input("Enter Chosen method: ").strip()
+    choice = input("Enter choice (1, 2, 3, 4, or 5): ").strip()
 
-    encryption_methods = {
-        "1": (aes_encryption, aes_decryption),
-        "2": (rsa_encryption, rsa_decryption),
-        "3": (aes_rsa_encryption, aes_rsa_decryption),
-        "4": (hill_cipher_encryption, hill_cipher_decryption),
-        "5": (ecc_xor_encryption, ecc_xor_decryption)
-    }
-
-    if choice in encryption_methods:
-        encryption_func, decryption_func = encryption_methods[choice]
-        
-        print("SELECT OPERATION:")
+    if choice in {"1", "2", "3", "4", "5"}:
+        print("\nSelect Operation:")
         print("1. Encryption")
         print("2. Decryption")
-        operation = input("Enter operation: ").strip()
-        
-        if operation in {"1", "2"}:
-            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card)
+        operation = input("Enter operation (1 or 2): ").strip()
+
+        if operation == "1":
+            if choice == "1":
+                aes_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+            elif choice == "2":
+                rsa_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+            elif choice == "3":
+                aes_rsa_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+            elif choice == "4":
+                hill_cipher_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+            elif choice == "5":
+                ecc_xor_encryption(lambda: CONFIG_PATH, write_to_nfc_card_as_ndef)
+            else:
+                print("Invalid choice for encryption.")
+
+        elif operation == "2":
+            if choice == "1":
+                aes_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
+            elif choice == "2":
+                rsa_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
+            elif choice == "3":
+                aes_rsa_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
+            elif choice == "4":
+                hill_cipher_decryption(lambda: CONFIG_PATH, read_from_nfc_card)
+            elif choice == "5":
+                ecc_xor_decryption(lambda: CONFIG_PATH, lambda: read_from_nfc_card(asymmetric_mode=True))
+            else:
+                print("Invalid choice for decryption.")
         else:
             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
     else:
@@ -228,3 +243,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
