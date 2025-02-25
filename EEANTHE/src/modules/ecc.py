@@ -65,6 +65,8 @@ def ecc_xor_encryption(get_csv_path, write_to_nfc, private_key_file="ecc_private
 
     print(f"Ephemeral public key saved to '{public_key_file}'.")
 
+    return encrypted_text
+
 # ------------------- ECC + XOR DECRYPTION -------------------
 
 def ecc_xor_decryption(get_csv_path, read_from_nfc, private_key_file="ecc_private.pem", public_key_file="ecc_ephemeral_public.pem", output_file="decrypted_ecc_data.csv"):
@@ -113,6 +115,8 @@ def ecc_xor_decryption(get_csv_path, read_from_nfc, private_key_file="ecc_privat
             csv_writer.writerow(decrypted_data)
 
         print(f"Decrypted data saved to '{output_file}'.")
+
+        return decrypted_text
 
     except Exception as e:
         print(f"Decryption failed: {e}")

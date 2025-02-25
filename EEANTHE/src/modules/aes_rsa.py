@@ -51,6 +51,8 @@ def aes_rsa_encryption(get_csv_path, write_to_nfc, output_file="aes_rsa_private.
         f.write(cipher_aes.nonce)  # AES nonce (15 bytes)
         f.write(tag)  # AES authentication tag (16 bytes)
 
+    return ciphertext
+
 # ------------------- AES + RSA DECRYPTION -------------------
 
 def aes_rsa_decryption(get_csv_path, read_from_nfc, input_file="aes_rsa_private.pem", output_csv="decrypted_aes_rsa_data.csv"):
@@ -95,6 +97,8 @@ def aes_rsa_decryption(get_csv_path, read_from_nfc, input_file="aes_rsa_private.
             csv_writer.writerow(decrypted_data)
 
         print(f"Decrypted data saved to '{output_csv}'.")
+
+        return plaintext
 
     except ValueError as e:
         print(f"Decryption failed: {e}")

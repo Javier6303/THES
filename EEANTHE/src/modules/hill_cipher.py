@@ -80,6 +80,7 @@ def hill_cipher_encryption(get_csv_path, write_to_nfc):
     write_to_nfc(ciphertext.encode("utf-8"))
     print("Ciphertext successfully written to NFC!")
 
+    return ciphertext
 # ------------------- HILL CIPHER DECRYPTION -------------------
 
 def hill_cipher_decryption(get_csv_path, read_from_nfc, output_file="decrypted_hill_data.csv"):
@@ -112,3 +113,5 @@ def hill_cipher_decryption(get_csv_path, read_from_nfc, output_file="decrypted_h
         csv_writer.writerow(decrypted_data)
 
     print(f"Decrypted data saved to '{output_file}'.")
+
+    return plaintext

@@ -37,6 +37,8 @@ def rsa_encryption(get_csv_path, write_to_nfc, output_file="rsa_private.pem"):
     write_to_nfc(ciphertext)
     print("Ciphertext successfully written to NFC!")
 
+    return ciphertext
+
 # ------------------- RSA DECRYPTION -------------------
 
 def rsa_decryption(get_csv_path, read_from_nfc, input_file="rsa_private.pem", output_csv="decrypted_rsa_data.csv"):
@@ -71,6 +73,8 @@ def rsa_decryption(get_csv_path, read_from_nfc, input_file="rsa_private.pem", ou
             csv_writer.writerow(decrypted_data)
 
         print(f"Decrypted data saved to '{output_csv}'.")
+
+        return plaintext
 
     except ValueError as e:
         print(f"Decryption failed: {e}")
