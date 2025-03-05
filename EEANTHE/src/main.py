@@ -121,7 +121,7 @@ def read_from_nfc_card(asymmetric_mode=False):
         logger.info(f"NFC card detected using: {reader}")
 
         nfc_data = b""
-        for page in range(4, 222):
+        for page in range(4, 225):
             READ_COMMAND = [0xFF, 0xB0, 0x00, page, 0x04]
             response, sw1, sw2 = connection.transmit(READ_COMMAND)
             if sw1 == 0x90 and sw2 == 0x00:
@@ -139,7 +139,7 @@ def read_from_nfc_card(asymmetric_mode=False):
         logger.exception(f"Error reading from NFC: {e}")
         sys.exit(1)
 
-def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func):
+def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
 
     if operation == "1":  # Encryption
@@ -173,7 +173,7 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
         start_time = time.time()
 
         # Execute the decryption function
-        decrypted_data = decryption_func(config_func, nfc_read_func)
+        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric))
 
         decryption_time = time.time() - start_time
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
@@ -194,8 +194,9 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
 
     logger.info("Performance Metrics: %s", metrics)
     print("Performance Metrics:", metrics)
-    
+
     return metrics
+
 
 
 # ------------------- MAIN PROGRAM -------------------
@@ -221,16 +222,20 @@ def main():
 
     if choice in encryption_methods:
         encryption_func, decryption_func = encryption_methods[choice]
-        
+
         print("SELECT OPERATION:")
         print("1. Encryption")
         print("2. Decryption")
         operation = input("Enter operation: ").strip()
-        
+
+        # RSA and ECC are asymmetric
+        asymmetric = choice in {"2", "5"}  
+
         if operation in {"1", "2"}:
-            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card)
+            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
         else:
             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
+
     else:
         print("Invalid encryption method choice. Choose a number between 1 and 5.")
 

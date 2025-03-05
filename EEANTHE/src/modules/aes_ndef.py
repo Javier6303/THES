@@ -3,8 +3,9 @@ from Crypto.Random import get_random_bytes
 import pandas as pd
 import csv
 import os
+from modules.db_manager import save_key, load_key
 
-def aes_encryption(get_csv_path, write_to_nfc, output_file="aes_encrypted.bin"):
+def aes_encryption(get_csv_path, write_to_nfc, key_name="aes_key"):
     """Encrypts CSV data with AES and writes to NFC."""
     csv_file = get_csv_path()
     if not csv_file:
@@ -13,6 +14,7 @@ def aes_encryption(get_csv_path, write_to_nfc, output_file="aes_encrypted.bin"):
     df = pd.read_csv(csv_file)
     first_row = df.iloc[0].tolist()
     data = ",".join(map(str, first_row))
+    
     aes_key = get_random_bytes(16)
     cipher = AES.new(aes_key, AES.MODE_OCB)
     ciphertext, tag = cipher.encrypt_and_digest(data.encode())
@@ -21,16 +23,13 @@ def aes_encryption(get_csv_path, write_to_nfc, output_file="aes_encrypted.bin"):
     print("AES Encryption completed and written to NFC.")
 
     # Save the encryption components to a file
-    with open(output_file, "wb") as f:
-        f.write(aes_key)
-        f.write(tag)
-        f.write(cipher.nonce)
+    save_key(key_name, aes_key + tag + cipher.nonce)
 
     return ciphertext  # Return the actual encrypted data for performance measurement
 
 
-def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv", input_file="aes_encrypted.bin"):
-    """Reads encrypted data from NFC, decrypts with AES, and restores the original CSV format."""
+def aes_decryption(get_csv_path, read_from_nfc, key_name="aes_key", output_file="decrypted_aes.csv"):
+    """Reads encrypted data from NFC, retrieves AES key from MongoDB, decrypts, and restores the CSV format."""
     print("Reading ciphertext from NFC card...")
     ciphertext = read_from_nfc()
 
@@ -39,17 +38,16 @@ def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv",
         return None
 
     try:
-        with open(input_file, "rb") as f:
-            aes_key = f.read(16)
-            tag = f.read(16)
-            nonce = f.read(15)
+        key_data = load_key(key_name)  # Retrieve key, tag, and nonce from MongoDB
+        if not key_data:
+            print(f"Error: No key found in MongoDB for '{key_name}'.")
+            return None
 
-        if len(ciphertext) == 0:
-            raise ValueError("No ciphertext found on NFC card.")
+        aes_key, tag, nonce = key_data[:16], key_data[16:32], key_data[32:]
 
         cipher = AES.new(aes_key, AES.MODE_OCB, nonce=nonce)
         plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode()
-        
+
         decrypted_data = plaintext.split(",")  # Convert plaintext back to list format
 
         csv_file = get_csv_path()
@@ -76,6 +74,9 @@ def aes_decryption(get_csv_path, read_from_nfc, output_file="decrypted_aes.csv",
     except ValueError as e:
         print(f"Decryption failed: {e}")
     except FileNotFoundError:
-        print(f"Error: File '{input_file}' not found.")
-    
+        print(f"Error: CSV file not found.")
+
     return None
+
+    
+    

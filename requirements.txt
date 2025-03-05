@@ -17,6 +17,9 @@ cryptography
 # --HILLCIPHER--
 numpy
 
+# --DATABASE-- 
+pymongo
+
 # Notes:
 # - It's best if each algorithm has their own directory in your project,
 # since the section of the codes that reads data from the CSV will always 

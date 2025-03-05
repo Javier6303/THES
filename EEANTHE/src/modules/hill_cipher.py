@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import csv
-
+from modules.db_manager import save_key, load_key  # Import MongoDB functions
 
 # ------------------- CUSTOM ALPHABET -------------------
 
@@ -24,6 +24,7 @@ def numbers_to_text(numbers):
     """Convert a list of numbers back to text using CUSTOM_ALPHABET."""
     return "".join(index_to_char(n) for n in numbers)
 
+
 # ------------------- HILL CIPHER FUNCTIONS -------------------
 
 def mod_inverse_matrix(matrix, mod=ALPHABET_SIZE):
@@ -32,6 +33,20 @@ def mod_inverse_matrix(matrix, mod=ALPHABET_SIZE):
     det_inv = pow(det, -1, mod)
     matrix_inv = np.round(det_inv * np.linalg.det(matrix) * np.linalg.inv(matrix)).astype(int) % mod
     return matrix_inv
+
+def generate_hill_cipher_key(key_name="hill_cipher_key"):
+    """Generate and store a new key matrix in MongoDB."""
+    key_matrix = np.array([[3, 3], [2, 5]])  # Example 2x2 key matrix
+    save_key(key_name, key_matrix.tobytes())  # Store as bytes
+    print(f"New Hill Cipher Key Matrix stored in MongoDB: {key_name}")
+
+def get_hill_cipher_key(key_name="hill_cipher_key"):
+    """Retrieve Hill Cipher key matrix from MongoDB."""
+    key_data = load_key(key_name)
+    if key_data:
+        return np.frombuffer(key_data, dtype=int).reshape(2, 2)  # Convert back to numpy array
+    print(f"Error: Hill Cipher Key '{key_name}' not found in MongoDB.")
+    return None
 
 def hill_encrypt(plaintext, key_matrix):
     """Encrypts plaintext using Hill Cipher."""
@@ -60,19 +75,24 @@ def hill_decrypt(ciphertext, key_matrix_inv):
 
     return numbers_to_text(decrypted_indexes).strip()
 
+
 # ------------------- HILL CIPHER ENCRYPTION -------------------
 
-def hill_cipher_encryption(get_csv_path, write_to_nfc):
+def hill_cipher_encryption(get_csv_path, write_to_nfc, key_name="hill_cipher_key"):
     """Encrypt CSV data using Hill Cipher and write to NFC."""
     csv_file = get_csv_path()
     if not csv_file:
-        return
+        return None
 
     df = pd.read_csv(csv_file)
     first_row = df.iloc[0].tolist()
     plaintext = ",".join(map(str, first_row))
 
-    key_matrix = np.array([[3, 3], [2, 5]])
+    # Retrieve the key matrix from MongoDB or generate a new one
+    key_matrix = get_hill_cipher_key(key_name)
+    if key_matrix is None:
+        generate_hill_cipher_key(key_name)
+        key_matrix = get_hill_cipher_key(key_name)
 
     ciphertext = hill_encrypt(plaintext, key_matrix)
 
@@ -81,25 +101,31 @@ def hill_cipher_encryption(get_csv_path, write_to_nfc):
     print("Ciphertext successfully written to NFC!")
 
     return ciphertext
+
+
 # ------------------- HILL CIPHER DECRYPTION -------------------
 
-def hill_cipher_decryption(get_csv_path, read_from_nfc, output_file="decrypted_hill_data.csv"):
+def hill_cipher_decryption(get_csv_path, read_from_nfc, key_name="hill_cipher_key", output_file="decrypted_hill_data.csv"):
     """Decrypt data from NFC using Hill Cipher and restore CSV format."""
-    key_matrix = np.array([[3, 3], [2, 5]])
+    key_matrix = get_hill_cipher_key(key_name)
+    if key_matrix is None:
+        print(f"Error: No Hill Cipher key found in MongoDB for '{key_name}'.")
+        return None
+
     key_matrix_inv = mod_inverse_matrix(key_matrix)
 
     ciphertext = read_from_nfc().decode("utf-8")
 
     if not ciphertext:
         print("Error: No ciphertext found on NFC card.")
-        return
+        return None
 
     plaintext = hill_decrypt(ciphertext, key_matrix_inv)
     decrypted_data = plaintext.split(",")
 
     csv_file = get_csv_path()
     if not csv_file:
-        return
+        return None
 
     df = pd.read_csv(csv_file)
     headers = df.columns.tolist()
