@@ -2,22 +2,23 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import pandas as pd
 import csv
+from modules.db_manager import save_key, load_key  # Import MongoDB functions
+
 
 # ------------------- RSA ENCRYPTION -------------------
 
-def generate_rsa_keypair(output_file="rsa_private.pem"):
+def generate_rsa_keypair(key_name="rsa_key"):
     """Generate RSA key pair and save the private key to a file."""
     key = RSA.generate(2048)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
 
-    with open(output_file, "wb") as f:
-        f.write(private_key)
-
-    print(f"RSA key pair generated and private key saved to '{output_file}'.")
+    save_key(f"{key_name}_private", private_key)
+    save_key(f"{key_name}_public", public_key)
+    
     return public_key
 
-def rsa_encryption(get_csv_path, write_to_nfc, output_file="rsa_private.pem"):
+def rsa_encryption(get_csv_path, write_to_nfc, key_name="rsa_key"):
     """Encrypt CSV data and store ciphertext on NFC using RSA."""
     csv_file = get_csv_path()
     if not csv_file:
@@ -27,9 +28,11 @@ def rsa_encryption(get_csv_path, write_to_nfc, output_file="rsa_private.pem"):
     first_row = df.iloc[0].tolist()
     data = ",".join(map(str, first_row)).encode()
 
-    public_key = generate_rsa_keypair(output_file)
-    public_key_obj = RSA.import_key(public_key)
-    cipher = PKCS1_OAEP.new(public_key_obj)
+    
+    public_key_data = generate_rsa_keypair(key_name)
+
+    public_key = RSA.import_key(public_key_data)
+    cipher = PKCS1_OAEP.new(public_key)
 
     ciphertext = cipher.encrypt(data)
 
@@ -41,17 +44,21 @@ def rsa_encryption(get_csv_path, write_to_nfc, output_file="rsa_private.pem"):
 
 # ------------------- RSA DECRYPTION -------------------
 
-def rsa_decryption(get_csv_path, read_from_nfc, input_file="rsa_private.pem", output_csv="decrypted_rsa_data.csv"):
-    """Decrypt data from NFC and restore original CSV format using RSA."""
+def rsa_decryption(get_csv_path, read_from_nfc, key_name="rsa_key", output_csv="decrypted_rsa_data.csv"):
+    """Decrypt data from NFC and restore original CSV format using RSA with keys from MongoDB."""
     try:
-        with open(input_file, "rb") as f:
-            private_key = RSA.import_key(f.read())
+        private_key_data = load_key(f"{key_name}_private")
+        if not private_key_data:
+            print(f"Error: No private key found in MongoDB for '{key_name}'.")
+            return None
+
+        private_key = RSA.import_key(private_key_data)
 
         ciphertext = read_from_nfc()
 
         if not ciphertext:
             print("Error: No ciphertext found on NFC card.")
-            return
+            return None
 
         plaintext = PKCS1_OAEP.new(private_key).decrypt(ciphertext).decode()
 
@@ -59,7 +66,7 @@ def rsa_decryption(get_csv_path, read_from_nfc, input_file="rsa_private.pem", ou
 
         csv_file = get_csv_path()
         if not csv_file:
-            return
+            return None
 
         df = pd.read_csv(csv_file)
         headers = df.columns.tolist()
@@ -74,9 +81,9 @@ def rsa_decryption(get_csv_path, read_from_nfc, input_file="rsa_private.pem", ou
 
         print(f"Decrypted data saved to '{output_csv}'.")
 
-        return plaintext
+        return plaintext.encode()  # Return plaintext as bytes for throughput calculation
 
     except ValueError as e:
         print(f"Decryption failed: {e}")
-    except FileNotFoundError:
-        print(f"Error: File '{input_file}' not found.")
+    return None
+
