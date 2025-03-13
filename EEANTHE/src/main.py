@@ -3,6 +3,7 @@ import sys
 import tracemalloc
 import time
 import logging
+import csv
 from pathlib import Path
 from dotenv import load_dotenv
 from modules.aes_ndef import aes_encryption, aes_decryption
@@ -10,7 +11,7 @@ from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
 from modules.rsa import rsa_encryption, rsa_decryption
 from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
-
+from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
 from smartcard.System import readers
 
 # ------------------- LOGGER CONFIGURATION -------------------
@@ -139,6 +140,37 @@ def read_from_nfc_card(asymmetric_mode=False):
         logger.exception(f"Error reading from NFC: {e}")
         sys.exit(1)
 
+
+def save_metrics_to_csv(metrics, operation):
+    """Append encryption or decryption metrics to a CSV file."""
+    csv_file = "metrics_log.csv"
+    file_exists = os.path.isfile(csv_file)
+
+    fieldnames = ["operation", "latency", "throughput", "memory_usage", "data_size_bytes"]
+
+    if operation == "1":
+        row = {
+            "operation": "encryption",
+            "latency": metrics["encryption_latency"],
+            "throughput": metrics["encryption_throughput"],
+            "memory_usage": str(metrics["encryption_memory_usage"]),
+            "data_size_bytes": metrics["data_size_bytes"]
+        }
+    else:
+        row = {
+            "operation": "decryption",
+            "latency": metrics["decryption_latency"],
+            "throughput": metrics["decryption_throughput"],
+            "memory_usage": str(metrics["decryption_memory_usage"]),
+            "data_size_bytes": metrics["data_size_bytes"]
+        }
+
+    with open(csv_file, mode="a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(row)
+
 def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
 
@@ -163,9 +195,12 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
+        metrics["data_size_bytes"] = data_size
 
         print(f"Encryption data: {encrypted_data}")
         logger.info(f"Encryption completed. Time: {encryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
+
+        save_metrics_to_csv(metrics, operation)
 
     elif operation == "2":  # Decryption
         print("Starting Decryption...")
@@ -188,9 +223,12 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
+        metrics["data_size_bytes"] = data_size
 
         print(f"Decryption data: {decrypted_data}")
         logger.info(f"Decryption completed. Time: {decryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
+
+        save_metrics_to_csv(metrics, operation)
 
     logger.info("Performance Metrics: %s", metrics)
     print("Performance Metrics:", metrics)
@@ -208,7 +246,8 @@ def main():
     print("2. RSA")
     print("3. AES-RSA")
     print("4. Hill Cipher")
-    print("5. ECC")
+    print("5. ECC XOR")
+    print("6. ECDH + AES-GCM")
 
     choice = input("Enter Chosen method: ").strip()
 
@@ -217,7 +256,8 @@ def main():
         "2": (rsa_encryption, rsa_decryption),
         "3": (aes_rsa_encryption, aes_rsa_decryption),
         "4": (hill_cipher_encryption, hill_cipher_decryption),
-        "5": (ecc_xor_encryption, ecc_xor_decryption)
+        "5": (ecc_xor_encryption, ecc_xor_decryption),
+        "6": (ecdh_aes_encryption, ecdh_aes_decryption)
     }
 
     if choice in encryption_methods:
@@ -229,7 +269,7 @@ def main():
         operation = input("Enter operation: ").strip()
 
         # RSA and ECC are asymmetric
-        asymmetric = choice in {"2", "5"}  
+        asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
 
         if operation in {"1", "2"}:
             measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
