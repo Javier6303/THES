@@ -2,7 +2,7 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key  # Import MongoDB functions
+from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 
 # ------------------- RSA ENCRYPTION -------------------
@@ -18,22 +18,25 @@ def generate_rsa_keypair(key_name="rsa_key"):
     
     return public_key
 
-def rsa_encryption(get_csv_path, write_to_nfc, key_name="rsa_key"):
+def rsa_encryption(patient_id, write_to_nfc, key_name="rsa_key"):
     """Encrypt CSV data and store ciphertext on NFC using RSA."""
-    csv_file = get_csv_path()
-    if not csv_file:
-        return
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
+        return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    data = ",".join(map(str, first_row)).encode()
+    patient.pop("_id", None)  # Remove MongoDB internal ID if present
+    data = ",".join(str(value) for value in patient.values()).encode()
 
-    
     public_key_data = generate_rsa_keypair(key_name)
-
     public_key = RSA.import_key(public_key_data)
     cipher = PKCS1_OAEP.new(public_key)
 
+    max_length = (public_key.size_in_bits() // 8) - 42  # 42 bytes overhead for OAEP
+    if len(data) > max_length:
+        print(f"Error: Patient data too large for RSA encryption. Limit is {max_length} bytes.")
+        return None
+    
     ciphertext = cipher.encrypt(data)
 
     print("Writing ciphertext to NFC card...")

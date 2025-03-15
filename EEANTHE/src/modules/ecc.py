@@ -4,7 +4,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 import base64
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key  # Import MongoDB functions
+from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 # ------------------- ECC KEY GENERATION -------------------
 
@@ -34,15 +34,18 @@ def generate_ecc_key_pair(key_name="ecc_key"):
 
 # ------------------- ECC + XOR ENCRYPTION -------------------
 
-def ecc_xor_encryption(get_csv_path, write_to_nfc, key_name="ecc_key"):
+def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
     """Encrypt CSV data using ECC XOR encryption and write to NFC."""
-    csv_file = get_csv_path()
-    if not csv_file:
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
         return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    plaintext = ",".join(map(str, first_row))
+    # Remove MongoDB-specific fields (like _id)
+    patient.pop("_id", None)
+
+    # Convert patient dict to comma-separated string
+    plaintext = ",".join(str(value) for value in patient.values())
 
     # Generate a new ECC key pair for each session
     private_key, public_key = generate_ecc_key_pair(key_name)

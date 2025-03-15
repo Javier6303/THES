@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key  # Import MongoDB functions
+from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 # ------------------- CUSTOM ALPHABET -------------------
 
@@ -78,15 +78,18 @@ def hill_decrypt(ciphertext, key_matrix_inv):
 
 # ------------------- HILL CIPHER ENCRYPTION -------------------
 
-def hill_cipher_encryption(get_csv_path, write_to_nfc, key_name="hill_cipher_key"):
+def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key"):
     """Encrypt CSV data using Hill Cipher and write to NFC."""
-    csv_file = get_csv_path()
-    if not csv_file:
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
         return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    plaintext = ",".join(map(str, first_row))
+    # Remove MongoDB-specific fields (like _id)
+    patient.pop("_id", None)
+
+    # Convert patient dict to comma-separated string
+    plaintext = ",".join(str(value) for value in patient.values())
 
     # Retrieve the key matrix from MongoDB or generate a new one
     key_matrix = get_hill_cipher_key(key_name)

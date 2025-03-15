@@ -44,3 +44,20 @@ def load_key(key_name):
 def load_patient(patient_id):
     """Retrieve patient document by patient_id."""
     return db["patients"].find_one({"patient_id": patient_id})
+
+def generate_next_patient_id():
+    """Auto-generates the next patient ID like 'P001', 'P002'..."""
+    last_patient = db["patients"].find().sort("patient_id", -1).limit(1)
+    last = list(last_patient)
+    if last:
+        last_id = int(last[0]["patient_id"][1:])
+        return f"P{last_id + 1:03d}"
+    return "P001"
+
+def save_new_patient(data):
+    """Insert new patient into MongoDB and return assigned patient_id."""
+    patient_id = generate_next_patient_id()
+    data["patient_id"] = patient_id
+    db["patients"].insert_one(data)
+    print(f"New patient saved with ID: {patient_id}")
+    return patient_id

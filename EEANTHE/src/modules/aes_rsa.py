@@ -3,7 +3,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key  # Import MongoDB functions
+from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 
 # ------------------- RSA KEY GENERATION -------------------
@@ -23,15 +23,15 @@ def generate_rsa_keypair(key_name="aes_rsa_key"):
 
 # ------------------- AES + RSA ENCRYPTION -------------------
 
-def aes_rsa_encryption(get_csv_path, write_to_nfc, key_name="aes_rsa_key"):
+def aes_rsa_encryption(patient_id, write_to_nfc, key_name="aes_rsa_key"):
     """Encrypt CSV data with AES and RSA, then write to NFC."""
-    csv_file = get_csv_path()
-    if not csv_file:
-        return None  # No file found, exit early
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
+        return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    plaintext = ",".join(map(str, first_row))
+    patient.pop("_id", None)  # Remove internal MongoDB ID
+    plaintext = ",".join(str(value) for value in patient.values())
 
     # Generate AES key for session
     aes_key = get_random_bytes(16)
