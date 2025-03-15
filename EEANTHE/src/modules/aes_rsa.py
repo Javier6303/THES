@@ -22,16 +22,10 @@ def generate_rsa_keypair(key_name="aes_rsa_key"):
 
 
 # ------------------- AES + RSA ENCRYPTION -------------------
+def aes_rsa_encryption(patient_data, write_to_nfc, key_name="aes_rsa_key"):
+    """Encrypts patient data using AES-RSA hybrid encryption and writes it to NFC."""
 
-def aes_rsa_encryption(get_csv_path, write_to_nfc, key_name="aes_rsa_key"):
-    """Encrypt CSV data with AES and RSA, then write to NFC."""
-    csv_file = get_csv_path()
-    if not csv_file:
-        return None  # No file found, exit early
-
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    plaintext = ",".join(map(str, first_row))
+    plaintext = ",".join(map(str, patient_data.values()))  # Convert dict values to a string
 
     # Generate AES key for session
     aes_key = get_random_bytes(16)
@@ -48,21 +42,25 @@ def aes_rsa_encryption(get_csv_path, write_to_nfc, key_name="aes_rsa_key"):
     cipher_aes = AES.new(aes_key, AES.MODE_OCB)
     ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext.encode())
 
-    # Write encrypted data to NFC
-    print("Writing ciphertext to NFC card...")
-    write_to_nfc(ciphertext)
+    # Attempt to write encrypted data to NFC
+    print("Attempting to write ciphertext to NFC card...")
+    success = write_to_nfc(ciphertext)
+    
+    if not success:
+        print("No NFC reader detected. Encryption aborted. Keys will NOT be saved.")
+        return None  # Prevent saving keys if NFC writing fails
+
     print("Ciphertext successfully written to NFC!")
 
     # Store encrypted AES key, nonce, and tag separately
-    save_key(f"{key_name}_enc_aes_key", enc_aes_key)  # Store encrypted AES key (256 bytes)
-    save_key(f"{key_name}_aes_nonce", cipher_aes.nonce)  # Store AES nonce (15 bytes)
-    save_key(f"{key_name}_aes_tag", tag)  # Store AES authentication tag (16 bytes)
+    save_key(f"{key_name}_enc_aes_key", enc_aes_key)  # Store encrypted AES key
+    save_key(f"{key_name}_aes_nonce", cipher_aes.nonce)  # Store AES nonce
+    save_key(f"{key_name}_aes_tag", tag)  # Store AES authentication tag
 
-    return ciphertext  # Return encrypted data for performance metrics
+    return ciphertext  # Return encrypted data for database storage
 
 
 # ------------------- AES + RSA DECRYPTION -------------------
-
 def aes_rsa_decryption(get_csv_path, read_from_nfc, key_name="aes_rsa_key", output_csv="decrypted_aes_rsa_data.csv"):
     """Decrypt data from NFC and restore the original CSV format using AES-RSA hybrid encryption."""
     try:
