@@ -32,25 +32,24 @@ if SHOULD_DOTENV:
     env_path = script_path.parent.joinpath("configs", ".env")
     load_dotenv(env_path)
 
-CONNECTION_STR = os.getenv("CONNECTION_STR", "")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "")
-PAT = os.getenv("PAT", "")
 
 # ------------------- NFC FUNCTIONALITIES -------------------
 def write_to_nfc_card_as_ndef(ciphertext):
+    """Writes encrypted data to NFC card."""
     try:
         r = readers()
         if not r:
             logger.error("No NFC readers found.")
-            return
-        
+            return False
+
         reader = r[0]
         connection = reader.createConnection()
         connection.connect()
 
         logger.info(f"NFC card detected using: {reader}")
 
-        #Build NDEF message
+        # Build NDEF message
         ndef_message = [0x03, len(ciphertext) + 7, 0xD1, 0x01, len(ciphertext) + 3, 0x54, 2] + list("en".encode()) + list(ciphertext) + [0xFE]
         while len(ndef_message) % 4 != 0:
             ndef_message.append(0x00)
@@ -62,58 +61,22 @@ def write_to_nfc_card_as_ndef(ciphertext):
             response, sw1, sw2 = connection.transmit(WRITE_COMMAND)
             if sw1 != 0x90 or sw2 != 0x00:
                 logger.error(f"Failed to write to page {page}. SW1: {sw1}, SW2: {sw2}")
-                break
+                return False
             page += 1
 
         logger.info("Write operation complete.")
+        return True
     except Exception as e:
         logger.exception(f"Error writing to NFC: {e}")
-
-def parse_ndef_message(nfc_data, asymmetric_mode=False):
-    """Parse NDEF message and extract ciphertext."""
-    print(f"Raw NDEF data: {nfc_data.hex()}")
-
-    if len(nfc_data) < 10:
-        raise ValueError("Invalid NFC data length.")
-
-    if nfc_data[0] != 0x03:
-        raise ValueError("Invalid NDEF message format.")
-
-    if asymmetric_mode:
-        index = 2
-        while index < len(nfc_data) and nfc_data[index] != 0x54:
-            index += 1
-
-        if index >= len(nfc_data) - 1:
-            raise ValueError("Ciphertext not found in NFC data!")
-
-        language_code_length = nfc_data[index + 1]
-        ciphertext_start = index + 2 + language_code_length
-        ciphertext = nfc_data[ciphertext_start:]
-
-        if ciphertext.endswith(b'\xFE'):
-            ciphertext = ciphertext[:-1]
-
-    else:
-        payload_length = nfc_data[1]
-        language_code_length = nfc_data[6]
-        ciphertext_start = 7 + language_code_length
-        ciphertext_end = ciphertext_start + (payload_length - (3 + language_code_length))
-        ciphertext = nfc_data[ciphertext_start:ciphertext_end]
-
-        if ciphertext.endswith(b'\xFE'):
-            ciphertext = ciphertext[:-1]
-
-    print(f"Extracted Ciphertext (Hex): {ciphertext.hex()}")
-    return ciphertext
+        return False
 
 def read_from_nfc_card(asymmetric_mode=False):
-    """Reads encrypted text from NFC."""
+    """Reads encrypted text from NFC card."""
     try:
         r = readers()
         if not r:
             logger.error("No NFC readers found.")
-            sys.exit(1)
+            return None
 
         reader = r[0]
         connection = reader.createConnection()
@@ -133,151 +96,38 @@ def read_from_nfc_card(asymmetric_mode=False):
 
         nfc_data = nfc_data.rstrip(b'\x00')
         logger.info("Successfully read data from NFC card.")
-
-        return parse_ndef_message(nfc_data, asymmetric_mode=asymmetric_mode)
-
+        return nfc_data
     except Exception as e:
         logger.exception(f"Error reading from NFC: {e}")
-        sys.exit(1)
+        return None
 
-
-def save_metrics_to_csv(metrics, operation):
-    """Append encryption or decryption metrics to a CSV file."""
-    csv_file = "metrics_log.csv"
-    file_exists = os.path.isfile(csv_file)
-
-    fieldnames = ["operation", "latency", "throughput", "memory_usage", "data_size_bytes"]
-
-    if operation == "1":
-        row = {
-            "operation": "encryption",
-            "latency": metrics["encryption_latency"],
-            "throughput": metrics["encryption_throughput"],
-            "memory_usage": str(metrics["encryption_memory_usage"]),
-            "data_size_bytes": metrics["data_size_bytes"]
-        }
-    else:
-        row = {
-            "operation": "decryption",
-            "latency": metrics["decryption_latency"],
-            "throughput": metrics["decryption_throughput"],
-            "memory_usage": str(metrics["decryption_memory_usage"]),
-            "data_size_bytes": metrics["data_size_bytes"]
-        }
-
-    with open(csv_file, mode="a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(row)
-
-def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func, asymmetric=False):
+# ------------------- PERFORMANCE MEASUREMENT -------------------
+def measure_performance(operation, encryption_func, decryption_func, nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
 
     if operation == "1":  # Encryption
-        print("Starting Encryption...")
         tracemalloc.start()
         start_time = time.time()
-
-        # Execute the encryption function
-        encrypted_data = encryption_func(config_func, nfc_write_func)
-
+        encrypted_data = encryption_func(lambda: CONFIG_PATH, nfc_write_func)
         encryption_time = time.time() - start_time
-        current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
+        current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-
-        # Calculate data size based on the actual encrypted data
-        data_size = len(encrypted_data.encode()) if isinstance(encrypted_data, str) else len(encrypted_data) if encrypted_data else 0
 
         metrics["encryption_latency"] = f"{encryption_time:.6f} s"
-        metrics["encryption_throughput"] = f"{(data_size / encryption_time) / 1024:.6f} KB/s" if encryption_time > 0 else "0 KB/s"
-        metrics["encryption_memory_usage"] = {
-            "current": f"{current / 1024:.6f} KB",
-            "peak": f"{peak / 1024:.6f} KB"
-        }
-        metrics["data_size_bytes"] = data_size
-
-        print(f"Encryption data: {encrypted_data}")
-        logger.info(f"Encryption completed. Time: {encryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
-
-        save_metrics_to_csv(metrics, operation)
-
+        metrics["encryption_memory_usage"] = f"{peak / 1024:.6f} KB"
+        logger.info(f"Encryption completed in {encryption_time:.6f}s, Peak Memory: {peak / 1024:.6f} KB")
+    
     elif operation == "2":  # Decryption
-        print("Starting Decryption...")
         tracemalloc.start()
         start_time = time.time()
-
-        # Execute the decryption function
-        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric))
-
+        decrypted_data = decryption_func(lambda: CONFIG_PATH, lambda: nfc_read_func(asymmetric_mode=asymmetric))
         decryption_time = time.time() - start_time
-        current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
+        current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
 
-        # Calculate data size based on the actual decrypted data
-        data_size = len(decrypted_data.encode()) if isinstance(decrypted_data, str) else len(decrypted_data) if decrypted_data else 0
-
         metrics["decryption_latency"] = f"{decryption_time:.6f} s"
-        metrics["decryption_throughput"] = f"{(data_size / decryption_time) / 1024:.6f} KB/s" if decryption_time > 0 else "0 KB/s"
-        metrics["decryption_memory_usage"] = {
-            "current": f"{current / 1024:.6f} KB",
-            "peak": f"{peak / 1024:.6f} KB"
-        }
-        metrics["data_size_bytes"] = data_size
-
-        print(f"Decryption data: {decrypted_data}")
-        logger.info(f"Decryption completed. Time: {decryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
-
-        save_metrics_to_csv(metrics, operation)
-
+        metrics["decryption_memory_usage"] = f"{peak / 1024:.6f} KB"
+        logger.info(f"Decryption completed in {decryption_time:.6f}s, Peak Memory: {peak / 1024:.6f} KB")
+    
     logger.info("Performance Metrics: %s", metrics)
-    print("Performance Metrics:", metrics)
-
     return metrics
-
-
-
-# ------------------- MAIN PROGRAM -------------------
-def main():
-    logger.info("STARTING PROGRAM...") #removev nalang this one if ever
-
-    print("SELECT ENCRYPTION METHOD:")
-    print("1. AES")
-    print("2. RSA")
-    print("3. AES-RSA")
-    print("4. Hill Cipher")
-    print("5. ECC XOR")
-    print("6. ECDH + AES-GCM")
-
-    choice = input("Enter Chosen method: ").strip()
-
-    encryption_methods = {
-        "1": (aes_encryption, aes_decryption),
-        "2": (rsa_encryption, rsa_decryption),
-        "3": (aes_rsa_encryption, aes_rsa_decryption),
-        "4": (hill_cipher_encryption, hill_cipher_decryption),
-        "5": (ecc_xor_encryption, ecc_xor_decryption),
-        "6": (ecdh_aes_encryption, ecdh_aes_decryption)
-    }
-
-    if choice in encryption_methods:
-        encryption_func, decryption_func = encryption_methods[choice]
-
-        print("SELECT OPERATION:")
-        print("1. Encryption")
-        print("2. Decryption")
-        operation = input("Enter operation: ").strip()
-
-        # RSA and ECC are asymmetric
-        asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
-
-        if operation in {"1", "2"}:
-            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
-        else:
-            print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
-
-    else:
-        print("Invalid encryption method choice. Choose a number between 1 and 5.")
-
-if __name__ == "__main__":
-    main()
