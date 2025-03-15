@@ -18,17 +18,18 @@ from smartcard.System import readers
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Load environment variables
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 DB_NAME = "encryption_db"
-COLLECTION_NAME = "patients"
+PATIENTS_COLLECTION = "patients"
+KEYS_COLLECTION = "keys"
 
 # Connect to MongoDB
 try:
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
-    collection = db[COLLECTION_NAME]
+    patients_collection = db[PATIENTS_COLLECTION]
+    keys_collection = db[KEYS_COLLECTION]
     logger.info("Connected to MongoDB successfully.")
 except Exception as e:
     logger.error(f"Error connecting to MongoDB: {e}")
@@ -105,6 +106,23 @@ class EncryptionApp:
         
         ttk.Button(self.patient_frame, text="Save & Encrypt", command=self.save_new_patient).pack(pady=20)
     
+    def save_patient_to_db(self, patient_data, encryption_method, encrypted_data):
+        """Saves patient data to MongoDB in the patients collection."""
+        patient_data["encryption_method"] = encryption_method
+        patient_data["encrypted_data"] = b64encode(encrypted_data).decode()
+        patients_collection.insert_one(patient_data)
+        logger.info("Patient data saved to MongoDB (patients collection).")
+    
+    def save_key_to_db(self, key_name, key_data):
+        """Saves encryption keys to MongoDB in the keys collection."""
+        keys_collection.update_one(
+            {"key_name": key_name},
+            {"$set": {"key_data": b64encode(key_data).decode()}},
+            upsert=True
+        )
+        logger.info(f"Encryption key '{key_name}' saved to MongoDB (keys collection).")
+    
+
     def save_new_patient(self):
         encryption_method = self.encryption_choice.get()
         if not encryption_method:
@@ -144,7 +162,7 @@ class EncryptionApp:
         return encrypt_func(data, write_to_nfc)
     
     def load_existing_patient(self):
-        """Loads an existing patient's encrypted data from the NFC card and allows editing."""
+        """Loads an existing patient's encrypted data from the NFC card and decrypts it."""
         if not self.check_nfc_reader():
             messagebox.showerror("Error", "No NFC reader detected.")
             return
@@ -154,7 +172,19 @@ class EncryptionApp:
             messagebox.showerror("Error", "Failed to read data from NFC card.")
             return
         
-        decryption_method = {
+        patient_record = patients_collection.find_one({"encrypted_data": b64encode(encrypted_data).decode()})
+        if not patient_record:
+            messagebox.showerror("Error", "No matching patient record found in the database.")
+            return
+        
+        encryption_method = patient_record.get("encryption_method")
+        key_record = keys_collection.find_one({"key_name": encryption_method})
+        
+        if not key_record:
+            messagebox.showerror("Error", "Encryption key not found in database.")
+            return
+        
+        decryption_methods = {
             "AES": aes_decryption,
             "RSA": rsa_decryption,
             "AES-RSA": aes_rsa_decryption,
@@ -162,14 +192,14 @@ class EncryptionApp:
             "ECC XOR": ecc_xor_decryption,
             "ECDH-AES": ecdh_aes_decryption
         }
-        decrypt_func = decryption_method.get(decryption_method)
+        decrypt_func = decryption_methods.get(encryption_method)
         
         if not decrypt_func:
             messagebox.showerror("Error", "Invalid decryption method.")
             return
         
-        patient_data = decrypt_func(lambda: CONFIG_PATH, read_from_nfc_card)
-        if not patient_data:
+        decrypted_data = decrypt_func(patient_record["encrypted_data"], key_record["key_data"])
+        if not decrypted_data:
             messagebox.showerror("Error", "Decryption failed.")
             return
         
@@ -179,11 +209,12 @@ class EncryptionApp:
         for i, field in enumerate(fields):
             ttk.Label(self.patient_frame, text=field + ":").pack(pady=5)
             entry = ttk.Entry(self.patient_frame)
-            entry.insert(0, patient_data.split(",")[i])
+            entry.insert(0, decrypted_data.split(",")[i])
             entry.pack(pady=5)
             self.patient_entries[field] = entry
         
-        ttk.Button(self.patient_frame, text="Update", command=lambda: self.save_existing_patient(patient_data)).pack(pady=20)
+        ttk.Button(self.patient_frame, text="Update", command=lambda: self.save_existing_patient(decrypted_data)).pack(pady=20)
+    
 
     def build_nfc_info_tab(self):
         ttk.Label(self.nfc_info_tab, text="NFC Information", font=("Arial", 12, "bold")).pack(pady=10)
