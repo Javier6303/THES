@@ -40,3 +40,7 @@ def load_key(key_name):
         return b64decode(key_entry["key_data"])  # Convert back from base64
     print(f"Key '{key_name}' not found in MongoDB.")
     return None
+
+def load_patient(patient_id):
+    """Retrieve patient document by patient_id."""
+    return db["patients"].find_one({"patient_id": patient_id})

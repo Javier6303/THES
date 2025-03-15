@@ -3,17 +3,20 @@ from Crypto.Random import get_random_bytes
 import pandas as pd
 import csv
 import os
-from modules.db_manager import save_key, load_key
+from modules.db_manager import save_key, load_key, load_patient
 
-def aes_encryption(get_csv_path, write_to_nfc, key_name="aes_key"):
+def aes_encryption(patient_id, write_to_nfc, key_name="aes_key"):
     """Encrypts CSV data with AES and writes to NFC."""
-    csv_file = get_csv_path()
-    if not csv_file:
-        return None  # Return None if no CSV file is found
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
+        return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    data = ",".join(map(str, first_row))
+    # Remove MongoDB-specific fields (like _id)
+    patient.pop("_id", None)
+
+    # Convert patient dict to comma-separated string
+    data = ",".join(str(value) for value in patient.values())
     
     aes_key = get_random_bytes(16)
     cipher = AES.new(aes_key, AES.MODE_OCB)

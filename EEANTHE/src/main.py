@@ -171,7 +171,7 @@ def save_metrics_to_csv(metrics, operation):
             writer.writeheader()
         writer.writerow(row)
 
-def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func, asymmetric=False):
+def measure_performance(operation, encryption_func, decryption_func, patient_id, config_func,  nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
 
     if operation == "1":  # Encryption
@@ -180,7 +180,7 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
         start_time = time.time()
 
         # Execute the encryption function
-        encrypted_data = encryption_func(config_func, nfc_write_func)
+        encrypted_data = encryption_func(patient_id, nfc_write_func)
 
         encryption_time = time.time() - start_time
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
@@ -272,7 +272,8 @@ def main():
         asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
 
         if operation in {"1", "2"}:
-            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
+            patient_id = input("Enter patient ID: ").strip()
+            measure_performance(operation, encryption_func, decryption_func, patient_id, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
         else:
             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
 
