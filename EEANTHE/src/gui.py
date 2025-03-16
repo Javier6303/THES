@@ -13,6 +13,7 @@ from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
 from smartcard.System import readers
+from smartcard.util import toHexString
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -217,9 +218,62 @@ class EncryptionApp:
     
 
     def build_nfc_info_tab(self):
+        def refresh_nfc_info():
+            if not self.check_nfc_reader():
+                self.nfc_display.delete("1.0", tk.END)
+                self.nfc_display.insert(tk.END, "No NFC reader detected.")
+                return
+            
+            try:
+                r = readers()
+                if not r:
+                    self.nfc_display.delete("1.0", tk.END)
+                    self.nfc_display.insert(tk.END, "No NFC reader detected.")
+                    return
+                
+                reader = r[0]
+                connection = reader.createConnection()
+                connection.connect()
+                atr = toHexString(connection.getATR())
+                
+                # Read UID
+                GET_UID = [0xFF, 0xCA, 0x00, 0x00, 0x00]
+                response, sw1, sw2 = connection.transmit(GET_UID)
+                uid = toHexString(response) if sw1 == 0x90 and sw2 == 0x00 else "UID UNAVAILABLE"
+                
+                # Read memory information
+                MEMORY_INFO_COMMAND = [0xFF, 0xB0, 0x00, 0x02, 0x04]
+                response, sw1, sw2 = connection.transmit(MEMORY_INFO_COMMAND)
+                memory_info = toHexString(response) if sw1 == 0x90 and sw2 == 0x00 else "UNKNOWN"
+                
+                # Check if protected by password
+                PASSWORD_PROTECTION_COMMAND = [0xFF, 0xB0, 0x00, 0xE3, 0x04]  # Read AUTH0 byte
+                response, sw1, sw2 = connection.transmit(PASSWORD_PROTECTION_COMMAND)
+                protected_by_password = "Yes" if response[0] != 0xFF else "No"
+                
+                nfc_data = read_from_nfc_card()
+                if not nfc_data:
+                    nfc_data = "Failed to read NFC card."
+                
+                self.nfc_display.delete("1.0", tk.END)
+                GET_TECH = [0xFF, 0xB0, 0x00, 0x00, 0x04]  # Command to get tech info (placeholder, may vary by card type)
+                response, sw1, sw2 = connection.transmit(GET_TECH)
+                tech_info = toHexString(response) if sw1 == 0x90 and sw2 == 0x00 else "UNKNOWN"
+                self.nfc_display.insert(tk.END, f"TECH: {tech_info}")
+                self.nfc_display.insert(tk.END, f"UID: {uid}\n")
+                self.nfc_display.insert(tk.END, f"ATR: {atr}\n")
+                self.nfc_display.insert(tk.END, f"MEMORY INFORMATION: {memory_info}\n")
+                self.nfc_display.insert(tk.END, f"PROTECTED BY PASSWORD: {protected_by_password}\n")
+                self.nfc_display.insert(tk.END, f"RECORD 1: {nfc_data}\n")
+            except Exception as e:
+                self.nfc_display.delete("1.0", tk.END)
+                self.nfc_display.insert(tk.END, f"Error reading NFC card: {e}")
+        
         ttk.Label(self.nfc_info_tab, text="NFC Information", font=("Arial", 12, "bold")).pack(pady=10)
-        self.nfc_display = tk.Text(self.nfc_info_tab, height=10, width=50)
+        self.nfc_display = tk.Text(self.nfc_info_tab, height=15, width=60)
         self.nfc_display.pack(pady=10)
+        ttk.Button(self.nfc_info_tab, text="Refresh NFC Info", command=refresh_nfc_info).pack(pady=10)
+    
     
 if __name__ == "__main__":
     root = tk.Tk()
