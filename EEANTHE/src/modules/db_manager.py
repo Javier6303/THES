@@ -68,9 +68,12 @@ def update_patient(patient_id, updated_data):
         {"patient_id": patient_id},
         {"$set": updated_data}
     )
-    if result.modified_count > 0:
-        print(f"Patient {patient_id} successfully updated.")
+    if result.matched_count > 0:
+        if result.modified_count == 0:
+            print(f"Patient {patient_id} was found, but no fields changed.")
+        else:
+            print(f"Patient {patient_id} updated.")
         return True
     else:
-        print(f"No update performed for patient {patient_id}.")
+        print(f"Patient ID '{patient_id}' not found.")
         return False
