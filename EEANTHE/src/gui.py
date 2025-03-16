@@ -97,6 +97,8 @@ class EncryptionGUI:
                 entry.pack()
                 self.entries[field] = entry
 
+            ttk.Label(self.form_frame, text="Select Algorithm For Encryption:").pack(pady=5)
+
             # Only show Save & Encrypt for New Patient
             self.action_btn.config(text="Save & Encrypt", command=self.save_and_encrypt)
             self.action_btn.pack(pady=10)
