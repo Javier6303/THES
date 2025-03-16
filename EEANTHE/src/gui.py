@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, scrolledtext
 import logging
 import os
 from dotenv import load_dotenv
@@ -37,30 +37,50 @@ class EncryptionGUI:
         self.root.title("Patient Encryption System")
         self.root.geometry("900x750")
 
-        # Patient type selection
-        ttk.Label(root, text="Select Patient Type:").pack(pady=5)
-        self.patient_type = ttk.Combobox(root, values=["New Patient", "Existing Patient"], state="readonly")
+        # -------------------- Create Notebook --------------------
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill="both", expand=True)
+
+        # --- Tab 1: Patient Operations ---
+        self.operations_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.operations_frame, text="Patient Operations")
+
+        # --- Tab 2: Metrics ---
+        self.metrics_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.metrics_frame, text="Metrics")
+
+        # -------------------- Frame inside Patient Operations tab --------------------
+        ttk.Label(self.operations_frame, text="Select Patient Type:").pack(pady=5)
+        self.patient_type = ttk.Combobox(self.operations_frame, values=["New Patient", "Existing Patient"], state="readonly")
         self.patient_type.set("New Patient")
         self.patient_type.pack(pady=5)
         self.patient_type.bind("<<ComboboxSelected>>", self.render_form)
 
-        # Frame for form fields
-        self.form_frame = ttk.Frame(root)
+        # Form frame inside operations tab
+        self.form_frame = ttk.Frame(self.operations_frame)
         self.form_frame.pack(pady=10)
 
-        # Shared fields
-        self.patient_fields = ["Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
-                               "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses",
-                               "Doctor's Notes", "Last Appointment Date"]
+        # Shared patient fields
+        self.patient_fields = [
+            "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
+            "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses",
+            "Doctor's Notes", "Last Appointment Date"
+        ]
         self.entries = {}
 
-        # Algorithm selection
-        self.encryption_choice = ttk.Combobox(root, values=["AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"], state="readonly")
+        # Encryption algorithm selector
+        self.encryption_choice = ttk.Combobox(self.operations_frame, values=[
+            "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+        ], state="readonly")
         self.encryption_choice.pack(pady=5)
 
-        # Buttons
-        self.action_btn = ttk.Button(root, text="Save & Encrypt", command=self.save_and_encrypt)
+        # Save button (only for new patients)
+        self.action_btn = ttk.Button(self.operations_frame, text="Save & Encrypt", command=self.save_and_encrypt)
         self.action_btn.pack(pady=10)
+
+        # -------------------- Metrics Tab --------------------
+        self.metrics_display = scrolledtext.ScrolledText(self.metrics_frame, width=100, height=30, state="disabled")
+        self.metrics_display.pack(padx=10, pady=10)
 
     def render_form(self, event=None):
         # Clear current form
@@ -134,10 +154,13 @@ class EncryptionGUI:
             )
 
             messagebox.showinfo("Success", f"Patient data saved and encrypted to NFC.\nID: {patient_id}")
+            self.display_metrics(metrics, "encryption")
 
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
+        
+        
     def decrypt_existing_patient(self):
         method = self.encryption_choice.get()
         if not method:
@@ -165,6 +188,7 @@ class EncryptionGUI:
                 asymmetric=True
             )
 
+            self.display_metrics(metrics, "decryption")
             decrypted_text = metrics.get("decryption_data", None)
             # Display decrypted text (split and display)
             decrypted_fields = decrypted_text.decode().split(",")
@@ -175,7 +199,7 @@ class EncryptionGUI:
             self.patient_id_entry = ttk.Entry(self.form_frame)
             self.patient_id_entry.insert(0, decrypted_fields[-1])
             self.patient_id_entry.pack()
-            
+
             for i, field in enumerate(self.patient_fields):
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
                 entry = ttk.Entry(self.form_frame)
@@ -187,6 +211,8 @@ class EncryptionGUI:
             self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
             self.update_btn.pack(pady=15)
 
+            
+            
         except Exception as e:
             messagebox.showerror("Decryption Error", str(e))
 
@@ -218,7 +244,7 @@ class EncryptionGUI:
         }.get(method)
 
         try:
-            measure_performance(
+            metrics = measure_performance(
                 operation="1",
                 encryption_func=encryption_func,
                 decryption_func=None,
@@ -228,9 +254,25 @@ class EncryptionGUI:
                 nfc_read_func=read_from_nfc_card,
                 asymmetric=True
             )
+            self.display_metrics(metrics, "encryption")
             messagebox.showinfo("Success", f"Patient {patient_id} updated and re-encrypted.")
         except Exception as e:
             messagebox.showerror("Encryption Error", str(e))
+
+    
+
+    def display_metrics(self, metrics, operation):
+        self.metrics_display.configure(state="normal")
+        self.metrics_display.insert(tk.END, f"\n--- {operation.upper()} METRICS ---\n")
+        for key, value in metrics.items():
+            if isinstance(value, dict):
+                for subkey, subval in value.items():
+                    self.metrics_display.insert(tk.END, f"{subkey.capitalize()}: {subval}\n")
+            else:
+                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
+        self.metrics_display.insert(tk.END, "\n")
+        self.metrics_display.configure(state="disabled")
+
 # ----------------- LAUNCH -----------------
 if __name__ == "__main__":
     root = tk.Tk()
