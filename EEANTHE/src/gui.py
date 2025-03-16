@@ -35,7 +35,7 @@ class EncryptionGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Patient Encryption System")
-        self.root.geometry("900x750")
+        self.root.geometry("800x1000")
 
         # -------------------- Create Notebook --------------------
         self.notebook = ttk.Notebook(self.root)
@@ -52,7 +52,6 @@ class EncryptionGUI:
         # -------------------- Frame inside Patient Operations tab --------------------
         ttk.Label(self.operations_frame, text="Select Patient Type:").pack(pady=5)
         self.patient_type = ttk.Combobox(self.operations_frame, values=["New Patient", "Existing Patient"], state="readonly")
-        self.patient_type.set("New Patient")
         self.patient_type.pack(pady=5)
         self.patient_type.bind("<<ComboboxSelected>>", self.render_form)
 
