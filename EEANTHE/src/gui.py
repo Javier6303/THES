@@ -97,7 +97,7 @@ class EncryptionGUI:
                 entry.pack()
                 self.entries[field] = entry
 
-            ttk.Label(self.form_frame, text="Select Algorithm For Encryption:").pack(pady=5)
+            ttk.Label(self.form_frame, text="Select Algorithm For:").pack(pady=5)
 
             # Only show Save & Encrypt for New Patient
             self.action_btn.config(text="Save & Encrypt", command=self.save_and_encrypt)
@@ -191,13 +191,11 @@ class EncryptionGUI:
 
             self.display_metrics(metrics, "decryption")
             decrypted_text = metrics.get("decryption_data", None)
-            
             # Display decrypted text (split and display)
             if isinstance(decrypted_text, bytes):
                 decrypted_text = decrypted_text.decode()
 
             decrypted_fields = decrypted_text.split(",")
-            
             for widget in self.form_frame.winfo_children():
                 widget.destroy()
 
@@ -217,7 +215,7 @@ class EncryptionGUI:
             self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
             self.update_btn.pack(pady=15)
 
-                
+              
         except Exception as e:
             messagebox.showerror("Decryption Error", str(e))
 
