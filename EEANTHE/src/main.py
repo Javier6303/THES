@@ -224,6 +224,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             "peak": f"{peak / 1024:.6f} KB"
         }
         metrics["data_size_bytes"] = data_size
+        metrics["decryption_data"] = decrypted_data
 
         print(f"Decryption data: {decrypted_data}")
         logger.info(f"Decryption completed. Time: {decryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")

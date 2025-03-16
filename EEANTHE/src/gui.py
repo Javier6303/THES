@@ -5,14 +5,14 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from base64 import b64encode
-from modules.aes_ndef import aes_encryption
-from modules.aes_rsa import aes_rsa_encryption
-from modules.rsa import rsa_encryption
-from modules.hill_cipher import hill_cipher_encryption
-from modules.ecc import ecc_xor_encryption
-from modules.ecdh_aes import ecdh_aes_encryption
-from main import write_to_nfc_card_as_ndef
-from modules.db_manager import save_new_patient
+from modules.aes_ndef import aes_encryption, aes_decryption
+from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
+from modules.rsa import rsa_encryption, rsa_decryption
+from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
+from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
+from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
+from main import measure_performance, CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card
+from modules.db_manager import save_new_patient, update_patient
 
 # ----------------- LOGGER -----------------
 logging.basicConfig(level=logging.INFO)
@@ -34,53 +34,84 @@ patients_collection = db[PATIENTS_COLLECTION]
 class EncryptionGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("New Patient Encryption")
-        self.root.geometry("900x700")
+        self.root.title("Patient Encryption System")
+        self.root.geometry("900x750")
 
+        # Patient type selection
         ttk.Label(root, text="Select Patient Type:").pack(pady=5)
-        self.patient_type = ttk.Combobox(root, values=["New Patient"], state="readonly")
+        self.patient_type = ttk.Combobox(root, values=["New Patient", "Existing Patient"], state="readonly")
         self.patient_type.set("New Patient")
         self.patient_type.pack(pady=5)
+        self.patient_type.bind("<<ComboboxSelected>>", self.render_form)
 
+        # Frame for form fields
+        self.form_frame = ttk.Frame(root)
+        self.form_frame.pack(pady=10)
+
+        # Shared fields
         self.patient_fields = ["Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
-                                "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses",
-                                "Doctor's Notes", "Last Appointment Date"]
+                               "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses",
+                               "Doctor's Notes", "Last Appointment Date"]
         self.entries = {}
 
-        for field in self.patient_fields:
-            ttk.Label(root, text=field.capitalize() + ":").pack(pady=3)
-            entry = ttk.Entry(root)
-            entry.pack(pady=3)
-            self.entries[field] = entry
-
-        ttk.Label(root, text="Select Encryption Algorithm:").pack(pady=5)
-        self.encryption_choice = ttk.Combobox(
-            root,
-            values=["AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"],
-            state="readonly"
-        )
+        # Algorithm selection
+        self.encryption_choice = ttk.Combobox(root, values=["AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"], state="readonly")
         self.encryption_choice.pack(pady=5)
 
-        self.save_btn = ttk.Button(root, text="Save & Encrypt", command=self.save_and_encrypt)
-        self.save_btn.pack(pady=20)
+        # Buttons
+        self.action_btn = ttk.Button(root, text="Save & Encrypt", command=self.save_and_encrypt)
+        self.action_btn.pack(pady=10)
+
+    def render_form(self, event=None):
+        # Clear current form
+        for widget in self.form_frame.winfo_children():
+            widget.destroy()
+
+        self.entries.clear()
+        selected_type = self.patient_type.get()
+
+        if selected_type == "New Patient":
+            # Show fields directly
+            for field in self.patient_fields:
+                ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
+                entry = ttk.Entry(self.form_frame)
+                entry.pack()
+                self.entries[field] = entry
+
+            # Only show Save & Encrypt for New Patient
+            self.action_btn.config(text="Save & Encrypt", command=self.save_and_encrypt)
+            self.action_btn.pack(pady=10)
+
+        elif selected_type == "Existing Patient":
+            # Hide Save & Encrypt (if it was packed before)
+            self.action_btn.pack_forget()
+
+            # Patient ID field
+            ttk.Label(self.form_frame, text="Patient ID:").pack(pady=2)
+            self.patient_id_entry = ttk.Entry(self.form_frame)
+            self.patient_id_entry.pack()
+
+            # Algorithm dropdown
+            ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
+            self.encryption_choice.pack()
+
+            # Decrypt button only for now
+            self.decrypt_btn = ttk.Button(self.form_frame, text="Decrypt NFC Data", command=self.decrypt_existing_patient)
+            self.decrypt_btn.pack(pady=10)
 
     def save_and_encrypt(self):
-        # Validate selection
         method = self.encryption_choice.get()
         if not method:
             messagebox.showerror("Error", "Please select an encryption method.")
             return
 
-        # Extract patient data
         patient_data = {field: self.entries[field].get().strip() for field in self.patient_fields}
         if any(not value for value in patient_data.values()):
-            messagebox.showerror("Error", "All patient fields must be filled.")
+            messagebox.showerror("Error", "All fields must be filled.")
             return
 
         patient_id = save_new_patient(patient_data)
-        logger.info(f"New patient saved to MongoDB with ID {patient_id}")
 
-        # Call encryption
         encryption_func = {
             "AES": aes_encryption,
             "RSA": rsa_encryption,
@@ -91,18 +122,115 @@ class EncryptionGUI:
         }.get(method)
 
         try:
-            encrypted_data = encryption_func(patient_id, write_to_nfc_card_as_ndef)
-            if not encrypted_data:
-                raise Exception("Encryption failed or patient not found.")
+            metrics = measure_performance(
+                operation="1",
+                encryption_func=encryption_func,
+                decryption_func=None,  # not needed for encryption
+                patient_id=patient_id,
+                config_func=lambda: CONFIG_PATH,
+                nfc_write_func=write_to_nfc_card_as_ndef,
+                nfc_read_func=read_from_nfc_card,
+                asymmetric=True  # all your algorithms use asymmetric_mode=True now
+            )
 
-            logger.info("Encryption and NFC write complete.")
-            messagebox.showinfo("Success", f"Patient data encrypted and written to NFC.\nPatient ID: {patient_id}")
+            messagebox.showinfo("Success", f"Patient data saved and encrypted to NFC.\nID: {patient_id}")
 
         except Exception as e:
-            logger.error(f"Encryption failed: {e}")
+            messagebox.showerror("Error", str(e))
+
+    def decrypt_existing_patient(self):
+        method = self.encryption_choice.get()
+        if not method:
+            messagebox.showerror("Error", "Please select an algorithm used.")
+            return
+
+        decryption_func = {
+            "AES": aes_decryption,
+            "RSA": rsa_decryption,
+            "AES-RSA": aes_rsa_decryption,
+            "Hill Cipher": hill_cipher_decryption,
+            "ECC XOR": ecc_xor_decryption,
+            "ECDH-AES": ecdh_aes_decryption
+        }.get(method)
+
+        try:
+            metrics = measure_performance(
+                operation="2",
+                encryption_func=None,  # not needed for decryption
+                decryption_func=decryption_func,
+                patient_id=None,  # not needed in current design
+                config_func=lambda: CONFIG_PATH,
+                nfc_write_func=write_to_nfc_card_as_ndef,  # still required by the function signature
+                nfc_read_func=read_from_nfc_card,
+                asymmetric=True
+            )
+
+            decrypted_text = metrics.get("decryption_data", None)
+            # Display decrypted text (split and display)
+            decrypted_fields = decrypted_text.decode().split(",")
+            for widget in self.form_frame.winfo_children():
+                widget.destroy()
+
+            ttk.Label(self.form_frame, text="Patient ID:").pack(pady=2)
+            self.patient_id_entry = ttk.Entry(self.form_frame)
+            self.patient_id_entry.insert(0, decrypted_fields[-1])
+            self.patient_id_entry.pack()
+            
+            for i, field in enumerate(self.patient_fields):
+                ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
+                entry = ttk.Entry(self.form_frame)
+                entry.insert(0, decrypted_fields[i] if i < len(decrypted_fields) else "")
+                entry.pack()
+                self.entries[field] = entry
+
+            # Add Update & Encrypt button
+            self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
+            self.update_btn.pack(pady=15)
+
+        except Exception as e:
+            messagebox.showerror("Decryption Error", str(e))
+
+    def update_and_encrypt(self):
+        method = self.encryption_choice.get()
+        patient_id = self.patient_id_entry.get().strip()
+
+        if not method or not patient_id:
+            messagebox.showerror("Error", "Please provide patient ID and select an encryption method.")
+            return
+
+        updated_data = {field: self.entries[field].get().strip() for field in self.patient_fields}
+        if any(not value for value in updated_data.values()):
+            messagebox.showerror("Error", "All fields must be filled.")
+            return
+
+        success = update_patient(patient_id, updated_data)
+        if not success:
+            messagebox.showerror("Error", f"Patient ID '{patient_id}' not found.")
+            return
+
+        encryption_func = {
+            "AES": aes_encryption,
+            "RSA": rsa_encryption,
+            "AES-RSA": aes_rsa_encryption,
+            "Hill Cipher": hill_cipher_encryption,
+            "ECC XOR": ecc_xor_encryption,
+            "ECDH-AES": ecdh_aes_encryption
+        }.get(method)
+
+        try:
+            measure_performance(
+                operation="1",
+                encryption_func=encryption_func,
+                decryption_func=None,
+                patient_id=patient_id,
+                config_func=lambda: CONFIG_PATH,
+                nfc_write_func=write_to_nfc_card_as_ndef,
+                nfc_read_func=read_from_nfc_card,
+                asymmetric=True
+            )
+            messagebox.showinfo("Success", f"Patient {patient_id} updated and re-encrypted.")
+        except Exception as e:
             messagebox.showerror("Encryption Error", str(e))
-
-
 # ----------------- LAUNCH -----------------
 if __name__ == "__main__":
     root = tk.Tk()

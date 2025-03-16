@@ -61,3 +61,16 @@ def save_new_patient(data):
     db["patients"].insert_one(data)
     print(f"New patient saved with ID: {patient_id}")
     return patient_id
+
+def update_patient(patient_id, updated_data):
+    """Update an existing patient in MongoDB using patient_id."""
+    result = db["patients"].update_one(
+        {"patient_id": patient_id},
+        {"$set": updated_data}
+    )
+    if result.modified_count > 0:
+        print(f"Patient {patient_id} successfully updated.")
+        return True
+    else:
+        print(f"No update performed for patient {patient_id}.")
+        return False
