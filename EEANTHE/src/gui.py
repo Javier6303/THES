@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from base64 import b64encode
+from smartcard.System import readers
+from smartcard.util import toHexString
 from modules.aes_ndef import aes_encryption, aes_decryption
 from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
 from modules.rsa import rsa_encryption, rsa_decryption
@@ -37,49 +39,55 @@ class EncryptionGUI:
         self.root.title("Patient Encryption System")
         self.root.geometry("800x1000")
 
-        # -------------------- Create Notebook --------------------
+        # ----- Notebook Tabs -----
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill="both", expand=True)
 
-        # --- Tab 1: Patient Operations ---
         self.operations_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.operations_frame, text="Patient Operations")
-
-        # --- Tab 2: Metrics ---
         self.metrics_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.metrics_frame, text="Metrics")
+        self.info_frame = ttk.Frame(self.notebook)
 
-        # -------------------- Frame inside Patient Operations tab --------------------
+        self.notebook.add(self.operations_frame, text="Patient Operations")
+        self.notebook.add(self.metrics_frame, text="Metrics")
+        self.notebook.add(self.info_frame, text="Information")
+
+        # ----- NFC Info Tab -----
+        ttk.Button(self.info_frame, text="Read NFC Card Info", command=self.read_nfc_info).pack(pady=10)
+        self.info_display = scrolledtext.ScrolledText(self.info_frame, width=100, height=30, state="disabled")
+        self.info_display.pack(padx=10, pady=10)
+
+        # ----- Patient Type (Operations Tab) -----
         ttk.Label(self.operations_frame, text="Select Patient Type:").pack(pady=5)
-        self.patient_type = ttk.Combobox(self.operations_frame, values=["New Patient", "Existing Patient"], state="readonly")
+
+        initial_patient_type = self.check_nfc_card_has_data()
+        patient_type_values = [initial_patient_type] if initial_patient_type else ["New Patient", "Existing Patient"]
+
+        self.patient_type = ttk.Combobox(self.operations_frame, values=patient_type_values, state="readonly")
         self.patient_type.pack(pady=5)
+        if initial_patient_type:
+            self.patient_type.set(initial_patient_type)
+
         self.patient_type.bind("<<ComboboxSelected>>", self.render_form)
 
-        # Form frame inside operations tab
+        # Form container and field definitions
         self.form_frame = ttk.Frame(self.operations_frame)
         self.form_frame.pack(pady=10)
 
-        # Shared patient fields
+        self.entries = {}
         self.patient_fields = [
             "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
             "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses",
             "Doctor's Notes", "Last Appointment Date"
         ]
-        self.entries = {}
 
-        # Encryption algorithm selector
-        self.encryption_choice = ttk.Combobox(self.operations_frame, values=[
-            "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
-        ], state="readonly")
-        self.encryption_choice.pack(pady=5)
-
-        # Save button (only for new patients)
-        self.action_btn = ttk.Button(self.operations_frame, text="Save & Encrypt", command=self.save_and_encrypt)
-        self.action_btn.pack(pady=10)
-
-        # -------------------- Metrics Tab --------------------
+        # ----- Metrics Tab -----
         self.metrics_display = scrolledtext.ScrolledText(self.metrics_frame, width=100, height=30, state="disabled")
         self.metrics_display.pack(padx=10, pady=10)
+
+        # Auto-render form based on card data
+        if initial_patient_type:
+            self.render_form()
+
 
     def render_form(self, event=None):
         # Clear current form
@@ -90,35 +98,49 @@ class EncryptionGUI:
         selected_type = self.patient_type.get()
 
         if selected_type == "New Patient":
-            # Show fields directly
+            # Clear previous
+            self.entries.clear()
+
+            # Form fields
             for field in self.patient_fields:
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
                 entry = ttk.Entry(self.form_frame)
                 entry.pack()
                 self.entries[field] = entry
 
-            ttk.Label(self.form_frame, text="Select Algorithm For:").pack(pady=5)
+            # Encryption label + dropdown
+            ttk.Label(self.form_frame, text="Select Algorithm For Encryption:").pack(pady=5)
+            self.encryption_choice = ttk.Combobox(self.form_frame, values=[
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+            ], state="readonly")
+            self.encryption_choice.pack()
 
-            # Only show Save & Encrypt for New Patient
-            self.action_btn.config(text="Save & Encrypt", command=self.save_and_encrypt)
+            # Save button
+            self.action_btn = ttk.Button(self.form_frame, text="Save & Encrypt", command=self.save_and_encrypt)
             self.action_btn.pack(pady=10)
 
-        elif selected_type == "Existing Patient":
-            # Hide Save & Encrypt (if it was packed before)
-            self.action_btn.pack_forget()
 
-            # Patient ID field
+        elif selected_type == "Existing Patient":
+            # Clear previous
+            self.entries.clear()
+
+            # Patient ID
             ttk.Label(self.form_frame, text="Patient ID:").pack(pady=2)
             self.patient_id_entry = ttk.Entry(self.form_frame)
             self.patient_id_entry.pack()
 
-            # Algorithm dropdown
+            # Encryption label + dropdown
             ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
+            self.encryption_choice = ttk.Combobox(self.form_frame, values=[
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+            ], state="readonly")
             self.encryption_choice.pack()
 
-            # Decrypt button only for now
+            # Decrypt button
             self.decrypt_btn = ttk.Button(self.form_frame, text="Decrypt NFC Data", command=self.decrypt_existing_patient)
             self.decrypt_btn.pack(pady=10)
+
+            
 
     def save_and_encrypt(self):
         method = self.encryption_choice.get()
@@ -211,6 +233,12 @@ class EncryptionGUI:
                 entry.pack()
                 self.entries[field] = entry
 
+            ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
+            self.encryption_choice = ttk.Combobox(self.form_frame, values=[
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+            ], state="readonly")
+            self.encryption_choice.pack()
+            
             # Add Update & Encrypt button
             self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
             self.update_btn.pack(pady=15)
@@ -220,33 +248,38 @@ class EncryptionGUI:
             messagebox.showerror("Decryption Error", str(e))
 
     def update_and_encrypt(self):
-        method = self.encryption_choice.get()
-        patient_id = self.patient_id_entry.get().strip()
-
-        if not method or not patient_id:
-            messagebox.showerror("Error", "Please provide patient ID and select an encryption method.")
-            return
-
-        updated_data = {field: self.entries[field].get().strip() for field in self.patient_fields}
-        if any(not value for value in updated_data.values()):
-            messagebox.showerror("Error", "All fields must be filled.")
-            return
-
-        success = update_patient(patient_id, updated_data)
-        if not success:
-            messagebox.showerror("Error", f"Patient ID '{patient_id}' not found.")
-            return
-
-        encryption_func = {
-            "AES": aes_encryption,
-            "RSA": rsa_encryption,
-            "AES-RSA": aes_rsa_encryption,
-            "Hill Cipher": hill_cipher_encryption,
-            "ECC XOR": ecc_xor_encryption,
-            "ECDH-AES": ecdh_aes_encryption
-        }.get(method)
-
         try:
+            # Make sure the encryption dropdown exists
+            if not hasattr(self, 'encryption_choice') or not self.encryption_choice.winfo_exists():
+                messagebox.showerror("Error", "Encryption method selector is unavailable.")
+                return
+
+            method = self.encryption_choice.get()
+            patient_id = self.patient_id_entry.get().strip()
+
+            if not method or not patient_id:
+                messagebox.showerror("Error", "Please provide patient ID and select an encryption method.")
+                return
+
+            updated_data = {field: self.entries[field].get().strip() for field in self.patient_fields}
+            if any(not value for value in updated_data.values()):
+                messagebox.showerror("Error", "All fields must be filled.")
+                return
+
+            success = update_patient(patient_id, updated_data)
+            if not success:
+                messagebox.showerror("Error", f"Patient ID '{patient_id}' not found.")
+                return
+
+            encryption_func = {
+                "AES": aes_encryption,
+                "RSA": rsa_encryption,
+                "AES-RSA": aes_rsa_encryption,
+                "Hill Cipher": hill_cipher_encryption,
+                "ECC XOR": ecc_xor_encryption,
+                "ECDH-AES": ecdh_aes_encryption
+            }.get(method)
+
             metrics = measure_performance(
                 operation="1",
                 encryption_func=encryption_func,
@@ -259,10 +292,10 @@ class EncryptionGUI:
             )
             self.display_metrics(metrics, "encryption")
             messagebox.showinfo("Success", f"Patient {patient_id} updated and re-encrypted.")
+
         except Exception as e:
             messagebox.showerror("Encryption Error", str(e))
 
-    
 
     def display_metrics(self, metrics, operation):
         self.metrics_display.configure(state="normal")
@@ -275,6 +308,103 @@ class EncryptionGUI:
                 self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
         self.metrics_display.insert(tk.END, "\n")
         self.metrics_display.configure(state="disabled")
+
+    def read_nfc_info(self):
+        try:
+            r = readers()
+            if not r:
+                messagebox.showerror("NFC Error", "No NFC readers found.")
+                return
+
+            reader = r[0]
+            connection = reader.createConnection()
+            connection.connect()
+
+            atr = connection.getATR()
+            atr_hex = toHexString(atr)
+
+            # Try getting UID from page 0 (common for NTAG cards)
+            get_uid_cmd = [0xFF, 0xCA, 0x00, 0x00, 0x00]
+            uid, sw1, sw2 = connection.transmit(get_uid_cmd)
+            uid_str = toHexString(uid) if sw1 == 0x90 and sw2 == 0x00 else "Unavailable"
+            
+            # Read raw NDEF pages (4–225)
+            nfc_data = b""
+            pages_read = 0
+            for page in range(4, 225):
+                READ_COMMAND = [0xFF, 0xB0, 0x00, page, 0x04]
+                response, sw1, sw2 = connection.transmit(READ_COMMAND)
+                if sw1 == 0x90 and sw2 == 0x00:
+                    nfc_data += bytes(response)
+                    pages_read += 1
+                else:
+                    break
+
+            nfc_data = nfc_data.rstrip(b'\x00')
+
+            # Parse text from NDEF payload
+            record = "Unavailable"
+            if nfc_data and nfc_data[0] == 0x03:
+                try:
+                    index = 2
+                    while index < len(nfc_data) and nfc_data[index] != 0x54:
+                        index += 1
+
+                    language_code_length = nfc_data[index + 1]
+                    text_start = index + 2 + language_code_length
+                    text_end = nfc_data.find(b'\xFE')  # End of NDEF message
+                    record_data = nfc_data[text_start:text_end]
+                    record = record_data.decode(errors='replace')  # Even if it's encrypted
+
+                except Exception as parse_err:
+                    record = f"Error parsing record: {parse_err}"
+
+            memory_bytes = pages_read * 4
+            info = [
+                f"Reader: {reader}",
+                f"ATR: {atr_hex}",
+                f"UID: {uid_str}",
+                f"Memory Pages: {pages_read} (4 bytes each) = {memory_bytes} bytes",  # can be calculated from read loop if needed
+                f"RECORD 1: Text (en) = {record}"
+            ]
+
+            self.info_display.configure(state="normal")
+            self.info_display.delete("1.0", tk.END)
+            for line in info:
+                self.info_display.insert(tk.END, line + "\n")
+            self.info_display.configure(state="disabled")
+
+        except Exception as e:
+            messagebox.showerror("NFC Error", str(e))
+    
+    def check_nfc_card_has_data(self):
+        try:
+            r = readers()
+            if not r:
+                return None
+
+            reader = r[0]
+            connection = reader.createConnection()
+            connection.connect()
+
+            nfc_data = b""
+            for page in range(4, 225):
+                READ_COMMAND = [0xFF, 0xB0, 0x00, page, 0x04]
+                response, sw1, sw2 = connection.transmit(READ_COMMAND)
+                if sw1 == 0x90 and sw2 == 0x00:
+                    nfc_data += bytes(response)
+                else:
+                    break
+
+            nfc_data = nfc_data.rstrip(b"\x00")
+            if nfc_data and b'\x03' in nfc_data:
+                return "Existing Patient"
+            return "New Patient"
+
+        except Exception as e:
+            print("NFC check failed:", e)
+            return None
+
 
 # ----------------- LAUNCH -----------------
 if __name__ == "__main__":
