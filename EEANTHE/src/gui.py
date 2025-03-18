@@ -300,14 +300,38 @@ class EncryptionGUI:
     def display_metrics(self, metrics, operation):
         self.metrics_display.configure(state="normal")
         self.metrics_display.insert(tk.END, f"\n--- {operation.upper()} METRICS ---\n")
+
         for key, value in metrics.items():
             if isinstance(value, dict):
                 for subkey, subval in value.items():
                     self.metrics_display.insert(tk.END, f"{subkey.capitalize()}: {subval}\n")
+
+            elif key in ("encryption_data", "decryption_data"):
+                # Show encoded form
+                if isinstance(value, bytes):
+                    try:
+                        hexed = value.hex()
+                        self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Hex):\n{hexed}\n")
+
+                        # Show readable decrypted string if applicable
+                        if key == "decryption_data":
+                            try:
+                                decoded_text = value.decode()
+                                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text):\n{decoded_text}\n")
+                            except Exception:
+                                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text): <Unreadable or binary>\n")
+                    except Exception:
+                        self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: <Binary data>\n")
+
+                else:
+                    self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
+
             else:
                 self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
+
         self.metrics_display.insert(tk.END, "\n")
         self.metrics_display.configure(state="disabled")
+
 
     def read_nfc_info(self):
         try:

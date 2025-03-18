@@ -196,8 +196,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             "peak": f"{peak / 1024:.6f} KB"
         }
         metrics["data_size_bytes"] = data_size
-
-        print(f"Encryption data: {encrypted_data}")
+        metrics["encryption_data"] = encrypted_data
         logger.info(f"Encryption completed. Time: {encryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
 
         save_metrics_to_csv(metrics, operation)
@@ -232,7 +231,6 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         save_metrics_to_csv(metrics, operation)
 
     logger.info("Performance Metrics: %s", metrics)
-    print("Performance Metrics:", metrics)
 
     return metrics
 
