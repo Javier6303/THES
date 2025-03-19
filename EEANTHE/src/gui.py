@@ -76,8 +76,8 @@ class EncryptionGUI:
         self.entries = {}
         self.patient_fields = [
             "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
-            "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses",
-            "Doctor's Notes", "Last Appointment Date"
+            "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses", "Last Appointment Date",
+            "Doctor's Notes"
         ]
 
         # ----- Metrics Tab -----
@@ -104,9 +104,14 @@ class EncryptionGUI:
             # Form fields
             for field in self.patient_fields:
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
-                entry = ttk.Entry(self.form_frame)
-                entry.pack()
-                self.entries[field] = entry
+                if field == "Doctor's Notes":
+                    text_widget = tk.Text(self.form_frame, height=7)
+                    text_widget.pack(fill="both", expand=True, padx=10, pady=5)
+                    self.entries[field] = text_widget
+                else:
+                    entry = ttk.Entry(self.form_frame)
+                    entry.pack()
+                    self.entries[field] = entry
 
             # Encryption label + dropdown
             ttk.Label(self.form_frame, text="Select Algorithm For Encryption:").pack(pady=5)
@@ -148,7 +153,15 @@ class EncryptionGUI:
             messagebox.showerror("Error", "Please select an encryption method.")
             return
 
-        patient_data = {field: self.entries[field].get().strip() for field in self.patient_fields}
+        patient_data = {
+            field: (
+                self.entries[field].get("1.0", tk.END).strip()
+                if isinstance(self.entries[field], tk.Text)
+                else self.entries[field].get().strip()
+            )
+            for field in self.patient_fields
+        }
+
         if any(not value for value in patient_data.values()):
             messagebox.showerror("Error", "All fields must be filled.")
             return
@@ -165,7 +178,11 @@ class EncryptionGUI:
         }.get(method)
 
         try:
-            metrics = measure_performance(
+
+            metrics = {
+                "plaintext_data": ",".join(str(v) for v in patient_data.values()) # joined as a single string for display
+            }
+            encryption_metrics = measure_performance(
                 operation="1",
                 encryption_func=encryption_func,
                 decryption_func=None,  # not needed for encryption
@@ -175,6 +192,8 @@ class EncryptionGUI:
                 nfc_read_func=read_from_nfc_card,
                 asymmetric=True  # all your algorithms use asymmetric_mode=True now
             )
+
+            metrics.update(encryption_metrics)
 
             messagebox.showinfo("Success", f"Patient data saved and encrypted to NFC.\nID: {patient_id}")
             self.display_metrics(metrics, "encryption")
@@ -228,10 +247,18 @@ class EncryptionGUI:
 
             for i, field in enumerate(self.patient_fields):
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
-                entry = ttk.Entry(self.form_frame)
-                entry.insert(0, decrypted_fields[i] if i < len(decrypted_fields) else "")
-                entry.pack()
-                self.entries[field] = entry
+                value = decrypted_fields[i] if i < len(decrypted_fields) else ""
+
+                if field == "Doctor's Notes":
+                    text_widget = tk.Text(self.form_frame, height=7)
+                    text_widget.insert("1.0", value)
+                    text_widget.pack(fill="both", expand=True, padx=10, pady=5)
+                    self.entries[field] = text_widget
+                else:
+                    entry = ttk.Entry(self.form_frame)
+                    entry.insert(0, value)
+                    entry.pack()
+                    self.entries[field] = entry
 
             ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
             self.encryption_choice = ttk.Combobox(self.form_frame, values=[
@@ -261,7 +288,14 @@ class EncryptionGUI:
                 messagebox.showerror("Error", "Please provide patient ID and select an encryption method.")
                 return
 
-            updated_data = {field: self.entries[field].get().strip() for field in self.patient_fields}
+            updated_data = {
+                field: (
+                    self.entries[field].get("1.0", tk.END).strip()
+                    if isinstance(self.entries[field], tk.Text)
+                    else self.entries[field].get().strip()
+                )
+                for field in self.patient_fields
+            }
             if any(not value for value in updated_data.values()):
                 messagebox.showerror("Error", "All fields must be filled.")
                 return
@@ -280,7 +314,11 @@ class EncryptionGUI:
                 "ECDH-AES": ecdh_aes_encryption
             }.get(method)
 
-            metrics = measure_performance(
+            metrics = {
+                "plaintext_data": ",".join(str(v) for v in updated_data.values())
+            }
+
+            encryption_metrics = measure_performance(
                 operation="1",
                 encryption_func=encryption_func,
                 decryption_func=None,
@@ -290,6 +328,9 @@ class EncryptionGUI:
                 nfc_read_func=read_from_nfc_card,
                 asymmetric=True
             )
+
+            metrics.update(encryption_metrics)
+
             self.display_metrics(metrics, "encryption")
             messagebox.showinfo("Success", f"Patient {patient_id} updated and re-encrypted.")
 
@@ -306,6 +347,13 @@ class EncryptionGUI:
                 for subkey, subval in value.items():
                     self.metrics_display.insert(tk.END, f"{subkey.capitalize()}: {subval}\n")
 
+            elif key == "plaintext_data":
+                self.metrics_display.insert(tk.END, "Plaintext data (before encryption):\n")
+                split_data = value.split(",")
+                for i, field in enumerate(self.patient_fields):
+                    val = split_data[i] if i < len(split_data) else "<missing>"
+                    self.metrics_display.insert(tk.END, f"{field}: {val}\n")
+                    
             elif key in ("encryption_data", "decryption_data"):
                 # Show encoded form
                 if isinstance(value, bytes):
