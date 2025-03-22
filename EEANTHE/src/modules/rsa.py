@@ -7,14 +7,14 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- RSA ENCRYPTION -------------------
 
-def generate_rsa_keypair(key_name="rsa_key"):
+def generate_rsa_keypair(patient_id, key_name="rsa_key"):
     """Generate RSA key pair and save the private key to a file."""
     key = RSA.generate(2048)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
 
-    save_key(f"{key_name}_private", private_key)
-    save_key(f"{key_name}_public", public_key)
+    save_key(f"{key_name}_private", private_key, patient_id)
+    save_key(f"{key_name}_public", public_key, patient_id)
     
     return public_key
 
@@ -28,7 +28,7 @@ def rsa_encryption(patient_id, write_to_nfc, key_name="rsa_key"):
     patient.pop("_id", None)  # Remove MongoDB internal ID if present
     data = ",".join(str(value) for value in patient.values()).encode()
 
-    public_key_data = generate_rsa_keypair(key_name)
+    public_key_data = generate_rsa_keypair(patient_id, key_name)
     public_key = RSA.import_key(public_key_data)
     cipher = PKCS1_OAEP.new(public_key)
 
@@ -47,10 +47,10 @@ def rsa_encryption(patient_id, write_to_nfc, key_name="rsa_key"):
 
 # ------------------- RSA DECRYPTION -------------------
 
-def rsa_decryption(get_csv_path, read_from_nfc, key_name="rsa_key", output_csv="decrypted_rsa_data.csv"):
+def rsa_decryption(get_csv_path, read_from_nfc, patient_id, key_name="rsa_key", output_csv="decrypted_rsa_data.csv"):
     """Decrypt data from NFC and restore original CSV format using RSA with keys from MongoDB."""
     try:
-        private_key_data = load_key(f"{key_name}_private")
+        private_key_data = load_key(f"{key_name}_private", patient_id)
         if not private_key_data:
             print(f"Error: No private key found in MongoDB for '{key_name}'.")
             return None

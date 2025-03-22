@@ -207,7 +207,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         start_time = time.time()
 
         # Execute the decryption function
-        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric))
+        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric), patient_id)
 
         decryption_time = time.time() - start_time
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage

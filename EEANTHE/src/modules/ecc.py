@@ -8,7 +8,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- ECC KEY GENERATION -------------------
 
-def generate_ecc_key_pair(key_name="ecc_key"):
+def generate_ecc_key_pair(patient_id, key_name="ecc_key"):
     """Generate ECC Private-Public Key Pair and store in MongoDB."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_key = private_key.public_key()
@@ -19,14 +19,14 @@ def generate_ecc_key_pair(key_name="ecc_key"):
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    save_key(f"{key_name}_private", private_pem)
+    save_key(f"{key_name}_private", private_pem, patient_id)
 
     # Save public key
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_public", public_pem)
+    save_key(f"{key_name}_public", public_pem, patient_id)
 
     print(f"New ECC Key Pair generated & stored in MongoDB: {key_name}")
 
@@ -48,7 +48,7 @@ def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
     plaintext = ",".join(str(value) for value in patient.values())
 
     # Generate a new ECC key pair for each session
-    private_key, public_key = generate_ecc_key_pair(key_name)
+    private_key, public_key = generate_ecc_key_pair(patient_id, key_name)
 
     # Generate an ephemeral key pair
     ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
@@ -78,7 +78,7 @@ def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_ephemeral", ephemeral_public_pem)
+    save_key(f"{key_name}_ephemeral", ephemeral_public_pem, patient_id)
 
     print(f"Ephemeral Public Key saved in MongoDB for '{key_name}'.")
 
@@ -86,18 +86,18 @@ def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
 
 # ------------------- ECC + XOR DECRYPTION -------------------
 
-def ecc_xor_decryption(get_csv_path, read_from_nfc, key_name="ecc_key", output_file="decrypted_ecc_data.csv"):
+def ecc_xor_decryption(get_csv_path, read_from_nfc, patient_id, key_name="ecc_key", output_file="decrypted_ecc_data.csv"):
     """Decrypt data from NFC using ECC XOR encryption and restore CSV format."""
     try:
         # Retrieve private key from MongoDB
-        private_key_data = load_key(f"{key_name}_private")
+        private_key_data = load_key(f"{key_name}_private", patient_id)
         if not private_key_data:
             print(f"Error: ECC Private Key '{key_name}_private' not found in MongoDB.")
             return None
         private_key = serialization.load_pem_private_key(private_key_data, password=None)
 
         # Retrieve ephemeral public key from MongoDB
-        ephemeral_public_key_data = load_key(f"{key_name}_ephemeral")
+        ephemeral_public_key_data = load_key(f"{key_name}_ephemeral", patient_id)
         if not ephemeral_public_key_data:
             print(f"Error: ECC Ephemeral Public Key '{key_name}_ephemeral' not found in MongoDB.")
             return None

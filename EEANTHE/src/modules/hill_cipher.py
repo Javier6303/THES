@@ -34,15 +34,15 @@ def mod_inverse_matrix(matrix, mod=ALPHABET_SIZE):
     matrix_inv = np.round(det_inv * np.linalg.det(matrix) * np.linalg.inv(matrix)).astype(int) % mod
     return matrix_inv
 
-def generate_hill_cipher_key(key_name="hill_cipher_key"):
+def generate_hill_cipher_key(patient_id, key_name="hill_cipher_key"):
     """Generate and store a new key matrix in MongoDB."""
     key_matrix = np.array([[3, 3], [2, 5]])  # Example 2x2 key matrix
-    save_key(key_name, key_matrix.tobytes())  # Store as bytes
+    save_key(key_name, key_matrix.tobytes(), patient_id)  # Store as bytes
     print(f"New Hill Cipher Key Matrix stored in MongoDB: {key_name}")
 
-def get_hill_cipher_key(key_name="hill_cipher_key"):
+def get_hill_cipher_key(patient_id, key_name="hill_cipher_key"):
     """Retrieve Hill Cipher key matrix from MongoDB."""
-    key_data = load_key(key_name)
+    key_data = load_key(key_name, patient_id)
     if key_data:
         return np.frombuffer(key_data, dtype=int).reshape(2, 2)  # Convert back to numpy array
     print(f"Error: Hill Cipher Key '{key_name}' not found in MongoDB.")
@@ -92,10 +92,10 @@ def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key")
     plaintext = ",".join(str(value) for value in patient.values())
 
     # Retrieve the key matrix from MongoDB or generate a new one
-    key_matrix = get_hill_cipher_key(key_name)
+    key_matrix = get_hill_cipher_key(patient_id, key_name)
     if key_matrix is None:
-        generate_hill_cipher_key(key_name)
-        key_matrix = get_hill_cipher_key(key_name)
+        generate_hill_cipher_key(patient_id, key_name)
+        key_matrix = get_hill_cipher_key(patient_id, key_name)
 
     ciphertext = hill_encrypt(plaintext, key_matrix)
 
@@ -108,9 +108,9 @@ def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key")
 
 # ------------------- HILL CIPHER DECRYPTION -------------------
 
-def hill_cipher_decryption(get_csv_path, read_from_nfc, key_name="hill_cipher_key", output_file="decrypted_hill_data.csv"):
+def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, key_name="hill_cipher_key", output_file="decrypted_hill_data.csv"):
     """Decrypt data from NFC using Hill Cipher and restore CSV format."""
-    key_matrix = get_hill_cipher_key(key_name)
+    key_matrix = get_hill_cipher_key(patient_id, key_name)
     if key_matrix is None:
         print(f"Error: No Hill Cipher key found in MongoDB for '{key_name}'.")
         return None

@@ -21,24 +21,28 @@ try:
 except Exception as e:
     print(f"Error connecting to MongoDB: {e}")
 
-def save_key(key_name, key_data):
-    """Save a key to MongoDB (Base64 Encoded)."""
-    key_encoded = b64encode(key_data).decode()  # Convert bytes to Base64 string
-    collection.update_one(
-        {"key_name": key_name}, 
-        {"$set": {"key_data": key_encoded}}, 
-        upsert=True
-    )
-    print(f"Key '{key_name}' saved to MongoDB.")
+def save_key(key_name, key_data, patient_id):
+    """Save a key to MongoDB (Base64 Encoded) associated with a patient ID."""
+    key_encoded = b64encode(key_data).decode()
+
+    query = {"patient_id": patient_id, "key_name": key_name}  # Unique combination
+    update_data = {"$set": {"key_data": key_encoded}}
+
+    collection.update_one(query, update_data, upsert=True)
+    print(f"Key '{key_name}' saved for patient '{patient_id}'.")
 
 
-def load_key(key_name):
-    """Retrieve a key from MongoDB."""
-    key_entry = collection.find_one({"key_name": key_name})
+
+def load_key(key_name, patient_id):
+    """Retrieve a key from MongoDB using patient_id and key_name."""
+    query = {"patient_id": patient_id, "key_name": key_name}
+    key_entry = collection.find_one(query)
+
     if key_entry:
-        print(f"Key '{key_name}' loaded from MongoDB.")
+        print(f"Key '{key_name}' loaded for patient '{patient_id}'.")
         return b64decode(key_entry["key_data"])  # Convert back from base64
-    print(f"Key '{key_name}' not found in MongoDB.")
+
+    print(f"Key '{key_name}' for patient '{patient_id}' not found.")
     return None
 
 def load_patient(patient_id):

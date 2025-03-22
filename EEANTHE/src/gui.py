@@ -15,6 +15,8 @@ from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
 from main import measure_performance, CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card
 from modules.db_manager import save_new_patient, update_patient
+import datetime
+
 
 # ----------------- LOGGER -----------------
 logging.basicConfig(level=logging.INFO)
@@ -104,7 +106,16 @@ class EncryptionGUI:
             # Form fields
             for field in self.patient_fields:
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
-                if field == "Doctor's Notes":
+                
+                if field == "Last Appointment Date":
+                    # Set the default value of 'Last Appointment Date' to today's date
+                    last_appointment_date = datetime.date.today().strftime("%Y-%m-%d")  # Format it as YYYY-MM-DD
+                    entry = ttk.Entry(self.form_frame)
+                    entry.insert(0, last_appointment_date)  # Insert today's date into the entry field
+                    entry.pack()
+                    self.entries[field] = entry
+
+                elif field == "Doctor's Notes":
                     text_widget = tk.Text(self.form_frame, height=7)
                     text_widget.pack(fill="both", expand=True, padx=10, pady=5)
                     self.entries[field] = text_widget
@@ -208,6 +219,8 @@ class EncryptionGUI:
         if not method:
             messagebox.showerror("Error", "Please select an algorithm used.")
             return
+        
+        patient_id = self.patient_id_entry.get().strip()
 
         decryption_func = {
             "AES": aes_decryption,
@@ -223,7 +236,7 @@ class EncryptionGUI:
                 operation="2",
                 encryption_func=None,  # not needed for decryption
                 decryption_func=decryption_func,
-                patient_id=None,  # not needed in current design
+                patient_id=patient_id,  # not needed in current design
                 config_func=lambda: CONFIG_PATH,
                 nfc_write_func=write_to_nfc_card_as_ndef,  # still required by the function signature
                 nfc_read_func=read_from_nfc_card,
