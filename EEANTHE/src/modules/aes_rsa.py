@@ -14,8 +14,8 @@ def generate_rsa_keypair(patient_id, key_name="aes_rsa_key"):
     private_key = key.export_key()
     public_key = key.publickey().export_key()
 
-    save_key(f"{key_name}_private", patient_id, private_key)
-    save_key(f"{key_name}_public", patient_id, public_key)
+    save_key(f"{key_name}_private", private_key, patient_id)
+    save_key(f"{key_name}_public", public_key,  patient_id)
 
     print("New RSA Key Pair Generated & Stored in MongoDB.")
     return public_key
