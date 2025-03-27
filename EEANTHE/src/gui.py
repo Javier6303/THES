@@ -15,7 +15,10 @@ from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
 from main import measure_performance, CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card
 from modules.db_manager import save_new_patient, update_patient
-import datetime
+from modules.email import send_email
+from datetime import timedelta
+import datetime 
+
 
 
 # ----------------- LOGGER -----------------
@@ -78,7 +81,7 @@ class EncryptionGUI:
         self.entries = {}
         self.patient_fields = [
             "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
-            "Blood Pressure", "Blood Type", "Allergies", "History of Medical Illnesses", "Last Appointment Date",
+            "Blood Pressure", "Blood Type", "History of Medical Illnesses", "Last Appointment Date","Next Appointment Date",
             "Doctor's Notes"
         ]
 
@@ -211,6 +214,18 @@ class EncryptionGUI:
 
         except Exception as e:
             messagebox.showerror("Error", str(e))
+
+        # --- Send appointment email after successful encryption ---
+        try:
+            email = patient_data["Email"]
+            next_appointment = patient_data["Next Appointment Date"]
+
+            subject = f"Your Next Appointment (Patient ID: {patient_id})"
+            body = f"Dear {patient_data['Name']},\n\nYour next appointment is scheduled for: {next_appointment}.\n\nThank you."
+
+            send_email(email, subject, body)
+        except Exception as e:
+            print(f"Failed to send appointment email: {e}")
 
         
         
@@ -350,7 +365,18 @@ class EncryptionGUI:
         except Exception as e:
             messagebox.showerror("Encryption Error", str(e))
 
+        # --- Send appointment email after successful encryption ---
+        try:
+            email = updated_data["Email"]
+            next_appointment = updated_data["Next Appointment Date"]
+            subject = f"Your Next Appointment (Patient ID: {patient_id})"
+            body = f"Dear {updated_data['Name']},\n\nYour next appointment is scheduled for: {next_appointment}.\n\nThank you."
 
+            send_email(email, subject, body)
+        except Exception as e:
+            print(f"Failed to send updated appointment email: {e}")
+
+            
     def display_metrics(self, metrics, operation):
         self.metrics_display.configure(state="normal")
         self.metrics_display.insert(tk.END, f"\n--- {operation.upper()} METRICS ---\n")
