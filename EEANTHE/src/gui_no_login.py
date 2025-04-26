@@ -36,37 +36,6 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 patients_collection = db[PATIENTS_COLLECTION]
 
-# ----------------- LOGIN -----------------
-class LoginWindow:
-    def __init__(self, master, on_success):
-        self.master = master
-        self.on_success = on_success
-
-        self.master.title("Login")
-        self.master.geometry("300x200")
-
-        ttk.Label(master, text="Username").pack(pady=5)
-        self.username_entry = ttk.Entry(master)
-        self.username_entry.pack()
-
-        ttk.Label(master, text="Password").pack(pady=5)
-        self.password_entry = ttk.Entry(master, show="*")
-        self.password_entry.pack()
-
-        ttk.Button(master, text="Login", command=self.authenticate).pack(pady=10)
-
-    def authenticate(self):
-        username = self.username_entry.get().strip()
-        password = self.password_entry.get().strip()
-
-        user = db["users"].find_one({"username": username, "password": password})
-        if user:
-            messagebox.showinfo("Login Success", f"Welcome, {username}!")
-            self.master.destroy()
-            self.on_success(user)  # Pass the user info to the main GUI
-        else:
-            messagebox.showerror("Login Failed", "Invalid credentials")
-
 
 # ----------------- GUI CLASS -----------------
 class EncryptionGUI:
@@ -549,13 +518,7 @@ class EncryptionGUI:
 
 
 # ----------------- LAUNCH -----------------
-def launch_gui(user_info):
+if __name__ == "__main__":
     root = tk.Tk()
     app = EncryptionGUI(root)
-    app.user_info = user_info  # Optional: store user role
     root.mainloop()
-
-if __name__ == "__main__":
-    login_root = tk.Tk()
-    LoginWindow(login_root, on_success=launch_gui)
-    login_root.mainloop()

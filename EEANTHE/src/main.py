@@ -174,6 +174,15 @@ def save_metrics_to_csv(metrics, operation):
 def measure_performance(operation, encryption_func, decryption_func, patient_id, config_func,  nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
 
+    decryption_keys = {
+        "aes_decryption": ["aes_key"],
+        "rsa_decryption": ["rsa_key_private"],
+        "aes_rsa_decryption": ["aes_rsa_key_private", "aes_rsa_key_enc_aes_key", "aes_rsa_key_aes_nonce", "aes_rsa_key_aes_tag"],
+        "hill_cipher_decryption": ["hill_cipher_key"],
+        "ecc_xor_decryption": ["ecc_key_private", "ecc_key_ephemeral"],
+        "ecdh_aes_decryption": ["ecdh_key_private", "ecdh_key_ephemeral", "ecdh_key_nonce", "ecdh_key_tag"],
+    }
+
     if operation == "1":  # Encryption
         print("Starting Encryption...")
         tracemalloc.start()
@@ -203,11 +212,22 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
 
     elif operation == "2":  # Decryption
         print("Starting Decryption...")
+
+        from modules.db_manager import load_key
+
+        # Load all necessary keys BEFORE timing
+        key_list = decryption_keys.get(decryption_func.__name__, [])
+        preloaded_keys = {}
+
+        for key_name in key_list:
+            key_data = load_key(key_name, patient_id)
+            preloaded_keys[key_name] = key_data
+
         tracemalloc.start()
         start_time = time.time()
 
         # Execute the decryption function
-        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric), patient_id)
+        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric), patient_id, preloaded_keys=preloaded_keys)
 
         decryption_time = time.time() - start_time
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage

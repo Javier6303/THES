@@ -108,9 +108,16 @@ def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key")
 
 # ------------------- HILL CIPHER DECRYPTION -------------------
 
-def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, key_name="hill_cipher_key", output_file="decrypted_hill_data.csv"):
+def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None, key_name="hill_cipher_key", output_file="decrypted_hill_data.csv"):
     """Decrypt data from NFC using Hill Cipher and restore CSV format."""
-    key_matrix = get_hill_cipher_key(patient_id, key_name)
+    if preloaded_keys:
+        key_data = preloaded_keys.get(key_name)
+        if key_data:
+            key_matrix = np.frombuffer(key_data, dtype=int).reshape(2, 2)
+        else:
+            print(f"Error: Preloaded Hill Cipher key '{key_name}' not found.")
+            return None
+        
     if key_matrix is None:
         print(f"Error: No Hill Cipher key found in MongoDB for '{key_name}'.")
         return None

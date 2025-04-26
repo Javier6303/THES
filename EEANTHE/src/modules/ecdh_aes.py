@@ -92,29 +92,21 @@ def ecdh_aes_encryption(patient_id, write_to_nfc, key_name="ecdh_key"):
 
 # ------------------- ECDH + AES-GCM DECRYPTION -------------------
 
-def ecdh_aes_decryption(get_csv_path, read_from_nfc, patient_id, key_name="ecdh_key", output_file="decrypted_ecdh_aes_data.csv"):
+def ecdh_aes_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None, key_name="ecdh_key", output_file="decrypted_ecdh_aes_data.csv"):
     """Decrypt data from NFC using ECDH for key derivation and AES-GCM for decryption."""
     try:
-        # Retrieve private key from MongoDB
-        private_key_data = load_key(f"{key_name}_private", patient_id)
-        if not private_key_data:
-            print(f"Error: ECC Private Key '{key_name}_private' not found in MongoDB.")
-            return None
-        private_key = serialization.load_pem_private_key(private_key_data, password=None)
+        if preloaded_keys:
+            private_key_data = preloaded_keys.get(f"{key_name}_private")
+            ephemeral_public_key_data = preloaded_keys.get(f"{key_name}_ephemeral")
+            nonce = preloaded_keys.get(f"{key_name}_nonce")
+            tag = preloaded_keys.get(f"{key_name}_tag")
 
-        # Retrieve ephemeral public key from MongoDB
-        ephemeral_public_key_data = load_key(f"{key_name}_ephemeral", patient_id)
-        if not ephemeral_public_key_data:
-            print(f"Error: ECC Ephemeral Public Key '{key_name}_ephemeral' not found in MongoDB.")
-            return None
-        ephemeral_public_key = serialization.load_pem_public_key(ephemeral_public_key_data)
+            if not private_key_data or not ephemeral_public_key_data or not nonce or not tag:
+                print(f"Error: Preloaded keys missing for '{key_name}'.")
+                return None
 
-        # Retrieve nonce and tag from MongoDB
-        nonce = load_key(f"{key_name}_nonce", patient_id)
-        tag = load_key(f"{key_name}_tag", patient_id)
-        if not nonce or not tag:
-            print("Error: AES-GCM Nonce or Tag not found in MongoDB.")
-            return None
+            private_key = serialization.load_pem_private_key(private_key_data, password=None)
+            ephemeral_public_key = serialization.load_pem_public_key(ephemeral_public_key_data)
 
         # Read ciphertext from NFC
         ciphertext = read_from_nfc()

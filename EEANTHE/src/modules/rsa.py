@@ -47,10 +47,12 @@ def rsa_encryption(patient_id, write_to_nfc, key_name="rsa_key"):
 
 # ------------------- RSA DECRYPTION -------------------
 
-def rsa_decryption(get_csv_path, read_from_nfc, patient_id, key_name="rsa_key", output_csv="decrypted_rsa_data.csv"):
+def rsa_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None, key_name="rsa_key", output_csv="decrypted_rsa_data.csv"):
     """Decrypt data from NFC and restore original CSV format using RSA with keys from MongoDB."""
     try:
-        private_key_data = load_key(f"{key_name}_private", patient_id)
+        if preloaded_keys:
+            private_key_data = preloaded_keys.get(f"{key_name}_private", None)
+            
         if not private_key_data:
             print(f"Error: No private key found in MongoDB for '{key_name}'.")
             return None
