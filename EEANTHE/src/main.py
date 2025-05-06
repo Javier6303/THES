@@ -14,7 +14,13 @@ from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
 from smartcard.System import readers
+import hashlib
+from modules.db_manager import load_patient  # ensure you can access plaintext
 
+def compute_checksum(plaintext):
+    if isinstance(plaintext, str):
+        plaintext = plaintext.encode()
+    return hashlib.sha256(plaintext).hexdigest()
 # ------------------- LOGGER CONFIGURATION -------------------
 logging.basicConfig(
     level=logging.INFO,
@@ -213,6 +219,14 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         metrics["encryption_cpu_usage"] = f"{cpu_usage:.2f} %"
         metrics["data_size_bytes"] = data_size
         metrics["encryption_data"] = encrypted_data
+        plaintext_data = load_patient(patient_id)
+        if plaintext_data:
+            joined_plaintext = ",".join(str(plaintext_data[field]) for field in [
+                "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
+                "Blood Pressure", "Blood Type", "History of Medical Illnesses", "Last Appointment Date", "Next Appointment Date",
+                "Doctor's Notes", "patient_id"
+            ])
+            metrics["checksum_sha256"] = compute_checksum(joined_plaintext)
         logger.info(f"Encryption completed. Time: {encryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
 
         save_metrics_to_csv(metrics, operation)
@@ -257,7 +271,9 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         metrics["decryption_cpu_usage"] = f"{cpu_usage:.2f} %"
         metrics["data_size_bytes"] = data_size
         metrics["decryption_data"] = decrypted_data
-
+        if decrypted_data:
+            cleaned = decrypted_data
+            metrics["checksum_sha256"] = compute_checksum(cleaned.strip())
         print(f"Decryption data: {decrypted_data}")
         logger.info(f"Decryption completed. Time: {decryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
 
@@ -269,48 +285,48 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
 
 
 
-# ------------------- MAIN PROGRAM -------------------
-def main():
-    logger.info("STARTING PROGRAM...") #removev nalang this one if ever
+# # ------------------- MAIN PROGRAM -------------------
+# def main():
+#     logger.info("STARTING PROGRAM...") #removev nalang this one if ever
 
-    print("SELECT ENCRYPTION METHOD:")
-    print("1. AES")
-    print("2. RSA")
-    print("3. AES-RSA")
-    print("4. Hill Cipher")
-    print("5. ECC XOR")
-    print("6. ECDH + AES-GCM")
+#     print("SELECT ENCRYPTION METHOD:")
+#     print("1. AES")
+#     print("2. RSA")
+#     print("3. AES-RSA")
+#     print("4. Hill Cipher")
+#     print("5. ECC XOR")
+#     print("6. ECDH + AES-GCM")
 
-    choice = input("Enter Chosen method: ").strip()
+#     choice = input("Enter Chosen method: ").strip()
 
-    encryption_methods = {
-        "1": (aes_encryption, aes_decryption),
-        "2": (rsa_encryption, rsa_decryption),
-        "3": (aes_rsa_encryption, aes_rsa_decryption),
-        "4": (hill_cipher_encryption, hill_cipher_decryption),
-        "5": (ecc_xor_encryption, ecc_xor_decryption),
-        "6": (ecdh_aes_encryption, ecdh_aes_decryption)
-    }
+#     encryption_methods = {
+#         "1": (aes_encryption, aes_decryption),
+#         "2": (rsa_encryption, rsa_decryption),
+#         "3": (aes_rsa_encryption, aes_rsa_decryption),
+#         "4": (hill_cipher_encryption, hill_cipher_decryption),
+#         "5": (ecc_xor_encryption, ecc_xor_decryption),
+#         "6": (ecdh_aes_encryption, ecdh_aes_decryption)
+#     }
 
-    if choice in encryption_methods:
-        encryption_func, decryption_func = encryption_methods[choice]
+#     if choice in encryption_methods:
+#         encryption_func, decryption_func = encryption_methods[choice]
 
-        print("SELECT OPERATION:")
-        print("1. Encryption")
-        print("2. Decryption")
-        operation = input("Enter operation: ").strip()
+#         print("SELECT OPERATION:")
+#         print("1. Encryption")
+#         print("2. Decryption")
+#         operation = input("Enter operation: ").strip()
 
-        # RSA and ECC are asymmetric
-        asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
+#         # RSA and ECC are asymmetric
+#         asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
 
-        if operation in {"1", "2"}:
-            patient_id = input("Enter patient ID: ").strip()
-            measure_performance(operation, encryption_func, decryption_func, patient_id, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
-        else:
-            print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
+#         if operation in {"1", "2"}:
+#             patient_id = input("Enter patient ID: ").strip()
+#             measure_performance(operation, encryption_func, decryption_func, patient_id, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
+#         else:
+#             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
 
-    else:
-        print("Invalid encryption method choice. Choose a number between 1 and 5.")
+#     else:
+#         print("Invalid encryption method choice. Choose a number between 1 and 5.")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
