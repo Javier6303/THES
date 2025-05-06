@@ -116,6 +116,7 @@ class EncryptionGUI:
                     entry = ttk.Entry(self.form_frame)
                     entry.insert(0, last_appointment_date)  # Insert today's date into the entry field
                     entry.pack()
+                    entry.configure(state="readonly")
                     self.entries[field] = entry
 
                 elif field == "Doctor's Notes":
@@ -231,6 +232,7 @@ class EncryptionGUI:
         
     def decrypt_existing_patient(self):
         method = self.encryption_choice.get()
+        self.selected_algorithm = method
         if not method:
             messagebox.showerror("Error", "Please select an algorithm used.")
             return
@@ -282,6 +284,13 @@ class EncryptionGUI:
                     text_widget.insert("1.0", value)
                     text_widget.pack(fill="both", expand=True, padx=10, pady=5)
                     self.entries[field] = text_widget
+                elif field == "Last Appointment Date":
+                    today = datetime.date.today().strftime("%Y-%m-%d")
+                    entry = ttk.Entry(self.form_frame)
+                    entry.insert(0, today)
+                    entry.configure(state="readonly")
+                    entry.pack()
+                    self.entries[field] = entry    
                 else:
                     entry = ttk.Entry(self.form_frame)
                     entry.insert(0, value)
@@ -293,6 +302,8 @@ class EncryptionGUI:
                 "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
             ], state="readonly")
             self.encryption_choice.pack()
+            self.encryption_choice.set(method)
+            self.encryption_choice.configure(state="disabled")
             
             # Add Update & Encrypt button
             self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
@@ -309,7 +320,7 @@ class EncryptionGUI:
                 messagebox.showerror("Error", "Encryption method selector is unavailable.")
                 return
 
-            method = self.encryption_choice.get()
+            method = getattr(self, "selected_algorithm", None)
             patient_id = self.patient_id_entry.get().strip()
 
             if not method or not patient_id:
@@ -381,7 +392,31 @@ class EncryptionGUI:
         self.metrics_display.configure(state="normal")
         self.metrics_display.insert(tk.END, f"\n--- {operation.upper()} METRICS ---\n")
 
+        # Define metrics to show in table form
+        table_keys = [
+            "Decryption latency", "Decryption throughput", "Current", "Peak",
+            "Decryption cpu usage", "Data size bytes"
+        ]
+
+        # Build ASCII-style table
+        col_width = 18
+        header = f"+{'-' * col_width}+{'-' * (col_width + 5)}+"
+        self.metrics_display.insert(tk.END, f"{header}\n")
+        self.metrics_display.insert(tk.END, f"|{'Metric'.ljust(col_width)}|{'Value'.ljust(col_width + 5)}|\n")
+        self.metrics_display.insert(tk.END, f"{header}\n")
+
+        for key in table_keys:
+            key_lower = key.lower().replace(" ", "_")
+            if key_lower in metrics:
+                val = str(metrics[key_lower])
+                self.metrics_display.insert(tk.END, f"|{key.ljust(col_width)}|{val.ljust(col_width + 5)}|\n")
+        self.metrics_display.insert(tk.END, f"{header}\n\n")
+
+        # Special formatting for plaintext and hex/text outputs
         for key, value in metrics.items():
+            if key in [k.lower().replace(" ", "_") for k in table_keys]:
+                continue  # already shown above
+
             if isinstance(value, dict):
                 for subkey, subval in value.items():
                     self.metrics_display.insert(tk.END, f"{subkey.capitalize()}: {subval}\n")
@@ -392,24 +427,20 @@ class EncryptionGUI:
                 for i, field in enumerate(self.patient_fields):
                     val = split_data[i] if i < len(split_data) else "<missing>"
                     self.metrics_display.insert(tk.END, f"{field}: {val}\n")
-                    
+
             elif key in ("encryption_data", "decryption_data"):
-                # Show encoded form
                 if isinstance(value, bytes):
                     try:
                         hexed = value.hex()
                         self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Hex):\n{hexed}\n")
-
-                        # Show readable decrypted string if applicable
                         if key == "decryption_data":
                             try:
-                                decoded_text = value.decode()
-                                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text):\n{decoded_text}\n")
+                                decoded = value.decode()
+                                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text):\n{decoded}\n")
                             except Exception:
                                 self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text): <Unreadable or binary>\n")
                     except Exception:
                         self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: <Binary data>\n")
-
                 else:
                     self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
 
@@ -418,6 +449,7 @@ class EncryptionGUI:
 
         self.metrics_display.insert(tk.END, "\n")
         self.metrics_display.configure(state="disabled")
+
 
 
     def read_nfc_info(self):

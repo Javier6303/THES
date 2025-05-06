@@ -4,6 +4,7 @@ import tracemalloc
 import time
 import logging
 import csv
+import psutil
 from pathlib import Path
 from dotenv import load_dotenv
 from modules.aes_ndef import aes_encryption, aes_decryption
@@ -186,12 +187,17 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
     if operation == "1":  # Encryption
         print("Starting Encryption...")
         tracemalloc.start()
+
+        process = psutil.Process(os.getpid())
+        process.cpu_percent(interval=None)
         start_time = time.time()
 
         # Execute the encryption function
         encrypted_data = encryption_func(patient_id, nfc_write_func)
 
-        encryption_time = time.time() - start_time
+        end_time = time.time()
+        encryption_time = end_time - start_time
+        cpu_usage = process.cpu_percent(interval=None)
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
         tracemalloc.stop()
 
@@ -204,6 +210,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
+        metrics["encryption_cpu_usage"] = f"{cpu_usage:.2f} %"
         metrics["data_size_bytes"] = data_size
         metrics["encryption_data"] = encrypted_data
         logger.info(f"Encryption completed. Time: {encryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
@@ -224,12 +231,17 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             preloaded_keys[key_name] = key_data
 
         tracemalloc.start()
+
+        process = psutil.Process(os.getpid())
+        process.cpu_percent(interval=None)
         start_time = time.time()
 
         # Execute the decryption function
         decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric), patient_id, preloaded_keys=preloaded_keys)
 
-        decryption_time = time.time() - start_time
+        end_time = time.time()
+        decryption_time = end_time - start_time
+        cpu_usage = process.cpu_percent(interval=None)
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
         tracemalloc.stop()
 
@@ -242,6 +254,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
+        metrics["decryption_cpu_usage"] = f"{cpu_usage:.2f} %"
         metrics["data_size_bytes"] = data_size
         metrics["decryption_data"] = decrypted_data
 

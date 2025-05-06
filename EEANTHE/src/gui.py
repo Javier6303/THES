@@ -147,6 +147,7 @@ class EncryptionGUI:
                     entry = ttk.Entry(self.form_frame)
                     entry.insert(0, last_appointment_date)  # Insert today's date into the entry field
                     entry.pack()
+                    entry.configure(state="readonly")
                     self.entries[field] = entry
 
                 elif field == "Doctor's Notes":
@@ -262,6 +263,7 @@ class EncryptionGUI:
         
     def decrypt_existing_patient(self):
         method = self.encryption_choice.get()
+        self.selected_algorithm = method
         if not method:
             messagebox.showerror("Error", "Please select an algorithm used.")
             return
@@ -313,6 +315,13 @@ class EncryptionGUI:
                     text_widget.insert("1.0", value)
                     text_widget.pack(fill="both", expand=True, padx=10, pady=5)
                     self.entries[field] = text_widget
+                elif field == "Last Appointment Date":
+                    today = datetime.date.today().strftime("%Y-%m-%d")
+                    entry = ttk.Entry(self.form_frame)
+                    entry.insert(0, today)
+                    entry.configure(state="readonly")
+                    entry.pack()
+                    self.entries[field] = entry  
                 else:
                     entry = ttk.Entry(self.form_frame)
                     entry.insert(0, value)
@@ -324,6 +333,8 @@ class EncryptionGUI:
                 "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
             ], state="readonly")
             self.encryption_choice.pack()
+            self.encryption_choice.set(method)
+            self.encryption_choice.configure(state="disabled")
             
             # Add Update & Encrypt button
             self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
@@ -340,7 +351,7 @@ class EncryptionGUI:
                 messagebox.showerror("Error", "Encryption method selector is unavailable.")
                 return
 
-            method = self.encryption_choice.get()
+            method = getattr(self, "selected_algorithm", None)
             patient_id = self.patient_id_entry.get().strip()
 
             if not method or not patient_id:
