@@ -193,7 +193,7 @@ class EncryptionGUI:
         }.get(method)
 
         try:
-
+            patient_data.pop("_id", None)
             metrics = {
                 "plaintext_data": ",".join(str(v) for v in patient_data.values()) # joined as a single string for display
             }

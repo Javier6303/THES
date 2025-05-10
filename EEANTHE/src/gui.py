@@ -224,7 +224,7 @@ class EncryptionGUI:
         }.get(method)
 
         try:
-
+            patient_data.pop("_id", None)
             metrics = {
                 "plaintext_data": ",".join(str(v) for v in patient_data.values()) # joined as a single string for display
             }
@@ -420,46 +420,75 @@ class EncryptionGUI:
 
             
     def display_metrics(self, metrics, operation):
-        self.metrics_display.configure(state="normal")
-        self.metrics_display.insert(tk.END, f"\n--- {operation.upper()} METRICS ---\n")
+        for widget in self.metrics_frame.winfo_children():
+            widget.destroy()
 
+        # Section title
+        ttk.Label(self.metrics_frame, text=f"--- {operation.upper()} METRICS ---", font=("Arial", 10, "bold")).pack(pady=(10, 5), anchor="w")
+
+        # Create short metrics table
+        columns = ("Metric", "Value")
+        tree = ttk.Treeview(self.metrics_frame, columns=columns, show="headings", height=8)
+        tree.heading("Metric", text="Metric")
+        tree.heading("Value", text="Value")
+        tree.column("Metric", width=250, anchor="w")
+        tree.column("Value", width=400, anchor="w")
+        tree.pack(fill="x", padx=10)
+
+        # Dynamically collect all short fields
+        # Dynamically collect all short fields, including nested memory metrics
         for key, value in metrics.items():
-            if isinstance(value, dict):
-                for subkey, subval in value.items():
-                    self.metrics_display.insert(tk.END, f"{subkey.capitalize()}: {subval}\n")
+            if isinstance(value, dict) and key in ["encryption_memory_usage", "decryption_memory_usage"]:
+                label_prefix = "Encryption" if "encryption" in key else "Decryption"
+                current = value.get("current")
+                peak = value.get("peak")
+                if current:
+                    tree.insert("", tk.END, values=(f"{label_prefix} current memory", current))
+                if peak:
+                    tree.insert("", tk.END, values=(f"{label_prefix} peak memory", peak))
+            elif any(x in key for x in ["latency", "throughput", "cpu_usage", "data_size_bytes"]):
+                label = key.replace("_", " ").capitalize()
+                tree.insert("", tk.END, values=(label, value))
+            elif key == "checksum_sha256":
+                tree.insert("", tk.END, values=("SHA-256 Checksum", value))
 
-            elif key == "plaintext_data":
-                self.metrics_display.insert(tk.END, "Plaintext data (before encryption):\n")
-                split_data = value.split(",")
-                for i, field in enumerate(self.patient_fields):
-                    val = split_data[i] if i < len(split_data) else "<missing>"
-                    self.metrics_display.insert(tk.END, f"{field}: {val}\n")
-                    
-            elif key in ("encryption_data", "decryption_data"):
-                # Show encoded form
-                if isinstance(value, bytes):
+        # Handle plaintext input if present
+        if "plaintext_data" in metrics:
+            ttk.Label(self.metrics_frame, text="Plaintext Data:", font=("Arial", 10, "bold")).pack(pady=(10, 2), anchor="w", padx=10)
+            plain_box = tk.Text(self.metrics_frame, height=10, wrap="word")
+            plain_box.insert(tk.END, metrics["plaintext_data"])
+            plain_box.config(state="disabled")
+            plain_box.pack(fill="x", padx=10)
+
+        # Handle encryption/decryption output data
+        for data_type in ["encryption_data", "decryption_data"]:
+            if data_type in metrics:
+                label = "Encryption" if data_type.startswith("encryption") else "Decryption"
+                data = metrics[data_type]
+
+                if isinstance(data, bytes):
                     try:
-                        hexed = value.hex()
-                        self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Hex):\n{hexed}\n")
-
-                        # Show readable decrypted string if applicable
-                        if key == "decryption_data":
-                            try:
-                                decoded_text = value.decode()
-                                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text):\n{decoded_text}\n")
-                            except Exception:
-                                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()} (Text): <Unreadable or binary>\n")
-                    except Exception:
-                        self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: <Binary data>\n")
-
+                        decoded = data.decode()
+                    except:
+                        decoded = "<Unreadable binary>"
+                    hexed = data.hex()
                 else:
-                    self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
+                    decoded = data
+                    hexed = data
 
-            else:
-                self.metrics_display.insert(tk.END, f"{key.replace('_', ' ').capitalize()}: {value}\n")
+                # Hex output
+                ttk.Label(self.metrics_frame, text=f"{label} Data (Hex):", font=("Arial", 10, "bold")).pack(pady=(10, 2), anchor="w", padx=10)
+                hex_box = tk.Text(self.metrics_frame, height=10, wrap="word")
+                hex_box.insert(tk.END, hexed)
+                hex_box.config(state="disabled")
+                hex_box.pack(fill="x", padx=10)
 
-        self.metrics_display.insert(tk.END, "\n")
-        self.metrics_display.configure(state="disabled")
+                # Text output
+                ttk.Label(self.metrics_frame, text=f"{label} Data (Text):", font=("Arial", 10, "bold")).pack(pady=(10, 2), anchor="w", padx=10)
+                text_box = tk.Text(self.metrics_frame, height=10, wrap="word")
+                text_box.insert(tk.END, decoded)
+                text_box.config(state="disabled")
+                text_box.pack(fill="x", padx=10)
 
 
     def read_nfc_info(self):

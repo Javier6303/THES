@@ -220,6 +220,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         metrics["data_size_bytes"] = data_size
         metrics["encryption_data"] = encrypted_data
         plaintext_data = load_patient(patient_id)
+        
         if plaintext_data:
             joined_plaintext = ",".join(str(plaintext_data[field]) for field in [
                 "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
