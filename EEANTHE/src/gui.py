@@ -124,6 +124,39 @@ class EncryptionGUI:
         if initial_patient_type:
             self.render_form()
 
+        self.field_limits = {
+            "Name": 50,
+            "Age": 3,
+            "Sex": 1,
+            "Address": 80,
+            "Contact Number": 15,
+            "Email": 50,
+            "Birthday": 10,
+            "Height": 4,
+            "Blood Pressure": 7,
+            "Blood Type": 3,
+            "History of Medical Illnesses": 80,
+            "Last Appointment Date": 10,
+            "Next Appointment Date": 10,
+            "Doctor's Notes": 350
+        }
+
+
+    def limit_entry(self, entry_widget, limit):
+        def validate_input(new_value):
+            return len(new_value) <= limit
+        vcmd = (entry_widget.register(validate_input), "%P")
+        entry_widget.config(validate="key", validatecommand=vcmd)
+
+
+    def limit_text(self, text_widget, limit):
+        def on_key(event):
+            content = text_widget.get("1.0", tk.END)
+            # Exclude final newline Tkinter auto-inserts
+            if len(content.rstrip("\n")) >= limit and event.keysym not in ("BackSpace", "Delete", "Left", "Right", "Up", "Down"):
+                return "break"  # block the keypress
+        text_widget.bind("<KeyPress>", on_key)
+
 
     def render_form(self, event=None):
         # Clear current form
@@ -141,6 +174,8 @@ class EncryptionGUI:
             for field in self.patient_fields:
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
                 
+                limit = self.field_limits.get(field, 50)
+
                 if field == "Last Appointment Date":
                     # Set the default value of 'Last Appointment Date' to today's date
                     last_appointment_date = datetime.date.today().strftime("%Y-%m-%d")  # Format it as YYYY-MM-DD
@@ -153,10 +188,12 @@ class EncryptionGUI:
                 elif field == "Doctor's Notes":
                     text_widget = tk.Text(self.form_frame, height=7)
                     text_widget.pack(fill="both", expand=True, padx=10, pady=5)
+                    self.limit_text(text_widget, limit)                    
                     self.entries[field] = text_widget
                 else:
                     entry = ttk.Entry(self.form_frame)
                     entry.pack()
+                    self.limit_entry(entry, limit)
                     self.entries[field] = entry
 
             # Encryption label + dropdown
@@ -309,11 +346,13 @@ class EncryptionGUI:
             for i, field in enumerate(self.patient_fields):
                 ttk.Label(self.form_frame, text=field + ":").pack(pady=2)
                 value = decrypted_fields[i] if i < len(decrypted_fields) else ""
+                limit = self.field_limits.get(field, 50)
 
                 if field == "Doctor's Notes":
                     text_widget = tk.Text(self.form_frame, height=7)
                     text_widget.insert("1.0", value)
                     text_widget.pack(fill="both", expand=True, padx=10, pady=5)
+                    self.limit_text(text_widget, limit)
                     self.entries[field] = text_widget
                 elif field == "Last Appointment Date":
                     today = datetime.date.today().strftime("%Y-%m-%d")
@@ -326,6 +365,7 @@ class EncryptionGUI:
                     entry = ttk.Entry(self.form_frame)
                     entry.insert(0, value)
                     entry.pack()
+                    self.limit_entry(entry, limit)
                     self.entries[field] = entry
 
             ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
