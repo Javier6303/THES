@@ -3,19 +3,19 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key  # Import MongoDB functions
+from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 
 # ------------------- RSA KEY GENERATION -------------------
 
-def generate_rsa_keypair(key_name="aes_rsa_key"):
+def generate_rsa_keypair(patient_id, key_name="aes_rsa_key"):
     """Generate a new RSA key pair and save it in MongoDB."""
     key = RSA.generate(2048)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
 
-    save_key(f"{key_name}_private", private_key)
-    save_key(f"{key_name}_public", public_key)
+    save_key(f"{key_name}_private", private_key, patient_id)
+    save_key(f"{key_name}_public", public_key,  patient_id)
 
     print("New RSA Key Pair Generated & Stored in MongoDB.")
     return public_key
@@ -23,21 +23,21 @@ def generate_rsa_keypair(key_name="aes_rsa_key"):
 
 # ------------------- AES + RSA ENCRYPTION -------------------
 
-def aes_rsa_encryption(get_csv_path, write_to_nfc, key_name="aes_rsa_key"):
+def aes_rsa_encryption(patient_id, write_to_nfc, key_name="aes_rsa_key"):
     """Encrypt CSV data with AES and RSA, then write to NFC."""
-    csv_file = get_csv_path()
-    if not csv_file:
-        return None  # No file found, exit early
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
+        return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    plaintext = ",".join(map(str, first_row))
+    patient.pop("_id", None)  # Remove internal MongoDB ID
+    plaintext = ",".join(str(value) for value in patient.values())
 
     # Generate AES key for session
     aes_key = get_random_bytes(16)
 
     # Generate new RSA key pair for this encryption session
-    public_key = generate_rsa_keypair(key_name)
+    public_key = generate_rsa_keypair(patient_id, key_name)
     public_key_obj = RSA.import_key(public_key)
     cipher_rsa = PKCS1_OAEP.new(public_key_obj)
 
@@ -54,23 +54,25 @@ def aes_rsa_encryption(get_csv_path, write_to_nfc, key_name="aes_rsa_key"):
     print("Ciphertext successfully written to NFC!")
 
     # Store encrypted AES key, nonce, and tag separately
-    save_key(f"{key_name}_enc_aes_key", enc_aes_key)  # Store encrypted AES key (256 bytes)
-    save_key(f"{key_name}_aes_nonce", cipher_aes.nonce)  # Store AES nonce (15 bytes)
-    save_key(f"{key_name}_aes_tag", tag)  # Store AES authentication tag (16 bytes)
+    save_key(f"{key_name}_enc_aes_key", enc_aes_key, patient_id)  # Store encrypted AES key (256 bytes)
+    save_key(f"{key_name}_aes_nonce", cipher_aes.nonce, patient_id)  # Store AES nonce (15 bytes)
+    save_key(f"{key_name}_aes_tag", tag, patient_id)  # Store AES authentication tag (16 bytes)
 
     return ciphertext  # Return encrypted data for performance metrics
 
 
 # ------------------- AES + RSA DECRYPTION -------------------
 
-def aes_rsa_decryption(get_csv_path, read_from_nfc, key_name="aes_rsa_key", output_csv="decrypted_aes_rsa_data.csv"):
+def aes_rsa_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None, key_name="aes_rsa_key", output_csv="decrypted_aes_rsa_data.csv"):
     """Decrypt data from NFC and restore the original CSV format using AES-RSA hybrid encryption."""
     try:
-        # Retrieve private RSA key from MongoDB
-        private_key_data = load_key(f"{key_name}_private")
-        if not private_key_data:
-            print(f"Error: No private key found in MongoDB for '{key_name}'.")
-            return None
+
+        if preloaded_keys:
+            private_key_data = preloaded_keys.get(f"{key_name}_private", None)
+            enc_aes_key = preloaded_keys.get(f"{key_name}_enc_aes_key", None)
+            nonce = preloaded_keys.get(f"{key_name}_aes_nonce", None)
+            tag = preloaded_keys.get(f"{key_name}_aes_tag", None)
+            
 
         rsa_private_key = RSA.import_key(private_key_data)
 
@@ -80,14 +82,6 @@ def aes_rsa_decryption(get_csv_path, read_from_nfc, key_name="aes_rsa_key", outp
             print("Error: No ciphertext found on NFC card.")
             return None
 
-        # Retrieve encrypted AES key, nonce, and tag from MongoDB
-        enc_aes_key = load_key(f"{key_name}_enc_aes_key")
-        nonce = load_key(f"{key_name}_aes_nonce")
-        tag = load_key(f"{key_name}_aes_tag")
-
-        if not enc_aes_key or not nonce or not tag:
-            print(f"Error: AES key components missing in MongoDB for '{key_name}'.")
-            return None
 
         # Decrypt AES key using RSA
         cipher_rsa = PKCS1_OAEP.new(rsa_private_key)

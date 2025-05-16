@@ -5,11 +5,11 @@ from Crypto.Cipher import AES
 import base64
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key  # Import MongoDB functions
+from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 # ------------------- ECC KEY GENERATION -------------------
 
-def generate_ecdh_key_pair(key_name="ecdh_key"):
+def generate_ecdh_key_pair(patient_id, key_name="ecdh_key"):
     """Generate ECC Private-Public Key Pair and store in MongoDB."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_key = private_key.public_key()
@@ -20,14 +20,14 @@ def generate_ecdh_key_pair(key_name="ecdh_key"):
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    save_key(f"{key_name}_private", private_pem)
+    save_key(f"{key_name}_private", private_pem, patient_id)
 
     # Save public key
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_public", public_pem)
+    save_key(f"{key_name}_public", public_pem, patient_id)
 
     print(f"New ECC Key Pair generated & stored in MongoDB: {key_name}")
 
@@ -35,18 +35,21 @@ def generate_ecdh_key_pair(key_name="ecdh_key"):
 
 # ------------------- ECDH + AES-GCM ENCRYPTION -------------------
 
-def ecdh_aes_encryption(get_csv_path, write_to_nfc, key_name="ecdh_key"):
+def ecdh_aes_encryption(patient_id, write_to_nfc, key_name="ecdh_key"):
     """Encrypt CSV data using ECDH for key derivation and AES-GCM for encryption."""
-    csv_file = get_csv_path()
-    if not csv_file:
+    patient = load_patient(patient_id)
+    if not patient:
+        print(f"No patient found with ID: {patient_id}")
         return None
 
-    df = pd.read_csv(csv_file)
-    first_row = df.iloc[0].tolist()
-    plaintext = ",".join(map(str, first_row)).encode()
+    # Remove MongoDB-specific fields (like _id)
+    patient.pop("_id", None)
+
+    # Convert patient dict to comma-separated string
+    plaintext = ",".join(str(value) for value in patient.values()).encode()
 
     # Generate a new ECC key pair for each session
-    private_key, public_key = generate_ecdh_key_pair(key_name)
+    private_key, public_key = generate_ecdh_key_pair(patient_id, key_name)
 
     # Generate an ephemeral key pair
     ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
@@ -79,9 +82,9 @@ def ecdh_aes_encryption(get_csv_path, write_to_nfc, key_name="ecdh_key"):
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_ephemeral", ephemeral_public_pem)
-    save_key(f"{key_name}_nonce", nonce)
-    save_key(f"{key_name}_tag", tag)
+    save_key(f"{key_name}_ephemeral", ephemeral_public_pem, patient_id)
+    save_key(f"{key_name}_nonce", nonce, patient_id)
+    save_key(f"{key_name}_tag", tag, patient_id)
 
     print(f"Ephemeral Public Key, Nonce, and Tag saved in MongoDB for '{key_name}'.")
 
@@ -89,29 +92,21 @@ def ecdh_aes_encryption(get_csv_path, write_to_nfc, key_name="ecdh_key"):
 
 # ------------------- ECDH + AES-GCM DECRYPTION -------------------
 
-def ecdh_aes_decryption(get_csv_path, read_from_nfc, key_name="ecdh_key", output_file="decrypted_ecdh_aes_data.csv"):
+def ecdh_aes_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None, key_name="ecdh_key", output_file="decrypted_ecdh_aes_data.csv"):
     """Decrypt data from NFC using ECDH for key derivation and AES-GCM for decryption."""
     try:
-        # Retrieve private key from MongoDB
-        private_key_data = load_key(f"{key_name}_private")
-        if not private_key_data:
-            print(f"Error: ECC Private Key '{key_name}_private' not found in MongoDB.")
-            return None
-        private_key = serialization.load_pem_private_key(private_key_data, password=None)
+        if preloaded_keys:
+            private_key_data = preloaded_keys.get(f"{key_name}_private")
+            ephemeral_public_key_data = preloaded_keys.get(f"{key_name}_ephemeral")
+            nonce = preloaded_keys.get(f"{key_name}_nonce")
+            tag = preloaded_keys.get(f"{key_name}_tag")
 
-        # Retrieve ephemeral public key from MongoDB
-        ephemeral_public_key_data = load_key(f"{key_name}_ephemeral")
-        if not ephemeral_public_key_data:
-            print(f"Error: ECC Ephemeral Public Key '{key_name}_ephemeral' not found in MongoDB.")
-            return None
-        ephemeral_public_key = serialization.load_pem_public_key(ephemeral_public_key_data)
+            if not private_key_data or not ephemeral_public_key_data or not nonce or not tag:
+                print(f"Error: Preloaded keys missing for '{key_name}'.")
+                return None
 
-        # Retrieve nonce and tag from MongoDB
-        nonce = load_key(f"{key_name}_nonce")
-        tag = load_key(f"{key_name}_tag")
-        if not nonce or not tag:
-            print("Error: AES-GCM Nonce or Tag not found in MongoDB.")
-            return None
+            private_key = serialization.load_pem_private_key(private_key_data, password=None)
+            ephemeral_public_key = serialization.load_pem_public_key(ephemeral_public_key_data)
 
         # Read ciphertext from NFC
         ciphertext = read_from_nfc()

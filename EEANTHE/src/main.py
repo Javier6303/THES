@@ -4,6 +4,7 @@ import tracemalloc
 import time
 import logging
 import csv
+import psutil
 from pathlib import Path
 from dotenv import load_dotenv
 from modules.aes_ndef import aes_encryption, aes_decryption
@@ -13,7 +14,13 @@ from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
 from smartcard.System import readers
+import hashlib
+from modules.db_manager import load_patient  # ensure you can access plaintext
 
+def compute_checksum(plaintext):
+    if isinstance(plaintext, str):
+        plaintext = plaintext.encode()
+    return hashlib.sha256(plaintext).hexdigest()
 # ------------------- LOGGER CONFIGURATION -------------------
 logging.basicConfig(
     level=logging.INFO,
@@ -171,18 +178,32 @@ def save_metrics_to_csv(metrics, operation):
             writer.writeheader()
         writer.writerow(row)
 
-def measure_performance(operation, encryption_func, decryption_func, config_func, nfc_write_func, nfc_read_func, asymmetric=False):
+def measure_performance(operation, encryption_func, decryption_func, patient_id, config_func,  nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
+
+    decryption_keys = {
+        "aes_decryption": ["aes_key"],
+        "rsa_decryption": ["rsa_key_private"],
+        "aes_rsa_decryption": ["aes_rsa_key_private", "aes_rsa_key_enc_aes_key", "aes_rsa_key_aes_nonce", "aes_rsa_key_aes_tag"],
+        "hill_cipher_decryption": ["hill_cipher_key"],
+        "ecc_xor_decryption": ["ecc_key_private", "ecc_key_ephemeral"],
+        "ecdh_aes_decryption": ["ecdh_key_private", "ecdh_key_ephemeral", "ecdh_key_nonce", "ecdh_key_tag"],
+    }
 
     if operation == "1":  # Encryption
         print("Starting Encryption...")
         tracemalloc.start()
+
+        process = psutil.Process(os.getpid())
+        process.cpu_percent(interval=None)
         start_time = time.time()
 
         # Execute the encryption function
-        encrypted_data = encryption_func(config_func, nfc_write_func)
+        encrypted_data = encryption_func(patient_id, nfc_write_func)
 
-        encryption_time = time.time() - start_time
+        end_time = time.time()
+        encryption_time = end_time - start_time
+        cpu_usage = process.cpu_percent(interval=None)
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
         tracemalloc.stop()
 
@@ -195,22 +216,47 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
+        metrics["encryption_cpu_usage"] = f"{cpu_usage:.2f} %"
         metrics["data_size_bytes"] = data_size
-
-        print(f"Encryption data: {encrypted_data}")
+        metrics["encryption_data"] = encrypted_data
+        plaintext_data = load_patient(patient_id)
+        
+        if plaintext_data:
+            joined_plaintext = ",".join(str(plaintext_data[field]) for field in [
+                "Name", "Age", "Sex", "Address", "Contact Number", "Email", "Birthday", "Height",
+                "Blood Pressure", "Blood Type", "History of Medical Illnesses", "Last Appointment Date", "Next Appointment Date",
+                "Doctor's Notes", "patient_id"
+            ])
+            metrics["checksum_sha256"] = compute_checksum(joined_plaintext)
         logger.info(f"Encryption completed. Time: {encryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
 
         save_metrics_to_csv(metrics, operation)
 
     elif operation == "2":  # Decryption
         print("Starting Decryption...")
+
+        from modules.db_manager import load_key
+
+        # Load all necessary keys BEFORE timing
+        key_list = decryption_keys.get(decryption_func.__name__, [])
+        preloaded_keys = {}
+
+        for key_name in key_list:
+            key_data = load_key(key_name, patient_id)
+            preloaded_keys[key_name] = key_data
+
         tracemalloc.start()
+
+        process = psutil.Process(os.getpid())
+        process.cpu_percent(interval=None)
         start_time = time.time()
 
         # Execute the decryption function
-        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric))
+        decrypted_data = decryption_func(config_func, lambda: nfc_read_func(asymmetric_mode=asymmetric), patient_id, preloaded_keys=preloaded_keys)
 
-        decryption_time = time.time() - start_time
+        end_time = time.time()
+        decryption_time = end_time - start_time
+        cpu_usage = process.cpu_percent(interval=None)
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
         tracemalloc.stop()
 
@@ -223,61 +269,65 @@ def measure_performance(operation, encryption_func, decryption_func, config_func
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
+        metrics["decryption_cpu_usage"] = f"{cpu_usage:.2f} %"
         metrics["data_size_bytes"] = data_size
-
+        metrics["decryption_data"] = decrypted_data
+        if decrypted_data:
+            cleaned = decrypted_data
+            metrics["checksum_sha256"] = compute_checksum(cleaned.strip())
         print(f"Decryption data: {decrypted_data}")
         logger.info(f"Decryption completed. Time: {decryption_time:.6f}s, Memory Usage: {peak / 1024:.6f} KB")
 
         save_metrics_to_csv(metrics, operation)
 
     logger.info("Performance Metrics: %s", metrics)
-    print("Performance Metrics:", metrics)
 
     return metrics
 
 
 
-# ------------------- MAIN PROGRAM -------------------
-def main():
-    logger.info("STARTING PROGRAM...") #removev nalang this one if ever
+# # ------------------- MAIN PROGRAM -------------------
+# def main():
+#     logger.info("STARTING PROGRAM...") #removev nalang this one if ever
 
-    print("SELECT ENCRYPTION METHOD:")
-    print("1. AES")
-    print("2. RSA")
-    print("3. AES-RSA")
-    print("4. Hill Cipher")
-    print("5. ECC XOR")
-    print("6. ECDH + AES-GCM")
+#     print("SELECT ENCRYPTION METHOD:")
+#     print("1. AES")
+#     print("2. RSA")
+#     print("3. AES-RSA")
+#     print("4. Hill Cipher")
+#     print("5. ECC XOR")
+#     print("6. ECDH + AES-GCM")
 
-    choice = input("Enter Chosen method: ").strip()
+#     choice = input("Enter Chosen method: ").strip()
 
-    encryption_methods = {
-        "1": (aes_encryption, aes_decryption),
-        "2": (rsa_encryption, rsa_decryption),
-        "3": (aes_rsa_encryption, aes_rsa_decryption),
-        "4": (hill_cipher_encryption, hill_cipher_decryption),
-        "5": (ecc_xor_encryption, ecc_xor_decryption),
-        "6": (ecdh_aes_encryption, ecdh_aes_decryption)
-    }
+#     encryption_methods = {
+#         "1": (aes_encryption, aes_decryption),
+#         "2": (rsa_encryption, rsa_decryption),
+#         "3": (aes_rsa_encryption, aes_rsa_decryption),
+#         "4": (hill_cipher_encryption, hill_cipher_decryption),
+#         "5": (ecc_xor_encryption, ecc_xor_decryption),
+#         "6": (ecdh_aes_encryption, ecdh_aes_decryption)
+#     }
 
-    if choice in encryption_methods:
-        encryption_func, decryption_func = encryption_methods[choice]
+#     if choice in encryption_methods:
+#         encryption_func, decryption_func = encryption_methods[choice]
 
-        print("SELECT OPERATION:")
-        print("1. Encryption")
-        print("2. Decryption")
-        operation = input("Enter operation: ").strip()
+#         print("SELECT OPERATION:")
+#         print("1. Encryption")
+#         print("2. Decryption")
+#         operation = input("Enter operation: ").strip()
 
-        # RSA and ECC are asymmetric
-        asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
+#         # RSA and ECC are asymmetric
+#         asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
 
-        if operation in {"1", "2"}:
-            measure_performance(operation, encryption_func, decryption_func, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
-        else:
-            print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
+#         if operation in {"1", "2"}:
+#             patient_id = input("Enter patient ID: ").strip()
+#             measure_performance(operation, encryption_func, decryption_func, patient_id, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
+#         else:
+#             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
 
-    else:
-        print("Invalid encryption method choice. Choose a number between 1 and 5.")
+#     else:
+#         print("Invalid encryption method choice. Choose a number between 1 and 5.")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
