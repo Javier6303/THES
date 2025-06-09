@@ -32,13 +32,7 @@ def mod_inverse_matrix(matrix, mod=ALPHABET_SIZE):
     det = int(np.round(np.linalg.det(matrix)))
     det_inv = pow(det, -1, mod)
     matrix_inv = np.round(det_inv * np.linalg.det(matrix) * np.linalg.inv(matrix)).astype(int) % mod
-    return matrix_inv
-
-def generate_hill_cipher_key(patient_id, key_name="hill_cipher_key"):
-    """Generate and store a new key matrix in MongoDB."""
-    key_matrix = np.array([[3, 3], [2, 5]])  # Example 2x2 key matrix
-    save_key(key_name, key_matrix.tobytes(), patient_id)  # Store as bytes
-    print(f"New Hill Cipher Key Matrix stored in MongoDB: {key_name}")
+    return matrix_inv 
 
 def get_hill_cipher_key(patient_id, key_name="hill_cipher_key"):
     """Retrieve Hill Cipher key matrix from MongoDB."""
@@ -78,12 +72,8 @@ def hill_decrypt(ciphertext, key_matrix_inv):
 
 # ------------------- HILL CIPHER ENCRYPTION -------------------
 
-def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key"):
+def hill_cipher_encryption(patient, write_to_nfc, key_name="hill_cipher_key"):
     """Encrypt CSV data using Hill Cipher and write to NFC."""
-    patient = load_patient(patient_id)
-    if not patient:
-        print(f"No patient found with ID: {patient_id}")
-        return None
 
     # Remove MongoDB-specific fields (like _id)
     patient.pop("_id", None)
@@ -92,10 +82,8 @@ def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key")
     plaintext = ",".join(str(value) for value in patient.values())
 
     # Retrieve the key matrix from MongoDB or generate a new one
-    key_matrix = get_hill_cipher_key(patient_id, key_name)
-    if key_matrix is None:
-        generate_hill_cipher_key(patient_id, key_name)
-        key_matrix = get_hill_cipher_key(patient_id, key_name)
+    key_matrix = np.array([[3, 3], [2, 5]], dtype=np.int32)
+    key_bytes = key_matrix.tobytes()
 
     ciphertext = hill_encrypt(plaintext, key_matrix)
 
@@ -103,17 +91,18 @@ def hill_cipher_encryption(patient_id, write_to_nfc, key_name="hill_cipher_key")
     write_to_nfc(ciphertext.encode("utf-8"))
     print("Ciphertext successfully written to NFC!")
 
-    return ciphertext
+    return ciphertext, {key_name: key_bytes}
 
 
 # ------------------- HILL CIPHER DECRYPTION -------------------
 
 def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None, key_name="hill_cipher_key", output_file="decrypted_hill_data.csv"):
     """Decrypt data from NFC using Hill Cipher and restore CSV format."""
+    key_matrix = None
     if preloaded_keys:
         key_data = preloaded_keys.get(key_name)
         if key_data:
-            key_matrix = np.frombuffer(key_data, dtype=int).reshape(2, 2)
+            key_matrix = np.frombuffer(key_data, dtype=np.int32).reshape(2, 2)
         else:
             print(f"Error: Preloaded Hill Cipher key '{key_name}' not found.")
             return None
@@ -131,23 +120,5 @@ def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_ke
         return None
 
     plaintext = hill_decrypt(ciphertext, key_matrix_inv)
-    decrypted_data = plaintext.split(",")
-
-    csv_file = get_csv_path()
-    if not csv_file:
-        return None
-
-    df = pd.read_csv(csv_file)
-    headers = df.columns.tolist()
-
-    if len(headers) != len(decrypted_data):
-        decrypted_data = decrypted_data[:len(headers)]
-
-    with open(output_file, "w", newline="") as csvfile:
-        csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-        csv_writer.writerow(headers)
-        csv_writer.writerow(decrypted_data)
-
-    print(f"Decrypted data saved to '{output_file}'.")
 
     return plaintext
