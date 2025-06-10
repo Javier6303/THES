@@ -9,18 +9,24 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 def generate_rsa_keypair():
     """Generate RSA key pair and save the private key to a file."""
-    key = RSA.generate(2048)
+    key = RSA.generate(4096)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
     return private_key, public_key
 
-def rsa_encryption(patient, write_to_nfc, key_name="rsa_key"):
+def rsa_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="rsa_key"):
     """Encrypt CSV data and store ciphertext on NFC using RSA."""
 
     patient.pop("_id", None)  # Remove MongoDB internal ID if present
     data = ",".join(str(value) for value in patient.values()).encode()
 
-    private_key, public_key = generate_rsa_keypair()
+    public_key = preloaded_keys.get(f"{key_name}_public")
+    private_key = preloaded_keys.get(f"{key_name}_private")
+
+    if not public_key or not private_key:
+        print("Error: Missing RSA public/private keys in preloaded_keys.")
+        return None
+    
     public_key_obj = RSA.import_key(public_key)
     cipher = PKCS1_OAEP.new(public_key_obj)
 

@@ -9,7 +9,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- ECC KEY GENERATION -------------------
 
-def generate_ecdh_key_pair():
+def generate_ecdh_key_pair(key_name="ecdh_key"):
     """Generate ECC Private-Public Key Pair and store in MongoDB."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_key = private_key.public_key()
@@ -20,18 +20,27 @@ def generate_ecdh_key_pair():
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    
+
     # Save public key
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    
-    return private_key, public_key, private_pem, public_pem
+
+    # Generate an ephemeral key pair
+    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
+    ephemeral_public_key = ephemeral_private_key.public_key()
+
+    return {
+        f"{key_name}_private": private_pem,
+        f"{key_name}_public": public_pem,
+        f"{key_name}_ephemeral_pub": ephemeral_public_key,
+        f"{key_name}_ephemeral_priv": ephemeral_private_key
+    }
 
 # ------------------- ECDH + AES-GCM ENCRYPTION -------------------
 
-def ecdh_aes_encryption(patient, write_to_nfc, key_name="ecdh_key"):
+def ecdh_aes_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="ecdh_key"):
     """Encrypt CSV data using ECDH for key derivation and AES-GCM for encryption."""
     # Remove MongoDB-specific fields (like _id)
     patient.pop("_id", None)
@@ -39,12 +48,14 @@ def ecdh_aes_encryption(patient, write_to_nfc, key_name="ecdh_key"):
     # Convert patient dict to comma-separated string
     plaintext = ",".join(str(value) for value in patient.values()).encode()
 
-    # Generate a new ECC key pair for each session
-    private_key, public_key, private_pem, public_pem = generate_ecdh_key_pair()
+    # --- Load preloaded ECC keys ---
+    private_pem = preloaded_keys.get(f"{key_name}_private")
+    public_pem = preloaded_keys.get(f"{key_name}_public")
+    ephemeral_private_key = preloaded_keys.get(f"{key_name}_ephemeral_priv")
+    ephemeral_public_key = preloaded_keys.get(f"{key_name}_ephemeral_pub")
 
-    # Generate an ephemeral key pair
-    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
-    ephemeral_public_key = ephemeral_private_key.public_key()
+    # Deserialize public key
+    public_key = serialization.load_pem_public_key(public_pem)
 
     # Compute shared secret
     shared_secret = ephemeral_private_key.exchange(ec.ECDH(), public_key)
@@ -52,7 +63,7 @@ def ecdh_aes_encryption(patient, write_to_nfc, key_name="ecdh_key"):
     # Derive a 256-bit AES key using HKDF
     aes_key = HKDF(
         algorithm=hashes.SHA256(),
-        length=16,  # 256-bit key
+        length=32,  # 256-bit key
         salt=None,
         info=b"ecdh-aes-gcm-key"
     ).derive(shared_secret)
@@ -113,7 +124,7 @@ def ecdh_aes_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=
         # Derive AES key using HKDF
         aes_key = HKDF(
             algorithm=hashes.SHA256(),
-            length=16,  # 256-bit key
+            length=32,  # 256-bit key
             salt=None,
             info=b"ecdh-aes-gcm-key"
         ).derive(shared_secret)

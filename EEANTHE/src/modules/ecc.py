@@ -11,7 +11,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- ECC KEY GENERATION -------------------
 
-def generate_ecc_key_pair():
+def generate_ecc_key_pair(key_name="ecc_key"):
     """Generate ECC Private-Public Key Pair and store in MongoDB."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_key = private_key.public_key()
@@ -29,11 +29,20 @@ def generate_ecc_key_pair():
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
 
-    return private_key, public_key, private_pem, public_pem
+    # Generate an ephemeral key pair
+    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
+    ephemeral_public_key = ephemeral_private_key.public_key()
+
+    return {
+        f"{key_name}_private": private_pem,
+        f"{key_name}_public": public_pem,
+        f"{key_name}_ephemeral_pub": ephemeral_public_key,
+        f"{key_name}_ephemeral_priv": ephemeral_private_key
+    }
 
 # ------------------- ECC + XOR ENCRYPTION -------------------
 
-def ecc_xor_encryption(patient, write_to_nfc, key_name="ecc_key"):
+def ecc_xor_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="ecc_key"):
     """Encrypt CSV data using ECC XOR encryption and write to NFC."""
 
     # Remove MongoDB-specific fields (like _id)
@@ -43,12 +52,13 @@ def ecc_xor_encryption(patient, write_to_nfc, key_name="ecc_key"):
     plaintext = ",".join(str(value) for value in patient.values())
     plaintext_bytes = plaintext.encode()
 
-    # Generate a new ECC key pair for each session
-    private_key, public_key, private_pem, public_pem = generate_ecc_key_pair()
+    private_pem = preloaded_keys.get(f"{key_name}_private")
+    public_pem = preloaded_keys.get(f"{key_name}_public")
+    ephemeral_public_key = preloaded_keys.get(f"{key_name}_ephemeral_pub")
+    ephemeral_private_key = preloaded_keys.get(f"{key_name}_ephemeral_priv")
 
-    # Generate an ephemeral key pair
-    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
-    ephemeral_public_key = ephemeral_private_key.public_key()
+    # Load the public key
+    public_key = serialization.load_pem_public_key(public_pem)
 
     # Compute shared secret
     shared_secret = ephemeral_private_key.exchange(ec.ECDH(), public_key)
@@ -56,7 +66,7 @@ def ecc_xor_encryption(patient, write_to_nfc, key_name="ecc_key"):
     # Derive key
     derived_key = HKDF(
         algorithm=hashes.SHA256(),
-        length=16,  # 16 bytes = 128-bit key (use 32 for 256-bit)
+        length=32,  # 16 bytes = 128-bit key (use 32 for 256-bit)
         salt=None,
         info=b"ecc-xor-keystream"
     ).derive(shared_secret)

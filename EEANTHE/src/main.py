@@ -7,16 +7,17 @@ import csv
 import psutil
 from pathlib import Path
 from dotenv import load_dotenv
-from modules.aes_ndef import aes_encryption, aes_decryption
-from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
-from modules.rsa import rsa_encryption, rsa_decryption
-from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
-from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
-from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
+from modules.aes_ndef import aes_encryption, aes_decryption, generate_aes_keys
+from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption, generate_aes_rsa_keys
+from modules.rsa import rsa_encryption, rsa_decryption, generate_rsa_keypair
+from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption, generate_hill_cipher_key
+from modules.ecc import ecc_xor_encryption, ecc_xor_decryption, generate_ecc_key_pair
+from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption, generate_ecdh_key_pair
 from smartcard.System import readers
 import hashlib
 from modules.db_manager import load_patient, save_key  # ensure you can access plaintext
 import pandas as pd
+
 
 def compute_checksum(plaintext):
     if isinstance(plaintext, str):
@@ -200,6 +201,28 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             print(f"No patient found with ID: {patient_id}")
             return None
         
+        preloaded_keys = {}
+
+        if encryption_func.__name__ == "aes_encryption":
+            preloaded_keys = generate_aes_keys()
+        
+        elif encryption_func.__name__ == "rsa_encryption":
+            private_key, public_key = generate_rsa_keypair()
+            preloaded_keys = {
+                "rsa_key_private": private_key,
+                "rsa_key_public": public_key
+            }
+        elif encryption_func.__name__ == "aes_rsa_encryption":
+            preloaded_keys = generate_aes_rsa_keys()
+
+        elif encryption_func.__name__ == "hill_cipher_encryption":
+            preloaded_keys = generate_hill_cipher_key()
+        
+        elif encryption_func.__name__ == "ecc_xor_encryption":
+            preloaded_keys = generate_ecc_key_pair("ecc_key")
+
+        elif encryption_func.__name__ == "ecdh_aes_encryption":
+            preloaded_keys = generate_ecdh_key_pair()
         tracemalloc.start()
 
         process = psutil.Process(os.getpid())
@@ -208,7 +231,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         start_time = time.time()
 
         # Execute the encryption function
-        result = encryption_func(patient, nfc_write_func)
+        result = encryption_func(patient, nfc_write_func, preloaded_keys=preloaded_keys)
 
         end_time = time.time()
         encryption_time = end_time - start_time

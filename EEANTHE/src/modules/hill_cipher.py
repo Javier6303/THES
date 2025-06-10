@@ -7,6 +7,8 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 CUSTOM_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,|.@#$/:-_()[]{}!?%&+=*\"' "
 ALPHABET_SIZE = len(CUSTOM_ALPHABET)
+HILL_MATRIX_SIZE = 6
+
 
 def char_to_index(char):
     """Convert character to index based on CUSTOM_ALPHABET."""
@@ -34,24 +36,17 @@ def mod_inverse_matrix(matrix, mod=ALPHABET_SIZE):
     matrix_inv = np.round(det_inv * np.linalg.det(matrix) * np.linalg.inv(matrix)).astype(int) % mod
     return matrix_inv 
 
-def get_hill_cipher_key(patient_id, key_name="hill_cipher_key"):
-    """Retrieve Hill Cipher key matrix from MongoDB."""
-    key_data = load_key(key_name, patient_id)
-    if key_data:
-        return np.frombuffer(key_data, dtype=int).reshape(2, 2)  # Convert back to numpy array
-    print(f"Error: Hill Cipher Key '{key_name}' not found in MongoDB.")
-    return None
-
 def hill_encrypt(plaintext, key_matrix):
     """Encrypts plaintext using Hill Cipher."""
     indexes = text_to_numbers(plaintext)
+    n = HILL_MATRIX_SIZE  # block size
 
-    while len(indexes) % len(key_matrix) != 0:
+    while len(indexes) % n != 0:
         indexes.append(char_to_index(" "))  # Pad with space
 
     ciphertext_indexes = []
-    for i in range(0, len(indexes), len(key_matrix)):
-        chunk = indexes[i:i + len(key_matrix)]
+    for i in range(0, len(indexes), n):
+        chunk = np.array(indexes[i:i + n])
         encrypted_chunk = np.dot(key_matrix, chunk) % ALPHABET_SIZE
         ciphertext_indexes.extend(encrypted_chunk)
 
@@ -60,19 +55,34 @@ def hill_encrypt(plaintext, key_matrix):
 def hill_decrypt(ciphertext, key_matrix_inv):
     """Decrypts ciphertext using Hill Cipher."""
     indexes = text_to_numbers(ciphertext)
+    n = HILL_MATRIX_SIZE
 
     decrypted_indexes = []
-    for i in range(0, len(indexes), len(key_matrix_inv)):
-        chunk = indexes[i:i + len(key_matrix_inv)]
+    for i in range(0, len(indexes), n):
+        chunk = np.array(indexes[i:i + n])
         decrypted_chunk = np.dot(key_matrix_inv, chunk) % ALPHABET_SIZE
         decrypted_indexes.extend(decrypted_chunk)
 
     return numbers_to_text(decrypted_indexes).strip()
 
+def generate_hill_cipher_key(key_name="hill_cipher_key"):
+    """Generate Hill Cipher key matrix and return it as a dict."""
+    n = HILL_MATRIX_SIZE  # 4x4 matrix for AES-128 level
+
+    while True:
+        matrix = np.random.randint(0, ALPHABET_SIZE, (n, n), dtype=np.int32)
+        try:
+            det = int(np.round(np.linalg.det(matrix)))
+            if det != 0 and pow(det, -1, ALPHABET_SIZE):  # Ensure invertibility mod ALPHABET_SIZE
+                break
+        except ValueError:
+            continue  # Try again if modular inverse doesn't exist
+
+    return {key_name: matrix.tobytes()}
 
 # ------------------- HILL CIPHER ENCRYPTION -------------------
 
-def hill_cipher_encryption(patient, write_to_nfc, key_name="hill_cipher_key"):
+def hill_cipher_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="hill_cipher_key"):
     """Encrypt CSV data using Hill Cipher and write to NFC."""
 
     # Remove MongoDB-specific fields (like _id)
@@ -82,9 +92,10 @@ def hill_cipher_encryption(patient, write_to_nfc, key_name="hill_cipher_key"):
     plaintext = ",".join(str(value) for value in patient.values())
 
     # Retrieve the key matrix from MongoDB or generate a new one
-    key_matrix = np.array([[3, 3], [2, 5]], dtype=np.int32)
-    key_bytes = key_matrix.tobytes()
-
+    key_matrix = None
+    key_bytes = preloaded_keys.get(key_name)
+    key_matrix = np.frombuffer(key_bytes, dtype=np.int32).reshape(HILL_MATRIX_SIZE, HILL_MATRIX_SIZE)
+    
     ciphertext = hill_encrypt(plaintext, key_matrix)
 
     print("Writing ciphertext to NFC card...")
@@ -102,7 +113,7 @@ def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_ke
     if preloaded_keys:
         key_data = preloaded_keys.get(key_name)
         if key_data:
-            key_matrix = np.frombuffer(key_data, dtype=np.int32).reshape(2, 2)
+            key_matrix = np.frombuffer(key_data, dtype=np.int32).reshape(HILL_MATRIX_SIZE, HILL_MATRIX_SIZE)
         else:
             print(f"Error: Preloaded Hill Cipher key '{key_name}' not found.")
             return None

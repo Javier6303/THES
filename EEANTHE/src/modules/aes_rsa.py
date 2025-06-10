@@ -8,33 +8,46 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- RSA KEY GENERATION -------------------
 
-def generate_rsa_keypair():
-    """Generate a new RSA key pair and save it in MongoDB."""
-    key = RSA.generate(2048)
-    private_key = key.export_key()
-    public_key = key.publickey().export_key()
+def generate_aes_rsa_keys(key_name="aes_rsa_key"):
+    """Generate AES key, RSA key pair, and encrypt AES key with RSA public key."""
 
-    return private_key, public_key
+    # Generate AES session key
+    aes_key = get_random_bytes(32)
+
+    # Generate RSA key pair
+    rsa_key = RSA.generate(2048)
+    private_key = rsa_key.export_key()
+    public_key = rsa_key.publickey().export_key()
+
+    # Encrypt the AES key using RSA public key
+    public_key_obj = RSA.import_key(public_key)
+    cipher_rsa = PKCS1_OAEP.new(public_key_obj)
+    enc_aes_key = cipher_rsa.encrypt(aes_key)
+
+    return {
+        f"{key_name}_aes_key": aes_key,
+        f"{key_name}_private": private_key,
+        f"{key_name}_public": public_key,
+        f"{key_name}_enc_aes_key": enc_aes_key
+    }
 
 
 # ------------------- AES + RSA ENCRYPTION -------------------
 
-def aes_rsa_encryption(patient, write_to_nfc, key_name="aes_rsa_key"):
+def aes_rsa_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="aes_rsa_key"):
     """Encrypt CSV data with AES and RSA, then write to NFC."""
 
     patient.pop("_id", None)  # Remove internal MongoDB ID
     plaintext = ",".join(str(value) for value in patient.values())
 
-    # Generate AES key for session
-    aes_key = get_random_bytes(16)
+    aes_key = preloaded_keys.get(f"{key_name}_aes_key")
+    private_key = preloaded_keys.get(f"{key_name}_private")
+    public_key = preloaded_keys.get(f"{key_name}_public")
+    enc_aes_key = preloaded_keys.get(f"{key_name}_enc_aes_key")
 
-    # Generate new RSA key pair for this encryption session
-    private_key, public_key = generate_rsa_keypair()
-    public_key_obj = RSA.import_key(public_key)
-    cipher_rsa = PKCS1_OAEP.new(public_key_obj)
-
-    # Encrypt the AES key with RSA
-    enc_aes_key = cipher_rsa.encrypt(aes_key)
+    if not (aes_key and private_key and public_key and enc_aes_key):
+        print("Missing one or more required preloaded keys.")
+        return None
 
     # Encrypt the plaintext using AES
     cipher_aes = AES.new(aes_key, AES.MODE_GCM)
