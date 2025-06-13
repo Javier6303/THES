@@ -129,7 +129,7 @@ def ecc_xor_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=N
         encrypted_bytes = base64.b64decode(encrypted_text)
         derived_key = HKDF(
             algorithm=hashes.SHA256(),
-            length=16,  # or 32 if you used 256-bit in encryption
+            length=32,  # or 32 if you used 256-bit in encryption
             salt=None,
             info=b"ecc-xor-keystream"
         ).derive(shared_secret)
