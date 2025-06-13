@@ -9,7 +9,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- ECC KEY GENERATION -------------------
 
-def generate_ecdh_key_pair(patient_id, key_name="ecdh_key"):
+def generate_ecdh_key_pair(key_name="ecdh_key"):
     """Generate ECC Private-Public Key Pair and store in MongoDB."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_key = private_key.public_key()
@@ -20,40 +20,42 @@ def generate_ecdh_key_pair(patient_id, key_name="ecdh_key"):
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    save_key(f"{key_name}_private", private_pem, patient_id)
 
     # Save public key
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_public", public_pem, patient_id)
 
-    print(f"New ECC Key Pair generated & stored in MongoDB: {key_name}")
+    # Generate an ephemeral key pair
+    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
+    ephemeral_public_key = ephemeral_private_key.public_key()
 
-    return private_key, public_key
+    return {
+        f"{key_name}_private": private_pem,
+        f"{key_name}_public": public_pem,
+        f"{key_name}_ephemeral_pub": ephemeral_public_key,
+        f"{key_name}_ephemeral_priv": ephemeral_private_key
+    }
 
 # ------------------- ECDH + AES-GCM ENCRYPTION -------------------
 
-def ecdh_aes_encryption(patient_id, write_to_nfc, key_name="ecdh_key"):
+def ecdh_aes_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="ecdh_key"):
     """Encrypt CSV data using ECDH for key derivation and AES-GCM for encryption."""
-    patient = load_patient(patient_id)
-    if not patient:
-        print(f"No patient found with ID: {patient_id}")
-        return None
-
     # Remove MongoDB-specific fields (like _id)
     patient.pop("_id", None)
 
     # Convert patient dict to comma-separated string
     plaintext = ",".join(str(value) for value in patient.values()).encode()
 
-    # Generate a new ECC key pair for each session
-    private_key, public_key = generate_ecdh_key_pair(patient_id, key_name)
+    # --- Load preloaded ECC keys ---
+    private_pem = preloaded_keys.get(f"{key_name}_private")
+    public_pem = preloaded_keys.get(f"{key_name}_public")
+    ephemeral_private_key = preloaded_keys.get(f"{key_name}_ephemeral_priv")
+    ephemeral_public_key = preloaded_keys.get(f"{key_name}_ephemeral_pub")
 
-    # Generate an ephemeral key pair
-    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
-    ephemeral_public_key = ephemeral_private_key.public_key()
+    # Deserialize public key
+    public_key = serialization.load_pem_public_key(public_pem)
 
     # Compute shared secret
     shared_secret = ephemeral_private_key.exchange(ec.ECDH(), public_key)
@@ -82,13 +84,15 @@ def ecdh_aes_encryption(patient_id, write_to_nfc, key_name="ecdh_key"):
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_ephemeral", ephemeral_public_pem, patient_id)
-    save_key(f"{key_name}_nonce", nonce, patient_id)
-    save_key(f"{key_name}_tag", tag, patient_id)
 
-    print(f"Ephemeral Public Key, Nonce, and Tag saved in MongoDB for '{key_name}'.")
 
-    return ciphertext
+    return ciphertext, {
+        f"{key_name}_private": private_pem,
+        f"{key_name}_public": public_pem,
+        f"{key_name}_ephemeral": ephemeral_public_pem,
+        f"{key_name}_nonce": nonce,
+        f"{key_name}_tag": tag
+    }
 
 # ------------------- ECDH + AES-GCM DECRYPTION -------------------
 
@@ -128,25 +132,6 @@ def ecdh_aes_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=
         # Decrypt using AES-GCM
         cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce)
         plaintext = cipher.decrypt_and_verify(ciphertext, tag).decode()
-
-        decrypted_data = plaintext.split(",")
-
-        csv_file = get_csv_path()
-        if not csv_file:
-            return None
-
-        df = pd.read_csv(csv_file)
-        headers = df.columns.tolist()
-
-        if len(headers) != len(decrypted_data):
-            decrypted_data = decrypted_data[:len(headers)]
-
-        with open(output_file, "w", newline="") as csvfile:
-            csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            csv_writer.writerow(headers)
-            csv_writer.writerow(decrypted_data)
-
-        print(f"Decrypted data saved to '{output_file}'.")
 
         return plaintext
 

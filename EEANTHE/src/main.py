@@ -7,15 +7,17 @@ import csv
 import psutil
 from pathlib import Path
 from dotenv import load_dotenv
-from modules.aes_ndef import aes_encryption, aes_decryption
-from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption
-from modules.rsa import rsa_encryption, rsa_decryption
-from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
-from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
-from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
+from modules.aes_ndef import aes_encryption, aes_decryption, generate_aes_keys
+from modules.aes_rsa import aes_rsa_encryption, aes_rsa_decryption, generate_aes_rsa_keys
+from modules.rsa import rsa_encryption, rsa_decryption, generate_rsa_keypair
+from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption, generate_hill_cipher_key
+from modules.ecc import ecc_xor_encryption, ecc_xor_decryption, generate_ecc_key_pair
+from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption, generate_ecdh_key_pair
 from smartcard.System import readers
 import hashlib
-from modules.db_manager import load_patient  # ensure you can access plaintext
+from modules.db_manager import load_patient, save_key  # ensure you can access plaintext
+import pandas as pd
+
 
 def compute_checksum(plaintext):
     if isinstance(plaintext, str):
@@ -153,7 +155,7 @@ def save_metrics_to_csv(metrics, operation):
     csv_file = "metrics_log.csv"
     file_exists = os.path.isfile(csv_file)
 
-    fieldnames = ["operation", "latency", "throughput", "memory_usage", "data_size_bytes"]
+    fieldnames = ["operation", "latency", "throughput", "memory_usage", "cpu_usage", "data_size_bytes"]
 
     if operation == "1":
         row = {
@@ -161,6 +163,7 @@ def save_metrics_to_csv(metrics, operation):
             "latency": metrics["encryption_latency"],
             "throughput": metrics["encryption_throughput"],
             "memory_usage": str(metrics["encryption_memory_usage"]),
+            "cpu_usage": metrics["encryption_cpu_usage"],
             "data_size_bytes": metrics["data_size_bytes"]
         }
     else:
@@ -169,6 +172,7 @@ def save_metrics_to_csv(metrics, operation):
             "latency": metrics["decryption_latency"],
             "throughput": metrics["decryption_throughput"],
             "memory_usage": str(metrics["decryption_memory_usage"]),
+            "cpu_usage": metrics["decryption_cpu_usage"],
             "data_size_bytes": metrics["data_size_bytes"]
         }
 
@@ -186,26 +190,64 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         "rsa_decryption": ["rsa_key_private"],
         "aes_rsa_decryption": ["aes_rsa_key_private", "aes_rsa_key_enc_aes_key", "aes_rsa_key_aes_nonce", "aes_rsa_key_aes_tag"],
         "hill_cipher_decryption": ["hill_cipher_key"],
-        "ecc_xor_decryption": ["ecc_key_private", "ecc_key_ephemeral"],
+        "ecc_xor_decryption": ["ecc_key_private", "ecc_key_ephemeral", "ecc_key_nonce"],
         "ecdh_aes_decryption": ["ecdh_key_private", "ecdh_key_ephemeral", "ecdh_key_nonce", "ecdh_key_tag"],
     }
 
     if operation == "1":  # Encryption
         print("Starting Encryption...")
+        patient = load_patient(patient_id)
+        if not patient:
+            print(f"No patient found with ID: {patient_id}")
+            return None
+        
+        preloaded_keys = {}
+
+        if encryption_func.__name__ == "aes_encryption":
+            preloaded_keys = generate_aes_keys()
+        
+        elif encryption_func.__name__ == "rsa_encryption":
+            private_key, public_key = generate_rsa_keypair()
+            preloaded_keys = {
+                "rsa_key_private": private_key,
+                "rsa_key_public": public_key
+            }
+        elif encryption_func.__name__ == "aes_rsa_encryption":
+            preloaded_keys = generate_aes_rsa_keys()
+
+        elif encryption_func.__name__ == "hill_cipher_encryption":
+            preloaded_keys = generate_hill_cipher_key()
+        
+        elif encryption_func.__name__ == "ecc_xor_encryption":
+            preloaded_keys = generate_ecc_key_pair("ecc_key")
+
+        elif encryption_func.__name__ == "ecdh_aes_encryption":
+            preloaded_keys = generate_ecdh_key_pair()
         tracemalloc.start()
 
         process = psutil.Process(os.getpid())
         process.cpu_percent(interval=None)
+        time.sleep(0.05)
         start_time = time.time()
 
         # Execute the encryption function
-        encrypted_data = encryption_func(patient_id, nfc_write_func)
+        result = encryption_func(patient, nfc_write_func, preloaded_keys=preloaded_keys)
 
         end_time = time.time()
         encryption_time = end_time - start_time
         cpu_usage = process.cpu_percent(interval=None)
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
         tracemalloc.stop()
+
+        if isinstance(result, tuple):
+            encrypted_data, key_dict = result
+        else:
+            encrypted_data = result
+            key_dict = {}
+            
+        # Save key_dict AFTER measurement
+        for key_name, value in key_dict.items():
+            save_key(key_name, value, patient_id)
 
         # Calculate data size based on the actual encrypted data
         data_size = len(encrypted_data.encode()) if isinstance(encrypted_data, str) else len(encrypted_data) if encrypted_data else 0
@@ -216,7 +258,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
-        metrics["encryption_cpu_usage"] = f"{cpu_usage:.2f} %"
+        metrics["encryption_cpu_usage"] = f"{cpu_usage:.6f} %"
         metrics["data_size_bytes"] = data_size
         metrics["encryption_data"] = encrypted_data
         plaintext_data = load_patient(patient_id)
@@ -249,6 +291,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
 
         process = psutil.Process(os.getpid())
         process.cpu_percent(interval=None)
+        time.sleep(0.05)
         start_time = time.time()
 
         # Execute the decryption function
@@ -260,6 +303,26 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         current, peak = tracemalloc.get_traced_memory()  # Get current and peak memory usage
         tracemalloc.stop()
 
+        csv_file = config_func()
+        if csv_file:
+            df = pd.read_csv(csv_file)
+            headers = df.columns.tolist()
+
+            # Trim or pad the decrypted data if needed
+            decrypted_list = decrypted_data.split(",")
+            if len(decrypted_list) != len(headers):
+                decrypted_list = decrypted_list[:len(headers)]
+
+
+            output_file = "decrypted_output.csv"
+            output_path = os.path.join(os.getcwd(), output_file)
+
+            with open(output_path, "w", newline="") as csvfile:
+                writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+                writer.writerow(headers)
+                writer.writerow(decrypted_list)
+
+
         # Calculate data size based on the actual decrypted data
         data_size = len(decrypted_data.encode()) if isinstance(decrypted_data, str) else len(decrypted_data) if decrypted_data else 0
 
@@ -269,7 +332,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             "current": f"{current / 1024:.6f} KB",
             "peak": f"{peak / 1024:.6f} KB"
         }
-        metrics["decryption_cpu_usage"] = f"{cpu_usage:.2f} %"
+        metrics["decryption_cpu_usage"] = f"{cpu_usage:.6f} %"
         metrics["data_size_bytes"] = data_size
         metrics["decryption_data"] = decrypted_data
         if decrypted_data:

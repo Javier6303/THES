@@ -1,6 +1,9 @@
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes, serialization
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
+from Crypto.Random import get_random_bytes
 import base64
 import pandas as pd
 import csv
@@ -8,7 +11,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- ECC KEY GENERATION -------------------
 
-def generate_ecc_key_pair(patient_id, key_name="ecc_key"):
+def generate_ecc_key_pair(key_name="ecc_key"):
     """Generate ECC Private-Public Key Pair and store in MongoDB."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_key = private_key.public_key()
@@ -19,40 +22,43 @@ def generate_ecc_key_pair(patient_id, key_name="ecc_key"):
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    save_key(f"{key_name}_private", private_pem, patient_id)
 
     # Save public key
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_public", public_pem, patient_id)
 
-    print(f"New ECC Key Pair generated & stored in MongoDB: {key_name}")
+    # Generate an ephemeral key pair
+    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
+    ephemeral_public_key = ephemeral_private_key.public_key()
 
-    return private_key, public_key
+    return {
+        f"{key_name}_private": private_pem,
+        f"{key_name}_public": public_pem,
+        f"{key_name}_ephemeral_pub": ephemeral_public_key,
+        f"{key_name}_ephemeral_priv": ephemeral_private_key
+    }
 
 # ------------------- ECC + XOR ENCRYPTION -------------------
 
-def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
+def ecc_xor_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="ecc_key"):
     """Encrypt CSV data using ECC XOR encryption and write to NFC."""
-    patient = load_patient(patient_id)
-    if not patient:
-        print(f"No patient found with ID: {patient_id}")
-        return None
 
     # Remove MongoDB-specific fields (like _id)
     patient.pop("_id", None)
 
     # Convert patient dict to comma-separated string
     plaintext = ",".join(str(value) for value in patient.values())
+    plaintext_bytes = plaintext.encode()
 
-    # Generate a new ECC key pair for each session
-    private_key, public_key = generate_ecc_key_pair(patient_id, key_name)
+    private_pem = preloaded_keys.get(f"{key_name}_private")
+    public_pem = preloaded_keys.get(f"{key_name}_public")
+    ephemeral_public_key = preloaded_keys.get(f"{key_name}_ephemeral_pub")
+    ephemeral_private_key = preloaded_keys.get(f"{key_name}_ephemeral_priv")
 
-    # Generate an ephemeral key pair
-    ephemeral_private_key = ec.generate_private_key(ec.SECP256R1())
-    ephemeral_public_key = ephemeral_private_key.public_key()
+    # Load the public key
+    public_key = serialization.load_pem_public_key(public_pem)
 
     # Compute shared secret
     shared_secret = ephemeral_private_key.exchange(ec.ECDH(), public_key)
@@ -60,13 +66,19 @@ def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
     # Derive key
     derived_key = HKDF(
         algorithm=hashes.SHA256(),
-        length=len(plaintext),
+        length=32,  # 16 bytes = 128-bit key (use 32 for 256-bit)
         salt=None,
-        info=b"ecc-xor-key"
+        info=b"ecc-xor-keystream"
     ).derive(shared_secret)
 
+    # Create a CTR-based keystream generator
+    nonce = get_random_bytes(8)  
+    ctr = Counter.new(64, prefix=nonce)
+    stream_cipher = AES.new(derived_key, AES.MODE_CTR, counter=ctr)
+
     # Encrypt using XOR
-    encrypted_bytes = bytes(a ^ b for a, b in zip(plaintext.encode(), derived_key))
+    keystream = stream_cipher.encrypt(b'\x00' * len(plaintext_bytes))
+    encrypted_bytes = bytes(a ^ b for a, b in zip(plaintext_bytes, keystream))
     encrypted_text = base64.b64encode(encrypted_bytes).decode()
 
     print("Writing ciphertext to NFC card...")
@@ -78,11 +90,13 @@ def ecc_xor_encryption(patient_id, write_to_nfc, key_name="ecc_key"):
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
-    save_key(f"{key_name}_ephemeral", ephemeral_public_pem, patient_id)
 
-    print(f"Ephemeral Public Key saved in MongoDB for '{key_name}'.")
-
-    return encrypted_text
+    return encrypted_text, {
+        f"{key_name}_private": private_pem,
+        f"{key_name}_public": public_pem,
+        f"{key_name}_ephemeral": ephemeral_public_pem,
+        f"{key_name}_nonce": nonce
+    }
 
 # ------------------- ECC + XOR DECRYPTION -------------------
 
@@ -93,6 +107,7 @@ def ecc_xor_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=N
         if preloaded_keys:
             private_key_data = preloaded_keys.get(f"{key_name}_private")
             ephemeral_public_key_data = preloaded_keys.get(f"{key_name}_ephemeral")
+            nonce = preloaded_keys.get(f"{key_name}_nonce")
 
             if not private_key_data or not ephemeral_public_key_data:
                 print(f"Error: Preloaded ECC keys missing for '{key_name}'.")
@@ -114,33 +129,19 @@ def ecc_xor_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=N
         encrypted_bytes = base64.b64decode(encrypted_text)
         derived_key = HKDF(
             algorithm=hashes.SHA256(),
-            length=len(encrypted_bytes),
+            length=32,  # or 32 if you used 256-bit in encryption
             salt=None,
-            info=b"ecc-xor-key"
+            info=b"ecc-xor-keystream"
         ).derive(shared_secret)
 
+        ctr = Counter.new(64, prefix=nonce)
+        stream_cipher = AES.new(derived_key, AES.MODE_CTR, counter=ctr)
+
+        keystream = stream_cipher.encrypt(b'\x00' * len(encrypted_bytes))
+
         # Decrypt using XOR
-        decrypted_bytes = bytes(a ^ b for a, b in zip(encrypted_bytes, derived_key))
+        decrypted_bytes = bytes(a ^ b for a, b in zip(encrypted_bytes, keystream))
         decrypted_text = decrypted_bytes.decode()
-
-        decrypted_data = decrypted_text.split(",")
-
-        csv_file = get_csv_path()
-        if not csv_file:
-            return None
-
-        df = pd.read_csv(csv_file)
-        headers = df.columns.tolist()
-
-        if len(headers) != len(decrypted_data):
-            decrypted_data = decrypted_data[:len(headers)]
-
-        with open(output_file, "w", newline="") as csvfile:
-            csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            csv_writer.writerow(headers)
-            csv_writer.writerow(decrypted_data)
-
-        print(f"Decrypted data saved to '{output_file}'.")
 
         return decrypted_text
 

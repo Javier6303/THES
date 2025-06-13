@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 # ----------------- LOAD ENV -----------------
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.147:27017/")
 DB_NAME = "encryption_db"
 PATIENTS_COLLECTION = "patients"
 
@@ -43,6 +43,23 @@ class EncryptionGUI:
         self.root = root
         self.root.title("Patient Encryption System")
         self.root.geometry("800x1000")
+
+        self.field_limits = {
+            "Name": 50,
+            "Age": 3,
+            "Sex": 1,
+            "Address": 80,
+            "Contact Number": 15,
+            "Email": 50,
+            "Birthday": 10,
+            "Height": 4,
+            "Blood Pressure": 7,
+            "Blood Type": 3,
+            "History of Medical Illnesses": 300,
+            "Last Appointment Date": 10,
+            "Next Appointment Date": 10,
+            "Doctor's Notes": 1000
+        }
 
         # ----- Notebook Tabs -----
         self.notebook = ttk.Notebook(self.root)
@@ -92,24 +109,6 @@ class EncryptionGUI:
         # Auto-render form based on card data
         if initial_patient_type:
             self.render_form()
-
-
-        self.field_limits = {
-            "Name": 50,
-            "Age": 3,
-            "Sex": 1,
-            "Address": 80,
-            "Contact Number": 15,
-            "Email": 50,
-            "Birthday": 10,
-            "Height": 4,
-            "Blood Pressure": 7,
-            "Blood Type": 3,
-            "History of Medical Illnesses": 80,
-            "Last Appointment Date": 10,
-            "Next Appointment Date": 10,
-            "Doctor's Notes": 350
-        }
 
 
     def limit_entry(self, entry_widget, limit):

@@ -8,44 +8,49 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 # ------------------- RSA KEY GENERATION -------------------
 
-def generate_rsa_keypair(patient_id, key_name="aes_rsa_key"):
-    """Generate a new RSA key pair and save it in MongoDB."""
-    key = RSA.generate(2048)
-    private_key = key.export_key()
-    public_key = key.publickey().export_key()
+def generate_aes_rsa_keys(key_name="aes_rsa_key"):
+    """Generate AES key, RSA key pair, and encrypt AES key with RSA public key."""
 
-    save_key(f"{key_name}_private", private_key, patient_id)
-    save_key(f"{key_name}_public", public_key,  patient_id)
+    # Generate AES session key
+    aes_key = get_random_bytes(32)
 
-    print("New RSA Key Pair Generated & Stored in MongoDB.")
-    return public_key
+    # Generate RSA key pair
+    rsa_key = RSA.generate(2048)
+    private_key = rsa_key.export_key()
+    public_key = rsa_key.publickey().export_key()
+
+    # Encrypt the AES key using RSA public key
+    public_key_obj = RSA.import_key(public_key)
+    cipher_rsa = PKCS1_OAEP.new(public_key_obj)
+    enc_aes_key = cipher_rsa.encrypt(aes_key)
+
+    return {
+        f"{key_name}_aes_key": aes_key,
+        f"{key_name}_private": private_key,
+        f"{key_name}_public": public_key,
+        f"{key_name}_enc_aes_key": enc_aes_key
+    }
 
 
 # ------------------- AES + RSA ENCRYPTION -------------------
 
-def aes_rsa_encryption(patient_id, write_to_nfc, key_name="aes_rsa_key"):
+def aes_rsa_encryption(patient, write_to_nfc, preloaded_keys=None, key_name="aes_rsa_key"):
     """Encrypt CSV data with AES and RSA, then write to NFC."""
-    patient = load_patient(patient_id)
-    if not patient:
-        print(f"No patient found with ID: {patient_id}")
-        return None
 
     patient.pop("_id", None)  # Remove internal MongoDB ID
     plaintext = ",".join(str(value) for value in patient.values())
 
-    # Generate AES key for session
-    aes_key = get_random_bytes(16)
+    aes_key = preloaded_keys.get(f"{key_name}_aes_key")
+    private_key = preloaded_keys.get(f"{key_name}_private")
+    public_key = preloaded_keys.get(f"{key_name}_public")
+    enc_aes_key = preloaded_keys.get(f"{key_name}_enc_aes_key")
 
-    # Generate new RSA key pair for this encryption session
-    public_key = generate_rsa_keypair(patient_id, key_name)
-    public_key_obj = RSA.import_key(public_key)
-    cipher_rsa = PKCS1_OAEP.new(public_key_obj)
-
-    # Encrypt the AES key with RSA
-    enc_aes_key = cipher_rsa.encrypt(aes_key)
+    if not (aes_key and private_key and public_key and enc_aes_key):
+        print("Missing one or more required preloaded keys.")
+        return None
 
     # Encrypt the plaintext using AES
-    cipher_aes = AES.new(aes_key, AES.MODE_OCB)
+    cipher_aes = AES.new(aes_key, AES.MODE_GCM)
     ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext.encode())
 
     # Write encrypted data to NFC
@@ -54,11 +59,15 @@ def aes_rsa_encryption(patient_id, write_to_nfc, key_name="aes_rsa_key"):
     print("Ciphertext successfully written to NFC!")
 
     # Store encrypted AES key, nonce, and tag separately
-    save_key(f"{key_name}_enc_aes_key", enc_aes_key, patient_id)  # Store encrypted AES key (256 bytes)
-    save_key(f"{key_name}_aes_nonce", cipher_aes.nonce, patient_id)  # Store AES nonce (15 bytes)
-    save_key(f"{key_name}_aes_tag", tag, patient_id)  # Store AES authentication tag (16 bytes)
+    key_dict = {
+        f"{key_name}_private": private_key,
+        f"{key_name}_public": public_key,
+        f"{key_name}_enc_aes_key": enc_aes_key,
+        f"{key_name}_aes_nonce": cipher_aes.nonce,
+        f"{key_name}_aes_tag": tag,
+    }
 
-    return ciphertext  # Return encrypted data for performance metrics
+    return ciphertext, key_dict  # Return encrypted data for performance metrics
 
 
 # ------------------- AES + RSA DECRYPTION -------------------
@@ -88,31 +97,10 @@ def aes_rsa_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=N
         aes_key = cipher_rsa.decrypt(enc_aes_key)
 
         # Decrypt the ciphertext using AES
-        cipher_aes = AES.new(aes_key, AES.MODE_OCB, nonce=nonce)
+        cipher_aes = AES.new(aes_key, AES.MODE_GCM, nonce=nonce)
         plaintext = cipher_aes.decrypt_and_verify(ciphertext, tag).decode()
 
-        decrypted_data = plaintext.split(",")
-
-        # Read CSV headers
-        csv_file = get_csv_path()
-        if not csv_file:
-            return None  # No CSV file, exit early
-
-        df = pd.read_csv(csv_file)
-        headers = df.columns.tolist()
-
-        # Ensure decrypted data matches the header count
-        if len(headers) != len(decrypted_data):
-            decrypted_data = decrypted_data[:len(headers)]
-
-        # Save decrypted data to CSV
-        with open(output_csv, "w", newline="") as csvfile:
-            csv_writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-            csv_writer.writerow(headers)
-            csv_writer.writerow(decrypted_data)
-
-        print(f"Decrypted data saved to '{output_csv}'.")
-        return plaintext.encode()  # Return decrypted data for performance tracking
+        return plaintext
 
     except ValueError as e:
         print(f"Decryption failed: {e}")
