@@ -13,9 +13,10 @@ from modules.rsa import rsa_encryption, rsa_decryption, generate_rsa_keypair
 from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption, generate_hill_cipher_key
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption, generate_ecc_key_pair
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption, generate_ecdh_key_pair
+from modules.cpabe import generate_cpabe_keypair
 from smartcard.System import readers
 import hashlib
-from modules.db_manager import load_patient, save_key  # ensure you can access plaintext
+from modules.db_manager import load_patient, save_key, save_cpabe_keys, load_cpabe_keys  # ensure you can access plaintext
 import pandas as pd
 
 
@@ -223,6 +224,10 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
 
         elif encryption_func.__name__ == "ecdh_aes_encryption":
             preloaded_keys = generate_ecdh_key_pair()
+
+        elif encryption_func.__name__ == "cpabe_encryption":
+            preloaded_keys = generate_cpabe_keypair()
+
         tracemalloc.start()
 
         process = psutil.Process(os.getpid())
@@ -246,8 +251,13 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             key_dict = {}
             
         # Save key_dict AFTER measurement
-        for key_name, value in key_dict.items():
-            save_key(key_name, value, patient_id)
+        
+        if encryption_func.__name__ == "cpabe_encryption":
+            save_cpabe_keys(key_dict, patient_id)
+        else:
+            for key_name, value in key_dict.items():
+                save_key(key_name, value, patient_id)
+
 
         # Calculate data size based on the actual encrypted data
         data_size = len(encrypted_data.encode()) if isinstance(encrypted_data, str) else len(encrypted_data) if encrypted_data else 0
@@ -280,12 +290,15 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
         from modules.db_manager import load_key
 
         # Load all necessary keys BEFORE timing
-        key_list = decryption_keys.get(decryption_func.__name__, [])
-        preloaded_keys = {}
+        if decryption_func.__name__ == "cpabe_decryption":
+            preloaded_keys = load_cpabe_keys(patient_id)
+        else:   
+            key_list = decryption_keys.get(decryption_func.__name__, [])
+            preloaded_keys = {}
 
-        for key_name in key_list:
-            key_data = load_key(key_name, patient_id)
-            preloaded_keys[key_name] = key_data
+            for key_name in key_list:
+                key_data = load_key(key_name, patient_id)
+                preloaded_keys[key_name] = key_data
 
         tracemalloc.start()
 
@@ -313,9 +326,16 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
             if len(decrypted_list) != len(headers):
                 decrypted_list = decrypted_list[:len(headers)]
 
+            func_name = decryption_func.__name__ if decryption_func else "unknown"
+            suffix = func_name.replace("_decryption", "")
+            output_file = f"decrypted_{suffix}.csv"
 
-            output_file = "decrypted_output.csv"
             output_path = os.path.join(os.getcwd(), output_file)
+
+            with open(output_path, "w", newline="") as csvfile:
+                writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+                writer.writerow(headers)
+                writer.writerow(decrypted_list)
 
             with open(output_path, "w", newline="") as csvfile:
                 writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)

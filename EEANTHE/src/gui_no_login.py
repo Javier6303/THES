@@ -13,6 +13,7 @@ from modules.rsa import rsa_encryption, rsa_decryption
 from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
+from modules.cpabe import cpabe_encryption, cpabe_decryption
 from main import measure_performance, CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card
 from modules.db_manager import save_new_patient, update_patient
 from modules.email import send_email
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # ----------------- LOAD ENV -----------------
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.147:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.61:27017/")
 DB_NAME = "encryption_db"
 PATIENTS_COLLECTION = "patients"
 
@@ -168,7 +169,7 @@ class EncryptionGUI:
             # Encryption label + dropdown
             ttk.Label(self.form_frame, text="Select Algorithm For Encryption:").pack(pady=5)
             self.encryption_choice = ttk.Combobox(self.form_frame, values=[
-                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES", "CP-ABE"
             ], state="readonly")
             self.encryption_choice.pack()
 
@@ -189,7 +190,7 @@ class EncryptionGUI:
             # Encryption label + dropdown
             ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
             self.encryption_choice = ttk.Combobox(self.form_frame, values=[
-                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES", "CP-ABE"
             ], state="readonly")
             self.encryption_choice.pack()
 
@@ -226,7 +227,8 @@ class EncryptionGUI:
             "AES-RSA": aes_rsa_encryption,
             "Hill Cipher": hill_cipher_encryption,
             "ECC XOR": ecc_xor_encryption,
-            "ECDH-AES": ecdh_aes_encryption
+            "ECDH-AES": ecdh_aes_encryption,
+            "CP-ABE": cpabe_encryption
         }.get(method)
 
         try:
@@ -282,7 +284,8 @@ class EncryptionGUI:
             "AES-RSA": aes_rsa_decryption,
             "Hill Cipher": hill_cipher_decryption,
             "ECC XOR": ecc_xor_decryption,
-            "ECDH-AES": ecdh_aes_decryption
+            "ECDH-AES": ecdh_aes_decryption,
+            "CP-ABE": cpabe_decryption
         }.get(method)
 
         try:
@@ -390,7 +393,8 @@ class EncryptionGUI:
                 "AES-RSA": aes_rsa_encryption,
                 "Hill Cipher": hill_cipher_encryption,
                 "ECC XOR": ecc_xor_encryption,
-                "ECDH-AES": ecdh_aes_encryption
+                "ECDH-AES": ecdh_aes_encryption,
+                "CP-ABE": cpabe_encryption
             }.get(method)
 
             metrics = {

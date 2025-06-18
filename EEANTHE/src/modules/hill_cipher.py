@@ -7,7 +7,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 CUSTOM_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,|.@#$/:-_()[]{}!?%&+=*\"' "
 ALPHABET_SIZE = len(CUSTOM_ALPHABET)
-HILL_MATRIX_SIZE = 6
+HILL_MATRIX_SIZE = 4
 
 
 def char_to_index(char):
@@ -25,7 +25,6 @@ def text_to_numbers(text):
 def numbers_to_text(numbers):
     """Convert a list of numbers back to text using CUSTOM_ALPHABET."""
     return "".join(index_to_char(n) for n in numbers)
-
 
 # ------------------- HILL CIPHER FUNCTIONS -------------------
 

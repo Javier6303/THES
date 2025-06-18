@@ -9,7 +9,7 @@ from modules.db_manager import save_key, load_key, load_patient  # Import MongoD
 
 def generate_rsa_keypair():
     """Generate RSA key pair and save the private key to a file."""
-    key = RSA.generate(4096)
+    key = RSA.generate(2048)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
     return private_key, public_key
