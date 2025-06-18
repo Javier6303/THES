@@ -2,13 +2,15 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 from base64 import b64encode, b64decode
-from Crypto.PublicKey import RSA  # Import RSA for correct handling
+import json
+from bson.binary import Binary
+import pickle
 
 # Load environment variables
 load_dotenv()
 
 # Update MongoDB details
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.147:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.61:27017/")
 DB_NAME = "encryption_db"
 COLLECTION_NAME = "keys"
 
@@ -81,3 +83,25 @@ def update_patient(patient_id, updated_data):
     else:
         print(f"Patient ID '{patient_id}' not found.")
         return False
+
+def save_cpabe_keys(cpabe_dict, patient_id, key_name="cpabe_key"):
+    """Save CP-ABE keys and attributes as a single entry using pickle."""
+    serialized_data = pickle.dumps(cpabe_dict)
+    query = {"patient_id": patient_id, "key_name": key_name}
+    update_data = {"$set": {"key_data": Binary(serialized_data)}}
+    collection.update_one(query, update_data, upsert=True)
+    print(f"CP-ABE keys saved under key '{key_name}' for patient '{patient_id}'.")
+
+def load_cpabe_keys(patient_id, key_name="cpabe_key"):
+    """Load CP-ABE key dict from MongoDB."""
+    query = {"patient_id": patient_id, "key_name": key_name}
+    key_entry = collection.find_one(query)
+    if key_entry:
+        print(f"CP-ABE keys loaded for patient '{patient_id}'.")
+        loaded = pickle.loads(key_entry["key_data"])
+        if isinstance(loaded, dict):
+            return loaded
+        else:
+            print("Loaded CP-ABE key is not a dictionary!")
+    print(f"CP-ABE keys for patient '{patient_id}' not found.")
+    return None
