@@ -232,7 +232,7 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
 
         process = psutil.Process(os.getpid())
         process.cpu_percent(interval=None)
-        time.sleep(0.05)
+        time.sleep(0.1)
         start_time = time.time()
 
         # Execute the encryption function
@@ -368,49 +368,3 @@ def measure_performance(operation, encryption_func, decryption_func, patient_id,
     return metrics
 
 
-
-# # ------------------- MAIN PROGRAM -------------------
-# def main():
-#     logger.info("STARTING PROGRAM...") #removev nalang this one if ever
-
-#     print("SELECT ENCRYPTION METHOD:")
-#     print("1. AES")
-#     print("2. RSA")
-#     print("3. AES-RSA")
-#     print("4. Hill Cipher")
-#     print("5. ECC XOR")
-#     print("6. ECDH + AES-GCM")
-
-#     choice = input("Enter Chosen method: ").strip()
-
-#     encryption_methods = {
-#         "1": (aes_encryption, aes_decryption),
-#         "2": (rsa_encryption, rsa_decryption),
-#         "3": (aes_rsa_encryption, aes_rsa_decryption),
-#         "4": (hill_cipher_encryption, hill_cipher_decryption),
-#         "5": (ecc_xor_encryption, ecc_xor_decryption),
-#         "6": (ecdh_aes_encryption, ecdh_aes_decryption)
-#     }
-
-#     if choice in encryption_methods:
-#         encryption_func, decryption_func = encryption_methods[choice]
-
-#         print("SELECT OPERATION:")
-#         print("1. Encryption")
-#         print("2. Decryption")
-#         operation = input("Enter operation: ").strip()
-
-#         # RSA and ECC are asymmetric
-#         asymmetric = choice in {"1", "2", "3", "4", "5", "6"}  
-
-#         if operation in {"1", "2"}:
-#             patient_id = input("Enter patient ID: ").strip()
-#             measure_performance(operation, encryption_func, decryption_func, patient_id, lambda: CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card, asymmetric=asymmetric)
-#         else:
-#             print("Invalid operation. Choose 1 for Encryption or 2 for Decryption.")
-
-#     else:
-#         print("Invalid encryption method choice. Choose a number between 1 and 5.")
-
-# if __name__ == "__main__":
-#     main()

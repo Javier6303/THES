@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # ----------------- LOAD ENV -----------------
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.61:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.60:27017/")
 DB_NAME = "encryption_db"
 PATIENTS_COLLECTION = "patients"
 
@@ -46,20 +46,20 @@ class EncryptionGUI:
         self.root.geometry("800x1000")
 
         self.field_limits = {
-            "Name": 50,
+            "Name": 13,
             "Age": 3,
             "Sex": 1,
-            "Address": 80,
-            "Contact Number": 15,
-            "Email": 50,
-            "Birthday": 10,
+            "Address": 21,
+            "Contact Number": 12,
+            "Email": 25,
+            "Birthday": 9,
             "Height": 4,
             "Blood Pressure": 7,
             "Blood Type": 3,
-            "History of Medical Illnesses": 300,
+            "History of Medical Illnesses": 142,
             "Last Appointment Date": 10,
             "Next Appointment Date": 10,
-            "Doctor's Notes": 1000
+            "Doctor's Notes": 595
         }
 
         # ----- Notebook Tabs -----

@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 import csv
-from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
+#from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 # ------------------- CUSTOM ALPHABET -------------------
 
 CUSTOM_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,|.@#$/:-_()[]{}!?%&+=*\"' "
 ALPHABET_SIZE = len(CUSTOM_ALPHABET)
-HILL_MATRIX_SIZE = 4
+HILL_MATRIX_SIZE = 11
 
 
 def char_to_index(char):
@@ -132,3 +132,4 @@ def hill_cipher_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_ke
     plaintext = hill_decrypt(ciphertext, key_matrix_inv)
 
     return plaintext
+

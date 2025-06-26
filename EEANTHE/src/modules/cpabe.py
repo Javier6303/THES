@@ -13,7 +13,7 @@ import tracemalloc
 import time
 
 # Use environment variable for Mongo URI
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.61:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.60:27017/")
 client = MongoClient(MONGO_URI)
 db = client["encryption_db"]
 ciphertext_collection = db["cpabe_ciphertexts"]

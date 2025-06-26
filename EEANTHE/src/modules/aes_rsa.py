@@ -12,7 +12,7 @@ def generate_aes_rsa_keys(key_name="aes_rsa_key"):
     """Generate AES key, RSA key pair, and encrypt AES key with RSA public key."""
 
     # Generate AES session key
-    aes_key = get_random_bytes(16)
+    aes_key = get_random_bytes(32)
 
     # Generate RSA key pair
     rsa_key = RSA.generate(2048)

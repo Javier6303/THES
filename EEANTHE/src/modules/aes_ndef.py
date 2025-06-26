@@ -72,5 +72,5 @@ def aes_decryption(get_csv_path, read_from_nfc, patient_id, preloaded_keys=None,
     return None
 
 
-    
+# aes_key, tag, nonce = key_data[:32], key_data[32:48], key_data[48:] FOR 32 KEY SIZE
     
