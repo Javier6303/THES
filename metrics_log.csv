@@ -1,152 +1,780 @@
-operation,latency,throughput,memory_usage,data_size_bytes
-encryption,0.418170 s,0.294251 KB/s,"{'current': '162.322266 KB', 'peak': '167.405273 KB'}",126
-decryption,2.477194 s,0.049672 KB/s,"{'current': '293.895508 KB', 'peak': '491.481445 KB'}",126
-encryption,0.019134 s,0.000000 KB/s,"{'current': '64.479492 KB', 'peak': '65.702148 KB'}",0
-encryption,0.002012 s,0.000000 KB/s,"{'current': '64.768555 KB', 'peak': '65.991211 KB'}",0
-encryption,0.002022 s,0.000000 KB/s,"{'current': '62.776367 KB', 'peak': '63.999023 KB'}",0
-encryption,0.216424 s,0.234638 KB/s,"{'current': '103.417969 KB', 'peak': '111.422852 KB'}",52
-decryption,2.466069 s,0.000000 KB/s,"{'current': '176.136719 KB', 'peak': '178.226562 KB'}",0
-decryption,2.469380 s,0.000000 KB/s,"{'current': '9.562500 KB', 'peak': '14.356445 KB'}",0
-encryption,0.203984 s,0.282459 KB/s,"{'current': '12.806641 KB', 'peak': '21.153320 KB'}",59
-decryption,2.476995 s,0.023261 KB/s,"{'current': '128.685547 KB', 'peak': '331.184570 KB'}",59
-encryption,3.595959 s,0.069522 KB/s,"{'current': '209.943359 KB', 'peak': '222.547852 KB'}",256
-decryption,2.540384 s,0.014608 KB/s,"{'current': '23.125000 KB', 'peak': '314.044922 KB'}",38
-encryption,1.126617 s,0.221903 KB/s,"{'current': '6.616211 KB', 'peak': '19.851562 KB'}",256
-decryption,2.412983 s,0.000000 KB/s,"{'current': '169.777344 KB', 'peak': '172.250000 KB'}",0
-decryption,2.530471 s,0.014665 KB/s,"{'current': '320.714844 KB', 'peak': '523.358398 KB'}",38
-decryption,2.535728 s,0.014635 KB/s,"{'current': '434.160156 KB', 'peak': '635.611328 KB'}",38
-decryption,2.502536 s,0.014829 KB/s,"{'current': '16.087891 KB', 'peak': '307.626953 KB'}",38
-decryption,2.517808 s,0.014739 KB/s,"{'current': '434.324219 KB', 'peak': '635.835938 KB'}",38
-decryption,2.503523 s,0.014823 KB/s,"{'current': '15.345703 KB', 'peak': '306.119141 KB'}",38
-decryption,2.534299 s,0.014643 KB/s,"{'current': '429.165039 KB', 'peak': '630.565430 KB'}",38
-decryption,2.500445 s,0.014841 KB/s,"{'current': '10.482422 KB', 'peak': '302.162109 KB'}",38
-decryption,2.538997 s,0.014616 KB/s,"{'current': '426.269531 KB', 'peak': '627.746094 KB'}",38
-encryption,0.963668 s,0.259426 KB/s,"{'current': '35.486328 KB', 'peak': '49.999023 KB'}",256
-encryption,1.282259 s,0.194968 KB/s,"{'current': '8.747070 KB', 'peak': '23.400391 KB'}",256
-decryption,2.528160 s,0.015065 KB/s,"{'current': '434.443359 KB', 'peak': '635.788086 KB'}",39
-encryption,4.510713 s,0.055424 KB/s,"{'current': '42.412109 KB', 'peak': '57.227539 KB'}",256
-decryption,2.491255 s,0.014896 KB/s,"{'current': '15.078125 KB', 'peak': '307.011719 KB'}",38
-encryption,2.071455 s,0.120688 KB/s,"{'current': '12.384766 KB', 'peak': '23.528320 KB'}",256
-decryption,2.500374 s,0.014842 KB/s,"{'current': '13.480469 KB', 'peak': '305.363281 KB'}",38
-encryption,0.178684 s,0.218612 KB/s,"{'current': '35.638672 KB', 'peak': '49.292969 KB'}",40
-decryption,2.434370 s,0.000000 KB/s,"{'current': '16.526367 KB', 'peak': '19.124023 KB'}",0
-encryption,0.322691 s,0.102895 KB/s,"{'current': '9.991211 KB', 'peak': '24.811523 KB'}",34
-decryption,2.479875 s,0.013389 KB/s,"{'current': '11.498047 KB', 'peak': '302.761719 KB'}",34
-encryption,0.154846 s,0.214427 KB/s,"{'current': '2.877930 KB', 'peak': '15.913086 KB'}",34
-decryption,2.439631 s,0.013610 KB/s,"{'current': '6.082031 KB', 'peak': '296.257812 KB'}",34
-encryption,0.143394 s,0.251982 KB/s,"{'current': '103.130859 KB', 'peak': '110.574219 KB'}",37
-decryption,2.414744 s,0.014963 KB/s,"{'current': '143.170898 KB', 'peak': '344.772461 KB'}",37
-encryption,0.255178 s,0.256408 KB/s,"{'current': '2.863281 KB', 'peak': '17.128906 KB'}",67
-decryption,2.439523 s,0.026821 KB/s,"{'current': '4.572266 KB', 'peak': '295.634766 KB'}",67
-encryption,0.241483 s,0.262861 KB/s,"{'current': '5.285156 KB', 'peak': '18.966797 KB'}",65
-encryption,0.021184 s,1.659569 KB/s,"{'current': '164.672852 KB', 'peak': '176.667969 KB'}",36
-encryption,0.011053 s,4.594405 KB/s,"{'current': '112.719727 KB', 'peak': '129.320312 KB'}",52
-encryption,0.196771 s,0.258073 KB/s,"{'current': '8.020508 KB', 'peak': '17.407227 KB'}",52
-decryption,2.472590 s,0.015403 KB/s,"{'current': '132.078125 KB', 'peak': '334.309570 KB'}",39
-decryption,2.472259 s,0.015405 KB/s,"{'current': '5.204102 KB', 'peak': '295.860352 KB'}",39
-encryption,0.158252 s,0.203641 KB/s,"{'current': '63.176758 KB', 'peak': '76.647461 KB'}",33
-decryption,2.472208 s,0.013036 KB/s,"{'current': '19.932617 KB', 'peak': '308.986328 KB'}",33
-encryption,1.611124 s,0.155171 KB/s,"{'current': '206.921875 KB', 'peak': '219.319336 KB'}",256
-decryption,2.541878 s,0.012294 KB/s,"{'current': '22.801758 KB', 'peak': '314.052734 KB'}",32
-encryption,0.156860 s,0.199222 KB/s,"{'current': '7.430664 KB', 'peak': '20.030273 KB'}",32
-encryption,0.127019 s,0.246027 KB/s,"{'current': '30.759766 KB', 'peak': '45.000000 KB'}",32
-decryption,2.470101 s,0.012651 KB/s,"{'current': '5.162109 KB', 'peak': '294.634766 KB'}",32
-encryption,0.128182 s,0.243793 KB/s,"{'current': '42.465820 KB', 'peak': '45.274414 KB'}",32
-encryption,0.126198 s,0.263103 KB/s,"{'current': '42.717773 KB', 'peak': '45.516602 KB'}",34
-decryption,2.473265 s,0.013425 KB/s,"{'current': '134.847656 KB', 'peak': '337.535156 KB'}",34
-encryption,0.127456 s,0.245182 KB/s,"{'current': '42.411133 KB', 'peak': '45.219727 KB'}",32
-decryption,2.471842 s,0.012642 KB/s,"{'current': '134.881836 KB', 'peak': '337.599609 KB'}",32
-encryption,0.152292 s,0.218022 KB/s,"{'current': '4.784180 KB', 'peak': '18.561523 KB'}",34
-encryption,0.293367 s,0.269633 KB/s,"{'current': '103.199219 KB', 'peak': '111.454102 KB'}",81
-decryption,2.475487 s,0.000000 KB/s,"{'current': '6.064453 KB', 'peak': '14.260742 KB'}",0
-decryption,2.451908 s,0.000000 KB/s,"{'current': '0.609375 KB', 'peak': '12.729492 KB'}",0
-decryption,2.469522 s,0.000000 KB/s,"{'current': '0.871094 KB', 'peak': '12.729492 KB'}",0
-encryption,0.161921 s,0.192996 KB/s,"{'current': '102.963867 KB', 'peak': '110.246094 KB'}",32
-decryption,2.469038 s,0.000000 KB/s,"{'current': '18.432617 KB', 'peak': '20.563477 KB'}",0
-encryption,0.130784 s,0.246411 KB/s,"{'current': '102.606445 KB', 'peak': '109.939453 KB'}",33
-decryption,2.441921 s,0.000000 KB/s,"{'current': '18.465820 KB', 'peak': '20.596680 KB'}",0
-encryption,0.130124 s,0.240155 KB/s,"{'current': '103.391602 KB', 'peak': '110.509766 KB'}",32
-decryption,2.467741 s,0.000000 KB/s,"{'current': '18.762695 KB', 'peak': '20.893555 KB'}",0
-encryption,0.125100 s,0.249799 KB/s,"{'current': '2.625977 KB', 'peak': '16.342773 KB'}",32
-decryption,2.444920 s,0.012782 KB/s,"{'current': '128.291016 KB', 'peak': '329.557617 KB'}",32
-encryption,0.125304 s,0.249394 KB/s,"{'current': '6.040039 KB', 'peak': '19.545898 KB'}",32
-decryption,2.472644 s,0.012638 KB/s,"{'current': '10.705078 KB', 'peak': '300.177734 KB'}",32
-encryption,0.131418 s,0.237790 KB/s,"{'current': '102.571289 KB', 'peak': '109.853516 KB'}",32
-decryption,2.445852 s,0.012777 KB/s,"{'current': '142.975586 KB', 'peak': '344.472656 KB'}",32
-encryption,0.124141 s,0.251731 KB/s,"{'current': '6.274414 KB', 'peak': '20.030273 KB'}",32
-decryption,2.442297 s,0.012795 KB/s,"{'current': '10.446289 KB', 'peak': '299.970703 KB'}",32
-decryption,2.468824 s,0.012658 KB/s,"{'current': '5.862305 KB', 'peak': '295.499023 KB'}",32
-decryption,2.473503 s,0.012634 KB/s,"{'current': '7.905273 KB', 'peak': '298.057617 KB'}",32
-encryption,0.132648 s,0.235587 KB/s,"{'current': '102.821289 KB', 'peak': '110.103516 KB'}",32
-decryption,2.447719 s,0.012767 KB/s,"{'current': '142.914062 KB', 'peak': '344.411133 KB'}",32
-encryption,0.154617 s,0.214744 KB/s,"{'current': '6.526367 KB', 'peak': '20.084961 KB'}",34
-decryption,2.473071 s,0.013031 KB/s,"{'current': '10.905273 KB', 'peak': '300.429688 KB'}",33
-encryption,0.131056 s,0.245899 KB/s,"{'current': '102.551758 KB', 'peak': '109.884766 KB'}",33
-decryption,2.476378 s,0.013014 KB/s,"{'current': '143.111328 KB', 'peak': '344.814453 KB'}",33
-encryption,0.149797 s,0.273808 KB/s,"{'current': '4.651367 KB', 'peak': '18.329102 KB'}",42
-decryption,2.475486 s,0.016569 KB/s,"{'current': '6.405273 KB', 'peak': '296.478516 KB'}",42
-decryption,2.473140 s,0.016584 KB/s,"{'current': '3.896484 KB', 'peak': '293.963867 KB'}",42
-encryption,0.148384 s,0.276415 KB/s,"{'current': '6.409180 KB', 'peak': '20.651367 KB'}",42
-encryption,0.147921 s,0.277280 KB/s,"{'current': '2.682617 KB', 'peak': '16.674805 KB'}",42
-encryption,0.158432 s,0.197245 KB/s,"{'current': '42.637695 KB', 'peak': '45.446289 KB'}",32
-encryption,0.155545 s,0.200907 KB/s,"{'current': '29.936523 KB', 'peak': '44.176758 KB'}",32
-decryption,2.485472 s,0.012573 KB/s,"{'current': '127.615234 KB', 'peak': '329.857422 KB'}",32
-encryption,0.135345 s,0.230892 KB/s,"{'current': '4.316406 KB', 'peak': '19.150391 KB'}",32
-encryption,0.140463 s,0.222478 KB/s,"{'current': '2.172852 KB', 'peak': '16.538086 KB'}",32
-encryption,0.134856 s,0.231729 KB/s,"{'current': '2.657227 KB', 'peak': '17.022461 KB'}",32
-encryption,0.168692 s,0.254717 KB/s,"{'current': '10.341797 KB', 'peak': '23.663086 KB'}",44
-encryption,0.170909 s,0.182846 KB/s,"{'current': '63.173828 KB', 'peak': '77.281250 KB'}",32
-encryption,0.132356 s,0.236105 KB/s,"{'current': '2.071289 KB', 'peak': '16.405273 KB'}",32
-decryption,2.483602 s,0.000000 KB/s,"{'current': '15.743164 KB', 'peak': '17.801758 KB'}",0
-encryption,0.131410 s,0.237806 KB/s,"{'current': '102.625000 KB', 'peak': '109.907227 KB'}",32
-decryption,2.475423 s,0.012624 KB/s,"{'current': '143.027344 KB', 'peak': '344.472656 KB'}",32
-encryption,0.156753 s,0.199359 KB/s,"{'current': '8.657227 KB', 'peak': '21.913086 KB'}",32
-decryption,2.473775 s,0.012633 KB/s,"{'current': '10.389648 KB', 'peak': '299.970703 KB'}",32
-encryption,0.156272 s,0.199972 KB/s,"{'current': '2.391602 KB', 'peak': '15.858398 KB'}",32
-decryption,2.443971 s,0.012787 KB/s,"{'current': '8.956055 KB', 'peak': '298.922852 KB'}",32
-encryption,2.469553 s,0.101233 KB/s,"{'current': '206.633789 KB', 'peak': '219.031250 KB'}",256
-decryption,2.540795 s,0.012299 KB/s,"{'current': '25.189453 KB', 'peak': '316.384766 KB'}",32
-encryption,2.148301 s,0.116371 KB/s,"{'current': '12.525391 KB', 'peak': '24.987305 KB'}",256
-decryption,2.513865 s,0.012820 KB/s,"{'current': '12.452148 KB', 'peak': '303.640625 KB'}",33
-encryption,3.694985 s,0.067659 KB/s,"{'current': '11.723633 KB', 'peak': '26.435547 KB'}",256
-decryption,2.564458 s,0.013328 KB/s,"{'current': '8.426758 KB', 'peak': '299.501953 KB'}",35
-encryption,0.138398 s,0.225799 KB/s,"{'current': '102.767578 KB', 'peak': '110.049805 KB'}",32
-decryption,2.465415 s,0.012675 KB/s,"{'current': '143.295898 KB', 'peak': '344.878906 KB'}",32
-decryption,2.443964 s,0.012787 KB/s,"{'current': '6.732422 KB', 'peak': '296.628906 KB'}",32
-encryption,0.127485 s,0.260448 KB/s,"{'current': '8.409180 KB', 'peak': '21.967773 KB'}",34
-decryption,2.449494 s,0.000000 KB/s,"{'current': '170.987305 KB', 'peak': '173.088867 KB'}",0
-encryption,0.160389 s,0.194839 KB/s,"{'current': '84.144531 KB', 'peak': '91.426758 KB'}",32
-decryption,2.487536 s,0.012563 KB/s,"{'current': '294.024414 KB', 'peak': '491.105469 KB'}",32
-decryption,2.478647 s,0.012608 KB/s,"{'current': '285.961914 KB', 'peak': '482.855469 KB'}",32
-decryption,2.501238 s,0.012494 KB/s,"{'current': '285.771484 KB', 'peak': '482.542969 KB'}",32
-encryption,0.133835 s,0.233497 KB/s,"{'current': '7.719727 KB', 'peak': '20.084961 KB'}",32
-encryption,1.116825 s,0.223849 KB/s,"{'current': '199.024414 KB', 'peak': '211.214844 KB'}",256
-decryption,2.572047 s,0.012150 KB/s,"{'current': '416.115234 KB', 'peak': '619.068359 KB'}",32
-encryption,1.924802 s,0.129884 KB/s,"{'current': '40.145508 KB', 'peak': '54.601562 KB'}",256
-encryption,0.184442 s,0.190608 KB/s,"{'current': '87.541016 KB', 'peak': '96.698242 KB'}",36
-decryption,2.556054 s,0.000000 KB/s,"{'current': '237.991211 KB', 'peak': '240.660156 KB'}",0
-decryption,2.479206 s,0.014180 KB/s,"{'current': '209.788086 KB', 'peak': '409.202148 KB'}",36
-encryption,0.148357 s,0.276465 KB/s,"{'current': '26.541016 KB', 'peak': '40.236328 KB'}",42
-decryption,2.511152 s,0.000000 KB/s,"{'current': '249.435547 KB', 'peak': '252.977539 KB'}",0
-decryption,2.330068 s,0.000000 KB/s,"{'current': '72.596680 KB', 'peak': '74.698242 KB'}",0
-decryption,2.328833 s,0.000000 KB/s,"{'current': '29.091797 KB', 'peak': '32.384766 KB'}",0
-decryption,2.340421 s,0.000000 KB/s,"{'current': '4.697266 KB', 'peak': '16.546875 KB'}",0
-decryption,2.356492 s,0.013676 KB/s,"{'current': '141.420898 KB', 'peak': '340.622070 KB'}",33
-decryption,2.485889 s,0.000000 KB/s,"{'current': '322.620117 KB', 'peak': '326.592773 KB'}",0
-decryption,2.347569 s,0.013728 KB/s,"{'current': '143.557617 KB', 'peak': '342.913086 KB'}",33
-encryption,2.982457 s,0.083824 KB/s,"{'current': '237.860352 KB', 'peak': '245.506836 KB'}",256
-decryption,2.574913 s,0.013274 KB/s,"{'current': '404.820312 KB', 'peak': '607.654297 KB'}",35
-encryption,3.579344 s,0.069845 KB/s,"{'current': '41.413086 KB', 'peak': '55.869141 KB'}",256
-decryption,2.543628 s,0.013437 KB/s,"{'current': '408.224609 KB', 'peak': '611.008789 KB'}",35
-encryption,1.817769 s,0.137531 KB/s,"{'current': '38.973633 KB', 'peak': '53.429688 KB'}",256
-decryption,2.568360 s,0.013308 KB/s,"{'current': '404.789062 KB', 'peak': '607.734375 KB'}",35
-encryption,1.912406 s,0.130725 KB/s,"{'current': '37.295898 KB', 'peak': '51.792969 KB'}",256
-decryption,2.575813 s,0.012890 KB/s,"{'current': '404.704102 KB', 'peak': '607.539062 KB'}",34
-encryption,1.383801 s,0.180662 KB/s,"{'current': '36.246094 KB', 'peak': '50.702148 KB'}",256
-decryption,2.576773 s,0.013265 KB/s,"{'current': '407.783203 KB', 'peak': '610.721680 KB'}",35
-encryption,1.285946 s,0.194409 KB/s,"{'current': '35.208984 KB', 'peak': '49.708008 KB'}",256
-decryption,2.439233 s,0.014012 KB/s,"{'current': '407.713867 KB', 'peak': '610.594727 KB'}",35
-encryption,0.448763 s,0.076164 KB/s,"{'current': '264.686523 KB', 'peak': '273.810547 KB'}",35
-decryption,2.600869 s,0.013142 KB/s,"{'current': '452.772461 KB', 'peak': '653.936523 KB'}",35
-encryption,2.043041 s,0.020076 KB/s,"{'current': '44.065430 KB', 'peak': '58.465820 KB'}",42
-decryption,2.549354 s,0.016089 KB/s,"{'current': '12.027344 KB', 'peak': '303.810547 KB'}",42
+operation,latency,throughput,memory_usage,cpu_usage,data_size_bytes
+encryption,0.667412 s,0.313126 KB/s,"{'current': '81.415039 KB', 'peak': '89.702148 KB'}",2.200000 %,214
+decryption,2.421992 s,0.086286 KB/s,"{'current': '91.861328 KB', 'peak': '94.276367 KB'}",0.000000 %,214
+encryption,0.680960 s,0.306897 KB/s,"{'current': '8.996094 KB', 'peak': '22.506836 KB'}",0.000000 %,214
+decryption,2.416879 s,0.086469 KB/s,"{'current': '2.913086 KB', 'peak': '13.639648 KB'}",0.600000 %,214
+encryption,0.651496 s,0.320776 KB/s,"{'current': '5.347656 KB', 'peak': '18.936523 KB'}",0.000000 %,214
+decryption,2.418343 s,0.086416 KB/s,"{'current': '3.030273 KB', 'peak': '13.639648 KB'}",1.900000 %,214
+encryption,0.650867 s,0.321086 KB/s,"{'current': '8.798828 KB', 'peak': '18.889648 KB'}",0.000000 %,214
+decryption,2.417064 s,0.086462 KB/s,"{'current': '2.596680 KB', 'peak': '13.639648 KB'}",0.000000 %,214
+encryption,0.680993 s,0.306882 KB/s,"{'current': '3.933594 KB', 'peak': '18.202148 KB'}",2.100000 %,214
+decryption,2.419213 s,0.086385 KB/s,"{'current': '6.541992 KB', 'peak': '13.389648 KB'}",0.000000 %,214
+encryption,2.186669 s,0.114329 KB/s,"{'current': '234.016602 KB', 'peak': '241.825195 KB'}",59.400000 %,256
+decryption,2.543127 s,0.082176 KB/s,"{'current': '219.364258 KB', 'peak': '221.672852 KB'}",3.600000 %,214
+encryption,1.769515 s,0.141282 KB/s,"{'current': '46.183594 KB', 'peak': '58.028320 KB'}",51.700000 %,256
+decryption,2.483311 s,0.084156 KB/s,"{'current': '6.694336 KB', 'peak': '17.799805 KB'}",4.900000 %,214
+encryption,2.903972 s,0.086089 KB/s,"{'current': '12.242188 KB', 'peak': '27.208008 KB'}",70.900000 %,256
+decryption,2.511934 s,0.083197 KB/s,"{'current': '10.978516 KB', 'peak': '19.858398 KB'}",3.000000 %,214
+encryption,1.873431 s,0.133445 KB/s,"{'current': '11.465820 KB', 'peak': '25.190430 KB'}",56.900000 %,256
+decryption,2.513269 s,0.083152 KB/s,"{'current': '6.131836 KB', 'peak': '17.846680 KB'}",4.300000 %,214
+encryption,2.043490 s,0.122340 KB/s,"{'current': '9.572266 KB', 'peak': '24.538086 KB'}",58.900000 %,256
+decryption,2.511739 s,0.083203 KB/s,"{'current': '7.350586 KB', 'peak': '17.346680 KB'}",2.400000 %,214
+encryption,1.037599 s,0.201412 KB/s,"{'current': '267.627930 KB', 'peak': '275.772461 KB'}",34.300000 %,214
+decryption,2.545942 s,0.082085 KB/s,"{'current': '272.501953 KB', 'peak': '274.977539 KB'}",4.800000 %,214
+encryption,1.595777 s,0.130961 KB/s,"{'current': '43.403320 KB', 'peak': '58.966797 KB'}",56.600000 %,214
+decryption,2.487100 s,0.084027 KB/s,"{'current': '6.979492 KB', 'peak': '18.463867 KB'}",1.800000 %,214
+encryption,2.001194 s,0.104430 KB/s,"{'current': '13.396484 KB', 'peak': '29.124023 KB'}",65.600000 %,214
+decryption,2.482982 s,0.084167 KB/s,"{'current': '11.702148 KB', 'peak': '18.216797 KB'}",3.100000 %,214
+encryption,2.700195 s,0.077396 KB/s,"{'current': '15.914062 KB', 'peak': '30.366211 KB'}",73.400000 %,214
+decryption,2.508685 s,0.083304 KB/s,"{'current': '10.819336 KB', 'peak': '17.763672 KB'}",3.000000 %,214
+encryption,2.004531 s,0.104256 KB/s,"{'current': '14.086914 KB', 'peak': '29.814453 KB'}",65.900000 %,214
+decryption,2.513067 s,0.083159 KB/s,"{'current': '6.706055 KB', 'peak': '17.506836 KB'}",3.000000 %,214
+encryption,0.682580 s,0.306169 KB/s,"{'current': '29.925781 KB', 'peak': '37.298828 KB'}",2.100000 %,214
+decryption,2.419386 s,0.086379 KB/s,"{'current': '33.233398 KB', 'peak': '46.381836 KB'}",1.300000 %,214
+encryption,0.654002 s,0.319547 KB/s,"{'current': '7.621094 KB', 'peak': '21.498047 KB'}",0.000000 %,214
+decryption,2.447611 s,0.085383 KB/s,"{'current': '2.690430 KB', 'peak': '17.166992 KB'}",0.600000 %,214
+encryption,0.653056 s,0.320010 KB/s,"{'current': '4.808594 KB', 'peak': '18.880859 KB'}",2.200000 %,214
+decryption,2.418359 s,0.086416 KB/s,"{'current': '3.593750 KB', 'peak': '17.982422 KB'}",0.600000 %,214
+encryption,0.651556 s,0.320747 KB/s,"{'current': '6.552734 KB', 'peak': '19.380859 KB'}",0.000000 %,214
+decryption,2.448157 s,0.085364 KB/s,"{'current': '2.569336 KB', 'peak': '17.069336 KB'}",0.000000 %,214
+encryption,0.655064 s,0.319029 KB/s,"{'current': '4.730469 KB', 'peak': '18.583984 KB'}",0.000000 %,214
+decryption,2.465445 s,0.084765 KB/s,"{'current': '6.241211 KB', 'peak': '20.741211 KB'}",1.200000 %,214
+encryption,0.896665 s,0.313662 KB/s,"{'current': '72.774414 KB', 'peak': '82.088867 KB'}",1.600000 %,288
+decryption,2.453461 s,0.085179 KB/s,"{'current': '75.421875 KB', 'peak': '80.943359 KB'}",0.000000 %,214
+encryption,0.866069 s,0.324743 KB/s,"{'current': '11.087891 KB', 'peak': '24.983398 KB'}",0.000000 %,288
+decryption,2.463160 s,0.084844 KB/s,"{'current': '2.307617 KB', 'peak': '13.452148 KB'}",0.000000 %,214
+encryption,0.861137 s,0.326603 KB/s,"{'current': '6.012695 KB', 'peak': '19.507812 KB'}",0.000000 %,288
+decryption,2.448975 s,0.085335 KB/s,"{'current': '3.583008 KB', 'peak': '13.452148 KB'}",0.000000 %,214
+encryption,0.890285 s,0.315910 KB/s,"{'current': '6.328125 KB', 'peak': '20.289062 KB'}",1.700000 %,288
+decryption,2.418140 s,0.086424 KB/s,"{'current': '6.252930 KB', 'peak': '13.452148 KB'}",1.900000 %,214
+encryption,0.890213 s,0.315936 KB/s,"{'current': '6.293945 KB', 'peak': '19.570312 KB'}",0.000000 %,288
+decryption,2.418184 s,0.086422 KB/s,"{'current': '6.252930 KB', 'peak': '13.702148 KB'}",1.900000 %,214
+encryption,0.657683 s,0.317759 KB/s,"{'current': '89.123047 KB', 'peak': '97.047852 KB'}",2.200000 %,214
+decryption,2.421625 s,0.086299 KB/s,"{'current': '103.459961 KB', 'peak': '106.031250 KB'}",1.900000 %,214
+encryption,0.652666 s,0.320201 KB/s,"{'current': '12.704102 KB', 'peak': '25.572266 KB'}",0.000000 %,214
+decryption,2.448607 s,0.085348 KB/s,"{'current': '2.889648 KB', 'peak': '13.702148 KB'}",0.600000 %,214
+encryption,0.652807 s,0.320132 KB/s,"{'current': '6.364258 KB', 'peak': '19.286133 KB'}",2.200000 %,214
+decryption,2.447746 s,0.085378 KB/s,"{'current': '6.567383 KB', 'peak': '15.510742 KB'}",0.000000 %,214
+encryption,0.681069 s,0.306847 KB/s,"{'current': '7.452148 KB', 'peak': '19.348633 KB'}",0.000000 %,214
+decryption,2.418799 s,0.086400 KB/s,"{'current': '2.706055 KB', 'peak': '13.452148 KB'}",0.000000 %,214
+encryption,0.653698 s,0.319696 KB/s,"{'current': '6.364258 KB', 'peak': '19.536133 KB'}",4.400000 %,214
+decryption,2.446390 s,0.085426 KB/s,"{'current': '6.971680 KB', 'peak': '13.452148 KB'}",0.000000 %,214
+encryption,0.422216 s,0.296057 KB/s,"{'current': '81.784180 KB', 'peak': '89.278320 KB'}",0.000000 %,128
+decryption,2.452292 s,0.050973 KB/s,"{'current': '100.252930 KB', 'peak': '102.654297 KB'}",1.900000 %,128
+encryption,0.420035 s,0.297594 KB/s,"{'current': '9.029297 KB', 'peak': '22.254883 KB'}",0.000000 %,128
+decryption,2.448184 s,0.051058 KB/s,"{'current': '2.891602 KB', 'peak': '13.389648 KB'}",0.000000 %,128
+encryption,0.390053 s,0.320470 KB/s,"{'current': '5.232422 KB', 'peak': '18.622070 KB'}",0.000000 %,128
+decryption,2.418155 s,0.051692 KB/s,"{'current': '6.458008 KB', 'peak': '13.389648 KB'}",0.600000 %,128
+encryption,0.447985 s,0.279027 KB/s,"{'current': '4.810547 KB', 'peak': '18.200195 KB'}",3.100000 %,128
+decryption,2.475556 s,0.050494 KB/s,"{'current': '7.733398 KB', 'peak': '13.639648 KB'}",0.600000 %,128
+encryption,0.418792 s,0.298478 KB/s,"{'current': '5.294922 KB', 'peak': '18.684570 KB'}",0.000000 %,128
+decryption,2.448127 s,0.051059 KB/s,"{'current': '6.458008 KB', 'peak': '13.389648 KB'}",0.000000 %,128
+encryption,1.445761 s,0.172919 KB/s,"{'current': '232.574219 KB', 'peak': '240.261719 KB'}",43.800000 %,256
+decryption,2.539461 s,0.049223 KB/s,"{'current': '227.338867 KB', 'peak': '229.778320 KB'}",4.200000 %,128
+encryption,3.045139 s,0.082098 KB/s,"{'current': '44.087891 KB', 'peak': '58.514648 KB'}",73.900000 %,256
+decryption,2.515487 s,0.049692 KB/s,"{'current': '6.500977 KB', 'peak': '17.799805 KB'}",2.400000 %,128
+encryption,2.047808 s,0.122082 KB/s,"{'current': '14.763672 KB', 'peak': '25.889648 KB'}",58.100000 %,256
+decryption,2.514474 s,0.049712 KB/s,"{'current': '10.207031 KB', 'peak': '18.018555 KB'}",3.000000 %,128
+encryption,1.362141 s,0.183535 KB/s,"{'current': '11.465820 KB', 'peak': '25.022461 KB'}",39.600000 %,256
+decryption,2.482436 s,0.050354 KB/s,"{'current': '7.239258 KB', 'peak': '18.538086 KB'}",4.900000 %,128
+encryption,1.610570 s,0.155225 KB/s,"{'current': '12.958984 KB', 'peak': '25.838867 KB'}",49.500000 %,256
+decryption,2.534962 s,0.049310 KB/s,"{'current': '6.047852 KB', 'peak': '17.346680 KB'}",2.400000 %,128
+encryption,2.044552 s,0.061138 KB/s,"{'current': '272.995117 KB', 'peak': '280.495117 KB'}",79.100000 %,128
+decryption,2.542754 s,0.049159 KB/s,"{'current': '264.436523 KB', 'peak': '266.757812 KB'}",3.000000 %,128
+encryption,2.071703 s,0.060337 KB/s,"{'current': '42.922852 KB', 'peak': '58.318359 KB'}",74.300000 %,128
+decryption,2.514132 s,0.049719 KB/s,"{'current': '12.856445 KB', 'peak': '19.902344 KB'}",2.400000 %,128
+encryption,1.798168 s,0.069515 KB/s,"{'current': '13.967773 KB', 'peak': '29.527344 KB'}",74.800000 %,128
+decryption,2.511117 s,0.049779 KB/s,"{'current': '12.586914 KB', 'peak': '19.695312 KB'}",3.000000 %,128
+encryption,1.336066 s,0.093558 KB/s,"{'current': '10.491211 KB', 'peak': '26.003906 KB'}",65.200000 %,128
+decryption,2.486045 s,0.050281 KB/s,"{'current': '8.010742 KB', 'peak': '17.760742 KB'}",2.500000 %,128
+encryption,1.679498 s,0.074427 KB/s,"{'current': '11.081055 KB', 'peak': '26.640625 KB'}",72.100000 %,128
+decryption,2.511545 s,0.049770 KB/s,"{'current': '6.649414 KB', 'peak': '17.510742 KB'}",2.400000 %,128
+encryption,0.420419 s,0.297322 KB/s,"{'current': '29.951172 KB', 'peak': '36.517578 KB'}",3.300000 %,128
+decryption,2.417684 s,0.051702 KB/s,"{'current': '33.040039 KB', 'peak': '42.704102 KB'}",0.000000 %,128
+encryption,0.421607 s,0.296485 KB/s,"{'current': '7.404297 KB', 'peak': '19.920898 KB'}",0.000000 %,128
+decryption,2.428823 s,0.051465 KB/s,"{'current': '3.551758 KB', 'peak': '14.567383 KB'}",0.600000 %,128
+encryption,0.416175 s,0.300354 KB/s,"{'current': '5.677734 KB', 'peak': '17.959961 KB'}",0.000000 %,128
+decryption,2.417762 s,0.051701 KB/s,"{'current': '2.485352 KB', 'peak': '14.143555 KB'}",0.000000 %,128
+encryption,0.420788 s,0.297062 KB/s,"{'current': '4.427734 KB', 'peak': '17.163086 KB'}",0.000000 %,128
+decryption,2.415662 s,0.051746 KB/s,"{'current': '8.698242 KB', 'peak': '19.713867 KB'}",0.600000 %,128
+encryption,0.420151 s,0.297512 KB/s,"{'current': '4.763672 KB', 'peak': '17.694336 KB'}",0.000000 %,128
+decryption,2.447791 s,0.051066 KB/s,"{'current': '2.485352 KB', 'peak': '14.143555 KB'}",0.000000 %,128
+encryption,0.546759 s,0.307208 KB/s,"{'current': '76.920898 KB', 'peak': '84.627930 KB'}",0.000000 %,172
+decryption,2.421835 s,0.051614 KB/s,"{'current': '66.648438 KB', 'peak': '71.958008 KB'}",0.600000 %,128
+encryption,0.552124 s,0.304223 KB/s,"{'current': '14.980469 KB', 'peak': '24.367188 KB'}",0.000000 %,172
+decryption,2.447461 s,0.051073 KB/s,"{'current': '2.540039 KB', 'peak': '13.452148 KB'}",0.000000 %,128
+encryption,0.544144 s,0.308685 KB/s,"{'current': '6.493164 KB', 'peak': '19.345703 KB'}",2.600000 %,172
+decryption,2.448602 s,0.051050 KB/s,"{'current': '3.129883 KB', 'peak': '13.702148 KB'}",0.000000 %,128
+encryption,0.545943 s,0.307667 KB/s,"{'current': '4.871094 KB', 'peak': '18.673828 KB'}",2.600000 %,172
+decryption,2.419903 s,0.051655 KB/s,"{'current': '3.574219 KB', 'peak': '13.452148 KB'}",1.900000 %,128
+encryption,0.540652 s,0.310678 KB/s,"{'current': '6.071289 KB', 'peak': '19.173828 KB'}",0.000000 %,172
+decryption,2.448220 s,0.051057 KB/s,"{'current': '2.367188 KB', 'peak': '13.736328 KB'}",1.200000 %,128
+encryption,0.425506 s,0.293768 KB/s,"{'current': '89.231445 KB', 'peak': '96.746094 KB'}",3.200000 %,128
+decryption,2.469268 s,0.050622 KB/s,"{'current': '103.460938 KB', 'peak': '105.892578 KB'}",0.000000 %,128
+encryption,0.400629 s,0.312010 KB/s,"{'current': '12.751953 KB', 'peak': '25.980469 KB'}",3.400000 %,128
+decryption,2.430133 s,0.051438 KB/s,"{'current': '2.782227 KB', 'peak': '13.452148 KB'}",0.600000 %,128
+encryption,0.391575 s,0.319223 KB/s,"{'current': '7.006836 KB', 'peak': '19.831055 KB'}",0.000000 %,128
+decryption,2.449103 s,0.051039 KB/s,"{'current': '2.512695 KB', 'peak': '13.452148 KB'}",1.900000 %,128
+encryption,0.389370 s,0.321031 KB/s,"{'current': '6.069336 KB', 'peak': '19.096680 KB'}",3.400000 %,128
+decryption,2.448341 s,0.051055 KB/s,"{'current': '8.858398 KB', 'peak': '15.510742 KB'}",0.000000 %,128
+encryption,0.421527 s,0.296541 KB/s,"{'current': '6.069336 KB', 'peak': '19.096680 KB'}",3.200000 %,128
+decryption,2.435796 s,0.051318 KB/s,"{'current': '2.512695 KB', 'peak': '13.452148 KB'}",0.600000 %,128
+encryption,0.775106 s,0.322537 KB/s,"{'current': '82.150391 KB', 'peak': '91.150391 KB'}",1.900000 %,256
+decryption,2.447498 s,0.102145 KB/s,"{'current': '100.378906 KB', 'peak': '102.905273 KB'}",1.200000 %,256
+encryption,0.800608 s,0.312263 KB/s,"{'current': '9.798828 KB', 'peak': '22.928711 KB'}",0.000000 %,256
+decryption,2.443837 s,0.102298 KB/s,"{'current': '2.809570 KB', 'peak': '13.389648 KB'}",0.000000 %,256
+encryption,0.773600 s,0.323164 KB/s,"{'current': '5.685547 KB', 'peak': '19.045898 KB'}",0.000000 %,256
+decryption,2.415810 s,0.103485 KB/s,"{'current': '7.890625 KB', 'peak': '13.389648 KB'}",0.000000 %,256
+encryption,0.770823 s,0.324329 KB/s,"{'current': '7.098633 KB', 'peak': '19.108398 KB'}",0.000000 %,256
+decryption,2.415247 s,0.103509 KB/s,"{'current': '2.747070 KB', 'peak': '13.389648 KB'}",0.600000 %,256
+encryption,0.784607 s,0.318631 KB/s,"{'current': '7.126953 KB', 'peak': '18.624023 KB'}",3.700000 %,256
+decryption,2.416570 s,0.103452 KB/s,"{'current': '3.379883 KB', 'peak': '13.639648 KB'}",0.000000 %,256
+encryption,2.316196 s,0.107936 KB/s,"{'current': '275.689453 KB', 'peak': '284.718750 KB'}",63.800000 %,256
+decryption,2.518563 s,0.099263 KB/s,"{'current': '264.429688 KB', 'peak': '266.875977 KB'}",4.200000 %,256
+encryption,2.285926 s,0.109365 KB/s,"{'current': '43.610352 KB', 'peak': '59.183594 KB'}",63.800000 %,256
+decryption,2.516310 s,0.099352 KB/s,"{'current': '13.223633 KB', 'peak': '20.265625 KB'}",3.000000 %,256
+encryption,1.599007 s,0.156347 KB/s,"{'current': '13.990234 KB', 'peak': '29.848633 KB'}",47.700000 %,256
+decryption,2.508948 s,0.099643 KB/s,"{'current': '8.105469 KB', 'peak': '18.213867 KB'}",3.700000 %,256
+encryption,2.244488 s,0.111384 KB/s,"{'current': '11.498047 KB', 'peak': '26.115234 KB'}",61.900000 %,256
+decryption,2.514481 s,0.099424 KB/s,"{'current': '10.860352 KB', 'peak': '18.010742 KB'}",3.600000 %,256
+encryption,1.863475 s,0.134158 KB/s,"{'current': '10.031250 KB', 'peak': '25.889648 KB'}",55.700000 %,256
+decryption,2.505646 s,0.099775 KB/s,"{'current': '6.860352 KB', 'peak': '17.510742 KB'}",3.100000 %,256
+encryption,0.802108 s,0.311679 KB/s,"{'current': '31.365234 KB', 'peak': '40.094727 KB'}",1.800000 %,256
+decryption,2.416744 s,0.103445 KB/s,"{'current': '33.111328 KB', 'peak': '47.806641 KB'}",1.900000 %,256
+encryption,0.774157 s,0.322932 KB/s,"{'current': '11.681641 KB', 'peak': '22.957031 KB'}",0.000000 %,256
+decryption,2.444500 s,0.102270 KB/s,"{'current': '2.500977 KB', 'peak': '18.547852 KB'}",1.900000 %,256
+encryption,0.802826 s,0.311400 KB/s,"{'current': '5.599609 KB', 'peak': '20.869141 KB'}",1.800000 %,256
+decryption,2.419422 s,0.103330 KB/s,"{'current': '2.644531 KB', 'peak': '18.691406 KB'}",1.900000 %,256
+encryption,0.772550 s,0.323604 KB/s,"{'current': '6.454102 KB', 'peak': '20.324219 KB'}",0.000000 %,256
+decryption,2.446723 s,0.102177 KB/s,"{'current': '2.500977 KB', 'peak': '18.547852 KB'}",0.000000 %,256
+encryption,0.772891 s,0.323461 KB/s,"{'current': '4.943359 KB', 'peak': '20.574219 KB'}",1.900000 %,256
+decryption,2.445498 s,0.102229 KB/s,"{'current': '3.469727 KB', 'peak': '19.516602 KB'}",1.200000 %,256
+encryption,1.049098 s,0.320215 KB/s,"{'current': '73.263672 KB', 'peak': '83.441406 KB'}",1.400000 %,344
+decryption,2.449242 s,0.102072 KB/s,"{'current': '66.922852 KB', 'peak': '72.469727 KB'}",2.500000 %,256
+encryption,1.049089 s,0.320218 KB/s,"{'current': '12.219727 KB', 'peak': '25.711914 KB'}",0.000000 %,344
+decryption,2.446926 s,0.102169 KB/s,"{'current': '2.348633 KB', 'peak': '13.702148 KB'}",1.900000 %,256
+encryption,1.052763 s,0.319101 KB/s,"{'current': '6.293945 KB', 'peak': '20.183594 KB'}",1.400000 %,344
+decryption,2.447125 s,0.102161 KB/s,"{'current': '3.624023 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,1.043123 s,0.322050 KB/s,"{'current': '6.293945 KB', 'peak': '19.933594 KB'}",1.400000 %,344
+decryption,2.445739 s,0.102219 KB/s,"{'current': '9.622070 KB', 'peak': '14.864258 KB'}",0.600000 %,256
+encryption,1.043212 s,0.322022 KB/s,"{'current': '6.293945 KB', 'peak': '19.933594 KB'}",1.400000 %,344
+decryption,2.445231 s,0.102240 KB/s,"{'current': '6.293945 KB', 'peak': '13.452148 KB'}",0.000000 %,256
+encryption,0.777511 s,0.321539 KB/s,"{'current': '89.189453 KB', 'peak': '98.014648 KB'}",0.000000 %,256
+decryption,2.451139 s,0.101993 KB/s,"{'current': '95.625977 KB', 'peak': '98.159180 KB'}",0.000000 %,256
+encryption,0.801790 s,0.311802 KB/s,"{'current': '12.528320 KB', 'peak': '25.100586 KB'}",0.000000 %,256
+decryption,2.447839 s,0.102131 KB/s,"{'current': '6.645508 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,0.803959 s,0.310961 KB/s,"{'current': '7.116211 KB', 'peak': '20.004883 KB'}",1.800000 %,256
+decryption,2.417040 s,0.103432 KB/s,"{'current': '2.781250 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,0.774637 s,0.322732 KB/s,"{'current': '11.490234 KB', 'peak': '20.159180 KB'}",0.000000 %,256
+decryption,2.446819 s,0.102173 KB/s,"{'current': '3.071289 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,0.774169 s,0.322927 KB/s,"{'current': '6.631836 KB', 'peak': '19.770508 KB'}",0.000000 %,256
+decryption,2.446290 s,0.102196 KB/s,"{'current': '2.747070 KB', 'peak': '13.452148 KB'}",1.200000 %,256
+encryption,0.805544 s,0.310349 KB/s,"{'current': '90.791992 KB', 'peak': '97.232422 KB'}",0.000000 %,256
+encryption,1.537317 s,0.325242 KB/s,"{'current': '78.557617 KB', 'peak': '87.860352 KB'}",2.900000 %,512
+decryption,2.459149 s,0.203322 KB/s,"{'current': '91.987305 KB', 'peak': '94.720703 KB'}",0.000000 %,512
+encryption,1.539845 s,0.324708 KB/s,"{'current': '6.931641 KB', 'peak': '17.848633 KB'}",0.000000 %,512
+decryption,2.416338 s,0.206925 KB/s,"{'current': '4.137695 KB', 'peak': '13.639648 KB'}",0.000000 %,512
+encryption,1.535640 s,0.325597 KB/s,"{'current': '4.810547 KB', 'peak': '15.989258 KB'}",1.000000 %,512
+decryption,2.413305 s,0.207185 KB/s,"{'current': '4.272461 KB', 'peak': '13.389648 KB'}",0.600000 %,512
+encryption,1.535734 s,0.325577 KB/s,"{'current': '4.701172 KB', 'peak': '15.989258 KB'}",0.000000 %,512
+decryption,2.446360 s,0.204385 KB/s,"{'current': '2.997070 KB', 'peak': '13.639648 KB'}",0.600000 %,512
+encryption,1.534358 s,0.325869 KB/s,"{'current': '4.701172 KB', 'peak': '15.989258 KB'}",0.000000 %,512
+decryption,2.449740 s,0.204103 KB/s,"{'current': '3.043945 KB', 'peak': '13.389648 KB'}",0.000000 %,512
+encryption,3.165358 s,0.157960 KB/s,"{'current': '269.741211 KB', 'peak': '279.135742 KB'}",50.500000 %,512
+decryption,2.513841 s,0.198899 KB/s,"{'current': '264.617188 KB', 'peak': '267.340820 KB'}",4.200000 %,512
+encryption,2.721393 s,0.183729 KB/s,"{'current': '40.999023 KB', 'peak': '54.414062 KB'}",42.100000 %,512
+decryption,2.483516 s,0.201327 KB/s,"{'current': '12.055664 KB', 'peak': '18.507812 KB'}",2.500000 %,512
+encryption,2.696585 s,0.185420 KB/s,"{'current': '12.392578 KB', 'peak': '26.178711 KB'}",42.600000 %,512
+decryption,2.483228 s,0.201351 KB/s,"{'current': '13.252930 KB', 'peak': '20.361328 KB'}",3.700000 %,512
+encryption,2.929454 s,0.170680 KB/s,"{'current': '9.656250 KB', 'peak': '23.442383 KB'}",47.100000 %,512
+decryption,2.507661 s,0.199389 KB/s,"{'current': '7.110352 KB', 'peak': '17.510742 KB'}",3.600000 %,512
+encryption,1.789042 s,0.279479 KB/s,"{'current': '13.702148 KB', 'peak': '24.800781 KB'}",15.100000 %,512
+decryption,2.492668 s,0.200588 KB/s,"{'current': '7.000977 KB', 'peak': '17.760742 KB'}",3.700000 %,512
+encryption,1.538330 s,0.325028 KB/s,"{'current': '26.794922 KB', 'peak': '35.791992 KB'}",0.000000 %,512
+decryption,2.419305 s,0.206671 KB/s,"{'current': '33.415039 KB', 'peak': '58.654297 KB'}",0.600000 %,512
+encryption,1.538673 s,0.324955 KB/s,"{'current': '11.814453 KB', 'peak': '29.675781 KB'}",0.000000 %,512
+decryption,2.417256 s,0.206846 KB/s,"{'current': '2.750977 KB', 'peak': '28.762695 KB'}",0.600000 %,512
+encryption,1.507452 s,0.331686 KB/s,"{'current': '4.052734 KB', 'peak': '27.048828 KB'}",1.000000 %,512
+decryption,2.448192 s,0.204232 KB/s,"{'current': '5.889648 KB', 'peak': '31.901367 KB'}",0.600000 %,512
+encryption,1.537862 s,0.325127 KB/s,"{'current': '4.052734 KB', 'peak': '27.048828 KB'}",0.000000 %,512
+decryption,2.430712 s,0.205701 KB/s,"{'current': '2.750977 KB', 'peak': '28.762695 KB'}",0.000000 %,512
+encryption,1.539304 s,0.324822 KB/s,"{'current': '7.724609 KB', 'peak': '27.298828 KB'}",1.000000 %,512
+decryption,2.443676 s,0.204610 KB/s,"{'current': '4.211914 KB', 'peak': '30.223633 KB'}",0.600000 %,512
+encryption,2.043732 s,0.326838 KB/s,"{'current': '70.107422 KB', 'peak': '82.559570 KB'}",2.200000 %,684
+decryption,2.472548 s,0.202221 KB/s,"{'current': '67.406250 KB', 'peak': '73.562500 KB'}",3.700000 %,512
+encryption,2.039083 s,0.327583 KB/s,"{'current': '9.099609 KB', 'peak': '21.953125 KB'}",0.000000 %,684
+decryption,2.443202 s,0.204649 KB/s,"{'current': '2.622070 KB', 'peak': '13.452148 KB'}",1.200000 %,512
+encryption,2.041470 s,0.327200 KB/s,"{'current': '10.829102 KB', 'peak': '24.072266 KB'}",0.000000 %,684
+decryption,2.442223 s,0.204732 KB/s,"{'current': '7.819336 KB', 'peak': '13.687500 KB'}",0.000000 %,512
+encryption,2.039185 s,0.327567 KB/s,"{'current': '5.649414 KB', 'peak': '18.271484 KB'}",0.000000 %,684
+decryption,2.444215 s,0.204565 KB/s,"{'current': '2.653320 KB', 'peak': '13.452148 KB'}",0.600000 %,512
+encryption,2.041312 s,0.327225 KB/s,"{'current': '5.649414 KB', 'peak': '18.271484 KB'}",0.700000 %,684
+decryption,2.440183 s,0.204903 KB/s,"{'current': '7.079102 KB', 'peak': '13.952148 KB'}",0.600000 %,512
+encryption,1.539059 s,0.324874 KB/s,"{'current': '87.319336 KB', 'peak': '96.259766 KB'}",1.000000 %,512
+decryption,2.450237 s,0.204062 KB/s,"{'current': '103.967773 KB', 'peak': '106.801758 KB'}",0.000000 %,512
+encryption,1.535986 s,0.325524 KB/s,"{'current': '10.502930 KB', 'peak': '21.062500 KB'}",1.900000 %,512
+decryption,2.442802 s,0.204683 KB/s,"{'current': '3.059570 KB', 'peak': '13.702148 KB'}",0.000000 %,512
+encryption,1.534362 s,0.325868 KB/s,"{'current': '11.413086 KB', 'peak': '21.456055 KB'}",0.000000 %,512
+decryption,2.444251 s,0.204562 KB/s,"{'current': '8.108398 KB', 'peak': '13.452148 KB'}",1.200000 %,512
+encryption,1.536125 s,0.325494 KB/s,"{'current': '6.256836 KB', 'peak': '17.049805 KB'}",1.000000 %,512
+decryption,2.441587 s,0.204785 KB/s,"{'current': '2.997070 KB', 'peak': '13.452148 KB'}",1.200000 %,512
+encryption,1.536247 s,0.325469 KB/s,"{'current': '9.850586 KB', 'peak': '18.697266 KB'}",0.000000 %,512
+decryption,2.415755 s,0.206975 KB/s,"{'current': '5.700195 KB', 'peak': '13.452148 KB'}",0.000000 %,512
+encryption,2.725203 s,0.412813 KB/s,"{'current': '71.291992 KB', 'peak': '92.556641 KB'}",0.000000 %,1152
+encryption,0.206655 s,1.015996 KB/s,"{'current': '79.830078 KB', 'peak': '86.916992 KB'}",12.500000 %,215
+encryption,0.176018 s,0.227472 KB/s,"{'current': '77.963867 KB', 'peak': '82.125977 KB'}",6.600000 %,41
+encryption,0.149290 s,0.268196 KB/s,"{'current': '77.713867 KB', 'peak': '81.875977 KB'}",7.200000 %,41
+decryption,2.488356 s,0.016091 KB/s,"{'current': '91.417969 KB', 'peak': '93.664062 KB'}",0.000000 %,41
+encryption,0.649886 s,0.320068 KB/s,"{'current': '6.002930 KB', 'peak': '17.447266 KB'}",2.200000 %,213
+decryption,2.436576 s,0.085369 KB/s,"{'current': '2.974609 KB', 'peak': '13.389648 KB'}",1.900000 %,213
+encryption,0.649809 s,0.320106 KB/s,"{'current': '4.299805 KB', 'peak': '15.330078 KB'}",0.000000 %,213
+encryption,0.810271 s,0.308539 KB/s,"{'current': '83.804688 KB', 'peak': '89.076172 KB'}",0.000000 %,256
+decryption,2.531240 s,0.016204 KB/s,"{'current': '221.879883 KB', 'peak': '224.356445 KB'}",4.800000 %,42
+encryption,0.177748 s,0.225258 KB/s,"{'current': '60.619141 KB', 'peak': '64.357422 KB'}",0.000000 %,41
+decryption,2.537087 s,0.015782 KB/s,"{'current': '264.087891 KB', 'peak': '266.324219 KB'}",4.200000 %,41
+encryption,0.195972 s,0.279058 KB/s,"{'current': '67.112305 KB', 'peak': '70.752930 KB'}",0.000000 %,56
+encryption,0.193289 s,0.282932 KB/s,"{'current': '67.310547 KB', 'peak': '70.919922 KB'}",0.000000 %,56
+decryption,2.474455 s,0.016181 KB/s,"{'current': '66.840820 KB', 'peak': '71.896484 KB'}",0.600000 %,41
+encryption,0.174314 s,0.235298 KB/s,"{'current': '25.178711 KB', 'peak': '28.581055 KB'}",0.000000 %,42
+decryption,2.451198 s,0.016733 KB/s,"{'current': '34.854492 KB', 'peak': '41.206055 KB'}",1.200000 %,42
+encryption,0.653115 s,0.319981 KB/s,"{'current': '85.391602 KB', 'peak': '90.837891 KB'}",2.200000 %,214
+decryption,2.471213 s,0.084568 KB/s,"{'current': '103.713867 KB', 'peak': '106.229492 KB'}",2.500000 %,214
+encryption,2.566218 s,0.328791 KB/s,"{'current': '79.964844 KB', 'peak': '94.074219 KB'}",0.600000 %,864
+decryption,2.420671 s,0.348560 KB/s,"{'current': '100.405273 KB', 'peak': '103.552734 KB'}",0.600000 %,864
+encryption,2.568984 s,0.328437 KB/s,"{'current': '12.572266 KB', 'peak': '26.316406 KB'}",1.800000 %,864
+decryption,2.446636 s,0.344861 KB/s,"{'current': '3.293945 KB', 'peak': '13.639648 KB'}",1.200000 %,864
+encryption,2.566389 s,0.328769 KB/s,"{'current': '6.375000 KB', 'peak': '18.864258 KB'}",0.000000 %,864
+decryption,2.418242 s,0.348910 KB/s,"{'current': '7.606445 KB', 'peak': '13.755859 KB'}",0.000000 %,864
+encryption,2.565333 s,0.328905 KB/s,"{'current': '5.154297 KB', 'peak': '18.669922 KB'}",0.000000 %,864
+decryption,2.443333 s,0.345327 KB/s,"{'current': '3.231445 KB', 'peak': '13.389648 KB'}",0.000000 %,864
+encryption,2.567369 s,0.328644 KB/s,"{'current': '8.826172 KB', 'peak': '21.370117 KB'}",0.000000 %,864
+decryption,2.446715 s,0.344850 KB/s,"{'current': '3.231445 KB', 'peak': '13.639648 KB'}",0.000000 %,864
+encryption,2.568061 s,0.328555 KB/s,"{'current': '4.927734 KB', 'peak': '18.669922 KB'}",0.000000 %,864
+decryption,2.449919 s,0.344399 KB/s,"{'current': '92.496094 KB', 'peak': '95.573242 KB'}",0.600000 %,864
+encryption,2.594313 s,0.325231 KB/s,"{'current': '7.197266 KB', 'peak': '20.287109 KB'}",0.600000 %,864
+decryption,2.446208 s,0.344922 KB/s,"{'current': '8.512695 KB', 'peak': '15.193359 KB'}",0.000000 %,864
+encryption,2.566982 s,0.328693 KB/s,"{'current': '6.429688 KB', 'peak': '18.973633 KB'}",2.400000 %,864
+decryption,2.448097 s,0.344655 KB/s,"{'current': '7.176758 KB', 'peak': '13.755859 KB'}",0.000000 %,864
+encryption,2.567064 s,0.328683 KB/s,"{'current': '10.333984 KB', 'peak': '24.132812 KB'}",0.600000 %,864
+decryption,2.447793 s,0.344698 KB/s,"{'current': '3.340820 KB', 'peak': '13.389648 KB'}",0.600000 %,864
+encryption,2.567682 s,0.328604 KB/s,"{'current': '62.383789 KB', 'peak': '76.014648 KB'}",0.000000 %,864
+decryption,2.528239 s,0.333730 KB/s,"{'current': '264.708984 KB', 'peak': '267.776367 KB'}",3.600000 %,864
+encryption,2.566696 s,0.328730 KB/s,"{'current': '6.808594 KB', 'peak': '21.787109 KB'}",0.000000 %,864
+decryption,2.512285 s,0.335850 KB/s,"{'current': '7.407227 KB', 'peak': '18.463867 KB'}",3.700000 %,864
+encryption,2.567527 s,0.328624 KB/s,"{'current': '6.142578 KB', 'peak': '18.419922 KB'}",1.200000 %,864
+decryption,2.502458 s,0.337169 KB/s,"{'current': '7.903320 KB', 'peak': '18.209961 KB'}",3.000000 %,864
+encryption,2.568658 s,0.328479 KB/s,"{'current': '5.343750 KB', 'peak': '18.730469 KB'}",0.000000 %,864
+decryption,2.539373 s,0.332267 KB/s,"{'current': '7.344727 KB', 'peak': '17.760742 KB'}",2.400000 %,864
+encryption,2.567468 s,0.328631 KB/s,"{'current': '7.343750 KB', 'peak': '19.479492 KB'}",0.600000 %,864
+decryption,2.513122 s,0.335738 KB/s,"{'current': '7.344727 KB', 'peak': '17.510742 KB'}",2.400000 %,864
+encryption,2.568139 s,0.328545 KB/s,"{'current': '4.484375 KB', 'peak': '18.607422 KB'}",0.000000 %,864
+encryption,2.537371 s,0.332529 KB/s,"{'current': '4.882812 KB', 'peak': '18.419922 KB'}",0.600000 %,864
+encryption,2.572970 s,0.327928 KB/s,"{'current': '32.786133 KB', 'peak': '55.880859 KB'}",0.600000 %,864
+decryption,2.458237 s,0.343234 KB/s,"{'current': '33.634766 KB', 'peak': '78.061523 KB'}",0.600000 %,864
+encryption,2.569245 s,0.328404 KB/s,"{'current': '5.954102 KB', 'peak': '46.541016 KB'}",1.200000 %,864
+decryption,2.451350 s,0.344198 KB/s,"{'current': '3.094727 KB', 'peak': '47.662109 KB'}",0.600000 %,864
+encryption,2.567755 s,0.328594 KB/s,"{'current': '5.624023 KB', 'peak': '45.853516 KB'}",1.200000 %,864
+decryption,2.451451 s,0.344184 KB/s,"{'current': '3.094727 KB', 'peak': '47.662109 KB'}",0.600000 %,864
+encryption,2.574645 s,0.327715 KB/s,"{'current': '10.594727 KB', 'peak': '45.853516 KB'}",1.200000 %,864
+decryption,2.433990 s,0.346653 KB/s,"{'current': '3.204102 KB', 'peak': '47.771484 KB'}",1.900000 %,864
+encryption,2.590991 s,0.325648 KB/s,"{'current': '4.239258 KB', 'peak': '45.853516 KB'}",1.200000 %,864
+decryption,2.450788 s,0.344277 KB/s,"{'current': '5.774414 KB', 'peak': '50.318359 KB'}",0.600000 %,864
+encryption,2.540898 s,0.332068 KB/s,"{'current': '89.490234 KB', 'peak': '101.696289 KB'}",0.600000 %,864
+decryption,2.446342 s,0.344903 KB/s,"{'current': '95.700195 KB', 'peak': '98.807617 KB'}",1.200000 %,864
+encryption,2.564173 s,0.329053 KB/s,"{'current': '14.052734 KB', 'peak': '27.443359 KB'}",0.600000 %,864
+decryption,2.447502 s,0.344739 KB/s,"{'current': '3.293945 KB', 'peak': '13.452148 KB'}",0.000000 %,864
+encryption,2.564105 s,0.329062 KB/s,"{'current': '11.050781 KB', 'peak': '23.186523 KB'}",1.200000 %,864
+decryption,2.432271 s,0.346898 KB/s,"{'current': '3.231445 KB', 'peak': '13.452148 KB'}",0.000000 %,864
+encryption,2.565395 s,0.328897 KB/s,"{'current': '11.283203 KB', 'peak': '24.673828 KB'}",0.600000 %,864
+decryption,2.420241 s,0.348622 KB/s,"{'current': '3.231445 KB', 'peak': '13.452148 KB'}",0.000000 %,864
+encryption,2.570268 s,0.328273 KB/s,"{'current': '6.048828 KB', 'peak': '19.210938 KB'}",1.200000 %,864
+decryption,2.448292 s,0.344628 KB/s,"{'current': '3.340820 KB', 'peak': '13.452148 KB'}",1.200000 %,864
+encryption,0.157356 s,0.273067 KB/s,"{'current': '26.610352 KB', 'peak': '30.107422 KB'}",7.700000 %,44
+decryption,2.445306 s,0.016374 KB/s,"{'current': '32.863281 KB', 'peak': '39.327148 KB'}",1.200000 %,41
+encryption,2.570163 s,0.328287 KB/s,"{'current': '6.415039 KB', 'peak': '47.181641 KB'}",1.800000 %,864
+decryption,2.418503 s,0.348873 KB/s,"{'current': '3.422852 KB', 'peak': '48.052734 KB'}",0.600000 %,864
+encryption,0.146403 s,0.280155 KB/s,"{'current': '26.053711 KB', 'peak': '29.456055 KB'}",0.000000 %,42
+decryption,2.446475 s,0.016765 KB/s,"{'current': '33.081055 KB', 'peak': '39.557617 KB'}",0.600000 %,42
+encryption,2.566217 s,0.328791 KB/s,"{'current': '81.259766 KB', 'peak': '94.998047 KB'}",1.200000 %,864
+encryption,2.583742 s,0.326561 KB/s,"{'current': '80.087891 KB', 'peak': '94.181641 KB'}",1.200000 %,864
+decryption,2.450311 s,0.344344 KB/s,"{'current': '92.495117 KB', 'peak': '95.587891 KB'}",1.900000 %,864
+encryption,2.562191 s,0.329308 KB/s,"{'current': '7.212891 KB', 'peak': '20.287109 KB'}",0.600000 %,864
+decryption,2.447072 s,0.344800 KB/s,"{'current': '14.075195 KB', 'peak': '20.552734 KB'}",0.600000 %,864
+encryption,2.563943 s,0.329083 KB/s,"{'current': '6.445312 KB', 'peak': '18.973633 KB'}",1.200000 %,864
+decryption,2.448067 s,0.344660 KB/s,"{'current': '3.231445 KB', 'peak': '13.389648 KB'}",0.600000 %,864
+encryption,2.548211 s,0.331115 KB/s,"{'current': '5.169922 KB', 'peak': '18.419922 KB'}",0.000000 %,864
+decryption,2.459017 s,0.343125 KB/s,"{'current': '7.176758 KB', 'peak': '13.755859 KB'}",0.000000 %,864
+encryption,2.564143 s,0.329057 KB/s,"{'current': '5.169922 KB', 'peak': '18.419922 KB'}",1.200000 %,864
+decryption,2.413574 s,0.349585 KB/s,"{'current': '3.340820 KB', 'peak': '13.389648 KB'}",1.900000 %,864
+encryption,0.001001 s,0.000000 KB/s,"{'current': '30.559570 KB', 'peak': '31.857422 KB'}",25.200000 %,0
+encryption,2.541832 s,0.331946 KB/s,"{'current': '46.016602 KB', 'peak': '58.136719 KB'}",0.600000 %,864
+decryption,2.532879 s,0.333119 KB/s,"{'current': '264.958984 KB', 'peak': '268.041992 KB'}",4.800000 %,864
+encryption,2.534268 s,0.332936 KB/s,"{'current': '6.535156 KB', 'peak': '21.240234 KB'}",1.800000 %,864
+decryption,2.482656 s,0.339858 KB/s,"{'current': '7.797852 KB', 'peak': '17.963867 KB'}",3.100000 %,864
+encryption,2.563103 s,0.329191 KB/s,"{'current': '4.947266 KB', 'peak': '18.607422 KB'}",0.600000 %,864
+decryption,2.513179 s,0.335730 KB/s,"{'current': '12.774414 KB', 'peak': '19.878906 KB'}",1.800000 %,864
+encryption,2.568456 s,0.328505 KB/s,"{'current': '3.671875 KB', 'peak': '18.607422 KB'}",2.400000 %,864
+decryption,2.514661 s,0.335532 KB/s,"{'current': '7.903320 KB', 'peak': '18.459961 KB'}",2.400000 %,864
+encryption,2.592301 s,0.325483 KB/s,"{'current': '3.484375 KB', 'peak': '18.419922 KB'}",0.600000 %,864
+decryption,2.510536 s,0.336084 KB/s,"{'current': '7.391602 KB', 'peak': '17.760742 KB'}",3.000000 %,864
+encryption,2.567425 s,0.328637 KB/s,"{'current': '28.504883 KB', 'peak': '56.259766 KB'}",0.600000 %,864
+decryption,2.450485 s,0.344320 KB/s,"{'current': '33.883789 KB', 'peak': '78.216797 KB'}",1.200000 %,864
+encryption,2.570855 s,0.328198 KB/s,"{'current': '6.649414 KB', 'peak': '47.087891 KB'}",0.600000 %,864
+decryption,2.419780 s,0.348689 KB/s,"{'current': '3.204102 KB', 'peak': '47.677734 KB'}",1.300000 %,864
+encryption,2.564111 s,0.329061 KB/s,"{'current': '5.514648 KB', 'peak': '45.509766 KB'}",0.000000 %,864
+decryption,2.447819 s,0.344695 KB/s,"{'current': '6.875977 KB', 'peak': '51.349609 KB'}",0.600000 %,864
+encryption,2.564876 s,0.328963 KB/s,"{'current': '4.348633 KB', 'peak': '45.759766 KB'}",0.000000 %,864
+decryption,2.448318 s,0.344624 KB/s,"{'current': '3.204102 KB', 'peak': '47.677734 KB'}",0.000000 %,864
+encryption,2.563945 s,0.329083 KB/s,"{'current': '4.239258 KB', 'peak': '45.759766 KB'}",0.600000 %,864
+decryption,2.450483 s,0.344320 KB/s,"{'current': '3.204102 KB', 'peak': '47.677734 KB'}",0.600000 %,864
+encryption,2.567230 s,0.328662 KB/s,"{'current': '85.962891 KB', 'peak': '99.679688 KB'}",1.200000 %,864
+decryption,2.481546 s,0.340010 KB/s,"{'current': '104.237305 KB', 'peak': '107.430664 KB'}",1.200000 %,864
+encryption,2.562653 s,0.329249 KB/s,"{'current': '8.841797 KB', 'peak': '21.539062 KB'}",1.800000 %,864
+decryption,2.447253 s,0.344774 KB/s,"{'current': '3.340820 KB', 'peak': '13.452148 KB'}",0.600000 %,864
+encryption,2.563130 s,0.329187 KB/s,"{'current': '7.378906 KB', 'peak': '19.530273 KB'}",1.200000 %,864
+decryption,2.463109 s,0.342555 KB/s,"{'current': '8.411133 KB', 'peak': '15.193359 KB'}",3.700000 %,864
+encryption,2.546946 s,0.331279 KB/s,"{'current': '6.103516 KB', 'peak': '19.226562 KB'}",0.000000 %,864
+decryption,2.419668 s,0.348705 KB/s,"{'current': '3.231445 KB', 'peak': '13.702148 KB'}",0.600000 %,864
+encryption,2.566239 s,0.328789 KB/s,"{'current': '11.361328 KB', 'peak': '24.689453 KB'}",1.200000 %,864
+decryption,2.410823 s,0.349984 KB/s,"{'current': '3.231445 KB', 'peak': '13.452148 KB'}",0.600000 %,864
+encryption,1.539324 s,0.324818 KB/s,"{'current': '78.986328 KB', 'peak': '88.350586 KB'}",1.000000 %,512
+decryption,2.460347 s,0.203223 KB/s,"{'current': '91.862305 KB', 'peak': '94.611328 KB'}",0.000000 %,512
+encryption,1.533600 s,0.326030 KB/s,"{'current': '7.009766 KB', 'peak': '18.003906 KB'}",1.000000 %,512
+decryption,2.446310 s,0.204390 KB/s,"{'current': '14.215820 KB', 'peak': '19.494141 KB'}",0.000000 %,512
+encryption,1.536205 s,0.325477 KB/s,"{'current': '4.826172 KB', 'peak': '15.941406 KB'}",0.000000 %,512
+decryption,2.443566 s,0.204619 KB/s,"{'current': '4.272461 KB', 'peak': '13.389648 KB'}",0.000000 %,512
+encryption,1.505161 s,0.332190 KB/s,"{'current': '4.826172 KB', 'peak': '15.941406 KB'}",1.000000 %,512
+decryption,2.413144 s,0.207199 KB/s,"{'current': '9.223633 KB', 'peak': '13.958984 KB'}",1.300000 %,512
+encryption,1.534316 s,0.325878 KB/s,"{'current': '4.826172 KB', 'peak': '15.941406 KB'}",0.000000 %,512
+decryption,2.447473 s,0.204292 KB/s,"{'current': '2.997070 KB', 'peak': '13.639648 KB'}",0.600000 %,512
+encryption,1.505155 s,0.332192 KB/s,"{'current': '62.207031 KB', 'peak': '70.803711 KB'}",1.000000 %,512
+decryption,2.541466 s,0.196737 KB/s,"{'current': '264.525391 KB', 'peak': '267.264648 KB'}",4.200000 %,512
+encryption,1.535920 s,0.325538 KB/s,"{'current': '6.410156 KB', 'peak': '18.894531 KB'}",1.000000 %,512
+decryption,2.511684 s,0.199070 KB/s,"{'current': '7.808594 KB', 'peak': '18.213867 KB'}",2.400000 %,512
+encryption,1.534888 s,0.325757 KB/s,"{'current': '8.507812 KB', 'peak': '18.457031 KB'}",2.000000 %,512
+decryption,2.488003 s,0.200964 KB/s,"{'current': '8.729492 KB', 'peak': '18.213867 KB'}",5.500000 %,512
+encryption,1.536882 s,0.325334 KB/s,"{'current': '4.085938 KB', 'peak': '16.128906 KB'}",0.000000 %,512
+decryption,2.512418 s,0.199011 KB/s,"{'current': '7.110352 KB', 'peak': '17.510742 KB'}",3.600000 %,512
+encryption,1.540127 s,0.324649 KB/s,"{'current': '3.519531 KB', 'peak': '16.375000 KB'}",1.900000 %,512
+decryption,2.481589 s,0.201484 KB/s,"{'current': '7.110352 KB', 'peak': '17.760742 KB'}",3.100000 %,512
+encryption,1.547015 s,0.325728 KB/s,"{'current': '28.438477 KB', 'peak': '37.240234 KB'}",1.000000 %,516
+encryption,1.552008 s,0.324680 KB/s,"{'current': '2.555664 KB', 'peak': '27.702148 KB'}",0.000000 %,516
+encryption,1.547580 s,0.325609 KB/s,"{'current': '2.520508 KB', 'peak': '27.594727 KB'}",1.000000 %,516
+decryption,2.418848 s,0.206710 KB/s,"{'current': '33.430664 KB', 'peak': '59.365234 KB'}",1.300000 %,512
+encryption,1.547866 s,0.325549 KB/s,"{'current': '7.047852 KB', 'peak': '29.659180 KB'}",0.000000 %,516
+decryption,2.446814 s,0.204347 KB/s,"{'current': '2.750977 KB', 'peak': '29.282227 KB'}",0.000000 %,512
+encryption,1.546014 s,0.325939 KB/s,"{'current': '4.008789 KB', 'peak': '27.844727 KB'}",2.000000 %,516
+decryption,2.443633 s,0.204613 KB/s,"{'current': '7.807617 KB', 'peak': '34.338867 KB'}",0.600000 %,512
+encryption,1.547482 s,0.325630 KB/s,"{'current': '5.040039 KB', 'peak': '27.594727 KB'}",0.000000 %,516
+decryption,2.409226 s,0.207535 KB/s,"{'current': '2.697266 KB', 'peak': '29.228516 KB'}",0.000000 %,512
+encryption,1.549347 s,0.325238 KB/s,"{'current': '5.094727 KB', 'peak': '27.594727 KB'}",1.000000 %,516
+decryption,2.441551 s,0.204788 KB/s,"{'current': '3.719727 KB', 'peak': '30.250977 KB'}",1.900000 %,512
+encryption,2.042228 s,0.327078 KB/s,"{'current': '68.536133 KB', 'peak': '80.847656 KB'}",0.700000 %,684
+decryption,2.449668 s,0.204109 KB/s,"{'current': '67.297852 KB', 'peak': '73.469727 KB'}",0.000000 %,512
+encryption,2.034649 s,0.328297 KB/s,"{'current': '7.265625 KB', 'peak': '19.547852 KB'}",2.200000 %,684
+decryption,2.448831 s,0.204179 KB/s,"{'current': '2.708008 KB', 'peak': '13.702148 KB'}",0.000000 %,512
+encryption,2.037423 s,0.327850 KB/s,"{'current': '4.902344 KB', 'peak': '17.805664 KB'}",0.000000 %,684
+decryption,2.444828 s,0.204513 KB/s,"{'current': '3.983398 KB', 'peak': '13.452148 KB'}",0.600000 %,512
+encryption,2.040003 s,0.327435 KB/s,"{'current': '4.902344 KB', 'peak': '17.555664 KB'}",0.700000 %,684
+decryption,2.447315 s,0.204306 KB/s,"{'current': '7.411133 KB', 'peak': '13.452148 KB'}",2.500000 %,512
+encryption,2.008446 s,0.332580 KB/s,"{'current': '5.011719 KB', 'peak': '17.555664 KB'}",0.800000 %,684
+decryption,2.443269 s,0.204644 KB/s,"{'current': '2.708008 KB', 'peak': '13.452148 KB'}",0.600000 %,512
+encryption,1.538943 s,0.324898 KB/s,"{'current': '84.875977 KB', 'peak': '93.675781 KB'}",2.900000 %,512
+decryption,2.451824 s,0.203930 KB/s,"{'current': '95.257812 KB', 'peak': '98.087891 KB'}",0.600000 %,512
+encryption,1.536996 s,0.325310 KB/s,"{'current': '8.529297 KB', 'peak': '19.201172 KB'}",0.000000 %,512
+decryption,2.415445 s,0.207001 KB/s,"{'current': '6.895508 KB', 'peak': '13.702148 KB'}",0.600000 %,512
+encryption,1.559212 s,0.320675 KB/s,"{'current': '5.759766 KB', 'peak': '16.498047 KB'}",1.000000 %,512
+decryption,2.441703 s,0.204775 KB/s,"{'current': '8.108398 KB', 'peak': '13.452148 KB'}",0.000000 %,512
+encryption,1.535726 s,0.325579 KB/s,"{'current': '5.759766 KB', 'peak': '16.498047 KB'}",1.000000 %,512
+decryption,2.405949 s,0.207818 KB/s,"{'current': '2.887695 KB', 'peak': '13.452148 KB'}",0.000000 %,512
+encryption,1.537631 s,0.325176 KB/s,"{'current': '5.759766 KB', 'peak': '16.498047 KB'}",0.000000 %,512
+decryption,2.444898 s,0.204508 KB/s,"{'current': '6.833008 KB', 'peak': '13.452148 KB'}",0.000000 %,512
+encryption,0.806397 s,0.310021 KB/s,"{'current': '79.440430 KB', 'peak': '86.027344 KB'}",0.000000 %,256
+decryption,2.423070 s,0.103175 KB/s,"{'current': '91.902344 KB', 'peak': '94.374023 KB'}",1.300000 %,256
+encryption,0.799067 s,0.312865 KB/s,"{'current': '6.564453 KB', 'peak': '17.476562 KB'}",1.800000 %,256
+decryption,2.447256 s,0.102155 KB/s,"{'current': '2.637695 KB', 'peak': '13.389648 KB'}",0.600000 %,256
+encryption,0.798570 s,0.313060 KB/s,"{'current': '4.576172 KB', 'peak': '15.664062 KB'}",0.000000 %,256
+decryption,2.417962 s,0.103393 KB/s,"{'current': '7.890625 KB', 'peak': '13.389648 KB'}",0.600000 %,256
+encryption,0.773455 s,0.323225 KB/s,"{'current': '5.817383 KB', 'peak': '15.414062 KB'}",0.000000 %,256
+decryption,2.425578 s,0.103068 KB/s,"{'current': '2.747070 KB', 'peak': '13.389648 KB'}",0.600000 %,256
+encryption,0.771378 s,0.324096 KB/s,"{'current': '4.576172 KB', 'peak': '15.414062 KB'}",0.000000 %,256
+decryption,2.417818 s,0.103399 KB/s,"{'current': '2.747070 KB', 'peak': '13.389648 KB'}",0.600000 %,256
+encryption,1.543527 s,0.323933 KB/s,"{'current': '84.350586 KB', 'peak': '92.108398 KB'}",3.900000 %,512
+decryption,2.705958 s,0.092389 KB/s,"{'current': '234.613281 KB', 'peak': '238.423828 KB'}",10.700000 %,256
+encryption,1.539484 s,0.324784 KB/s,"{'current': '11.928711 KB', 'peak': '23.753906 KB'}",1.000000 %,512
+decryption,2.649839 s,0.094345 KB/s,"{'current': '13.188477 KB', 'peak': '27.664062 KB'}",8.700000 %,256
+encryption,1.539075 s,0.324870 KB/s,"{'current': '5.039062 KB', 'peak': '17.149414 KB'}",0.000000 %,512
+decryption,2.674518 s,0.093475 KB/s,"{'current': '12.877930 KB', 'peak': '27.376953 KB'}",10.900000 %,256
+encryption,1.542064 s,0.324241 KB/s,"{'current': '8.281250 KB', 'peak': '16.719727 KB'}",0.000000 %,512
+decryption,2.686759 s,0.093049 KB/s,"{'current': '7.477539 KB', 'peak': '21.972656 KB'}",9.100000 %,256
+encryption,1.542281 s,0.324195 KB/s,"{'current': '4.609375 KB', 'peak': '16.719727 KB'}",1.000000 %,512
+decryption,2.677520 s,0.093370 KB/s,"{'current': '8.563477 KB', 'peak': '23.062500 KB'}",8.000000 %,256
+encryption,0.802189 s,0.311647 KB/s,"{'current': '61.735352 KB', 'peak': '67.804688 KB'}",0.000000 %,256
+decryption,2.519880 s,0.099211 KB/s,"{'current': '272.541992 KB', 'peak': '275.074219 KB'}",4.200000 %,256
+encryption,0.770739 s,0.324364 KB/s,"{'current': '6.160156 KB', 'peak': '18.367188 KB'}",0.000000 %,256
+decryption,2.517791 s,0.099293 KB/s,"{'current': '7.375977 KB', 'peak': '18.213867 KB'}",4.300000 %,256
+encryption,0.770392 s,0.324510 KB/s,"{'current': '3.023438 KB', 'peak': '15.601562 KB'}",1.900000 %,256
+decryption,2.509863 s,0.099607 KB/s,"{'current': '7.347656 KB', 'peak': '17.963867 KB'}",3.600000 %,256
+encryption,0.772385 s,0.323673 KB/s,"{'current': '5.459961 KB', 'peak': '15.414062 KB'}",1.900000 %,256
+decryption,2.514642 s,0.099418 KB/s,"{'current': '7.618164 KB', 'peak': '17.510742 KB'}",2.400000 %,256
+encryption,0.800196 s,0.312423 KB/s,"{'current': '3.023438 KB', 'peak': '15.851562 KB'}",0.000000 %,256
+decryption,2.495594 s,0.100177 KB/s,"{'current': '7.618164 KB', 'peak': '17.510742 KB'}",4.300000 %,256
+encryption,0.809419 s,0.311277 KB/s,"{'current': '28.077148 KB', 'peak': '33.723633 KB'}",1.800000 %,258
+decryption,2.448509 s,0.102103 KB/s,"{'current': '33.180664 KB', 'peak': '48.221680 KB'}",0.000000 %,256
+encryption,0.802464 s,0.313974 KB/s,"{'current': '6.034180 KB', 'peak': '18.567383 KB'}",0.000000 %,258
+decryption,2.447233 s,0.102156 KB/s,"{'current': '7.766602 KB', 'peak': '24.112305 KB'}",2.500000 %,256
+encryption,0.801369 s,0.314403 KB/s,"{'current': '3.975586 KB', 'peak': '17.315430 KB'}",5.500000 %,258
+decryption,2.418636 s,0.103364 KB/s,"{'current': '2.667969 KB', 'peak': '19.037109 KB'}",0.000000 %,256
+encryption,0.771695 s,0.326493 KB/s,"{'current': '4.998047 KB', 'peak': '17.208008 KB'}",0.000000 %,258
+decryption,2.448961 s,0.102084 KB/s,"{'current': '7.743164 KB', 'peak': '24.112305 KB'}",1.900000 %,256
+encryption,0.771075 s,0.326756 KB/s,"{'current': '3.756836 KB', 'peak': '17.208008 KB'}",0.000000 %,258
+decryption,2.446716 s,0.102178 KB/s,"{'current': '2.610352 KB', 'peak': '19.002930 KB'}",0.000000 %,256
+encryption,1.049332 s,0.320144 KB/s,"{'current': '68.160156 KB', 'peak': '75.847656 KB'}",1.400000 %,344
+decryption,2.450404 s,0.102024 KB/s,"{'current': '67.266602 KB', 'peak': '72.829102 KB'}",0.600000 %,256
+encryption,1.043667 s,0.321882 KB/s,"{'current': '6.792969 KB', 'peak': '18.133789 KB'}",0.000000 %,344
+decryption,2.428127 s,0.102960 KB/s,"{'current': '7.715820 KB', 'peak': '13.452148 KB'}",1.900000 %,256
+encryption,1.047571 s,0.320682 KB/s,"{'current': '4.679688 KB', 'peak': '15.891602 KB'}",0.000000 %,344
+decryption,2.447608 s,0.102141 KB/s,"{'current': '3.624023 KB', 'peak': '13.452148 KB'}",1.200000 %,256
+encryption,1.043432 s,0.321954 KB/s,"{'current': '4.679688 KB', 'peak': '16.141602 KB'}",1.400000 %,344
+decryption,2.466629 s,0.101353 KB/s,"{'current': '2.348633 KB', 'peak': '13.452148 KB'}",0.000000 %,256
+encryption,1.043468 s,0.321943 KB/s,"{'current': '4.679688 KB', 'peak': '15.891602 KB'}",0.000000 %,344
+decryption,2.419351 s,0.103334 KB/s,"{'current': '7.137695 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,0.805999 s,0.310174 KB/s,"{'current': '85.330078 KB', 'peak': '91.540039 KB'}",1.800000 %,256
+decryption,2.423764 s,0.103145 KB/s,"{'current': '95.325195 KB', 'peak': '97.827148 KB'}",0.600000 %,256
+encryption,0.801750 s,0.311818 KB/s,"{'current': '8.083984 KB', 'peak': '18.369141 KB'}",0.000000 %,256
+decryption,2.422527 s,0.103198 KB/s,"{'current': '2.700195 KB', 'peak': '13.452148 KB'}",0.000000 %,256
+encryption,0.772072 s,0.323804 KB/s,"{'current': '5.509766 KB', 'peak': '15.970703 KB'}",0.000000 %,256
+decryption,2.444242 s,0.102281 KB/s,"{'current': '7.851562 KB', 'peak': '13.702148 KB'}",0.000000 %,256
+encryption,0.800779 s,0.312196 KB/s,"{'current': '6.750977 KB', 'peak': '15.970703 KB'}",0.000000 %,256
+decryption,2.443546 s,0.102310 KB/s,"{'current': '2.637695 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,0.826012 s,0.302659 KB/s,"{'current': '5.509766 KB', 'peak': '16.220703 KB'}",1.800000 %,256
+decryption,2.454246 s,0.101864 KB/s,"{'current': '7.012695 KB', 'peak': '13.452148 KB'}",1.900000 %,256
+encryption,0.445769 s,0.280415 KB/s,"{'current': '82.832031 KB', 'peak': '88.188477 KB'}",0.000000 %,128
+decryption,2.417759 s,0.051701 KB/s,"{'current': '95.675781 KB', 'peak': '98.022461 KB'}",0.000000 %,128
+encryption,0.418071 s,0.298993 KB/s,"{'current': '6.013672 KB', 'peak': '16.976562 KB'}",0.000000 %,128
+decryption,2.446571 s,0.051092 KB/s,"{'current': '2.891602 KB', 'peak': '13.389648 KB'}",0.600000 %,128
+encryption,0.418170 s,0.298922 KB/s,"{'current': '3.763672 KB', 'peak': '15.164062 KB'}",0.000000 %,128
+decryption,2.417176 s,0.051713 KB/s,"{'current': '7.864258 KB', 'peak': '13.389648 KB'}",0.000000 %,128
+encryption,0.418030 s,0.299022 KB/s,"{'current': '3.763672 KB', 'peak': '15.164062 KB'}",0.000000 %,128
+decryption,2.444404 s,0.051137 KB/s,"{'current': '3.897461 KB', 'peak': '13.639648 KB'}",0.000000 %,128
+encryption,0.417554 s,0.299362 KB/s,"{'current': '4.013672 KB', 'peak': '15.164062 KB'}",3.200000 %,128
+decryption,2.443904 s,0.051148 KB/s,"{'current': '2.512695 KB', 'peak': '13.639648 KB'}",0.600000 %,128
+encryption,1.543451 s,0.323949 KB/s,"{'current': '84.327148 KB', 'peak': '91.959961 KB'}",1.000000 %,512
+decryption,2.706301 s,0.046189 KB/s,"{'current': '229.985352 KB', 'peak': '234.038086 KB'}",10.200000 %,128
+encryption,1.540849 s,0.324496 KB/s,"{'current': '11.222656 KB', 'peak': '22.836914 KB'}",1.000000 %,512
+decryption,2.668431 s,0.046844 KB/s,"{'current': '13.040039 KB', 'peak': '27.664062 KB'}",12.100000 %,128
+encryption,1.538189 s,0.325058 KB/s,"{'current': '8.710938 KB', 'peak': '17.046875 KB'}",1.000000 %,512
+decryption,2.676925 s,0.046695 KB/s,"{'current': '9.081055 KB', 'peak': '23.705078 KB'}",8.600000 %,128
+encryption,1.538665 s,0.324957 KB/s,"{'current': '4.609375 KB', 'peak': '16.617188 KB'}",0.000000 %,512
+decryption,2.660698 s,0.046980 KB/s,"{'current': '7.297852 KB', 'peak': '21.921875 KB'}",8.600000 %,128
+encryption,1.539447 s,0.324792 KB/s,"{'current': '6.429688 KB', 'peak': '16.617188 KB'}",0.000000 %,512
+decryption,2.681036 s,0.046624 KB/s,"{'current': '8.438477 KB', 'peak': '23.062500 KB'}",9.100000 %,128
+encryption,0.418504 s,0.298683 KB/s,"{'current': '61.610352 KB', 'peak': '66.347656 KB'}",3.200000 %,128
+decryption,2.549650 s,0.049026 KB/s,"{'current': '272.095703 KB', 'peak': '274.502930 KB'}",6.000000 %,128
+encryption,0.418082 s,0.298985 KB/s,"{'current': '5.828125 KB', 'peak': '18.117188 KB'}",3.300000 %,128
+decryption,2.482722 s,0.050348 KB/s,"{'current': '7.348633 KB', 'peak': '18.416992 KB'}",3.100000 %,128
+encryption,0.414888 s,0.301286 KB/s,"{'current': '2.898438 KB', 'peak': '15.351562 KB'}",0.000000 %,128
+decryption,2.489497 s,0.050211 KB/s,"{'current': '7.075195 KB', 'peak': '17.959961 KB'}",2.500000 %,128
+encryption,0.417623 s,0.299313 KB/s,"{'current': '2.648438 KB', 'peak': '15.351562 KB'}",0.000000 %,128
+decryption,2.485752 s,0.050287 KB/s,"{'current': '8.010742 KB', 'peak': '17.510742 KB'}",3.700000 %,128
+encryption,0.418581 s,0.298628 KB/s,"{'current': '2.757812 KB', 'peak': '15.164062 KB'}",0.000000 %,128
+decryption,2.510814 s,0.049785 KB/s,"{'current': '6.625977 KB', 'peak': '17.510742 KB'}",3.000000 %,128
+encryption,0.428194 s,0.301046 KB/s,"{'current': '27.790039 KB', 'peak': '32.348633 KB'}",0.000000 %,132
+decryption,2.445586 s,0.051112 KB/s,"{'current': '44.110352 KB', 'peak': '55.645508 KB'}",0.000000 %,128
+encryption,0.429479 s,0.300145 KB/s,"{'current': '5.235352 KB', 'peak': '15.853516 KB'}",3.100000 %,132
+decryption,2.417130 s,0.051714 KB/s,"{'current': '2.692383 KB', 'peak': '14.643555 KB'}",0.000000 %,128
+encryption,0.401243 s,0.321267 KB/s,"{'current': '3.360352 KB', 'peak': '13.947266 KB'}",6.900000 %,132
+decryption,2.418215 s,0.051691 KB/s,"{'current': '2.375977 KB', 'peak': '14.393555 KB'}",0.000000 %,128
+encryption,0.412889 s,0.312206 KB/s,"{'current': '3.165039 KB', 'peak': '14.197266 KB'}",0.000000 %,132
+decryption,2.448097 s,0.051060 KB/s,"{'current': '10.504883 KB', 'peak': '22.040039 KB'}",0.000000 %,128
+encryption,0.428802 s,0.300620 KB/s,"{'current': '3.633789 KB', 'peak': '14.166016 KB'}",0.000000 %,132
+decryption,2.449382 s,0.051033 KB/s,"{'current': '2.485352 KB', 'peak': '14.393555 KB'}",0.000000 %,128
+encryption,0.542175 s,0.309806 KB/s,"{'current': '68.105469 KB', 'peak': '73.457031 KB'}",0.000000 %,172
+decryption,2.450838 s,0.051003 KB/s,"{'current': '66.922852 KB', 'peak': '72.192383 KB'}",0.600000 %,128
+encryption,0.538922 s,0.311676 KB/s,"{'current': '6.613281 KB', 'peak': '17.047852 KB'}",0.000000 %,172
+decryption,2.419648 s,0.051660 KB/s,"{'current': '2.540039 KB', 'peak': '13.702148 KB'}",1.900000 %,128
+encryption,0.539181 s,0.311526 KB/s,"{'current': '8.128906 KB', 'peak': '15.055664 KB'}",2.600000 %,172
+decryption,2.447152 s,0.051080 KB/s,"{'current': '2.223633 KB', 'peak': '13.452148 KB'}",0.000000 %,128
+encryption,0.539592 s,0.311288 KB/s,"{'current': '4.491211 KB', 'peak': '15.055664 KB'}",0.000000 %,172
+decryption,2.445365 s,0.051117 KB/s,"{'current': '4.371094 KB', 'peak': '13.452148 KB'}",0.600000 %,128
+encryption,0.540247 s,0.310911 KB/s,"{'current': '4.457031 KB', 'peak': '15.305664 KB'}",0.000000 %,172
+decryption,2.419827 s,0.051657 KB/s,"{'current': '2.333008 KB', 'peak': '13.452148 KB'}",1.900000 %,128
+encryption,0.423237 s,0.295343 KB/s,"{'current': '85.171875 KB', 'peak': '90.049805 KB'}",0.000000 %,128
+decryption,2.453282 s,0.050952 KB/s,"{'current': '94.710938 KB', 'peak': '97.139648 KB'}",1.200000 %,128
+encryption,0.418901 s,0.298400 KB/s,"{'current': '7.259766 KB', 'peak': '18.173828 KB'}",3.200000 %,128
+decryption,2.447285 s,0.051077 KB/s,"{'current': '7.938477 KB', 'peak': '13.702148 KB'}",0.000000 %,128
+encryption,0.417904 s,0.299112 KB/s,"{'current': '4.947266 KB', 'peak': '15.720703 KB'}",0.000000 %,128
+decryption,2.415482 s,0.051749 KB/s,"{'current': '2.622070 KB', 'peak': '13.452148 KB'}",2.500000 %,128
+encryption,0.388440 s,0.321800 KB/s,"{'current': '4.697266 KB', 'peak': '15.720703 KB'}",0.000000 %,128
+decryption,2.448241 s,0.051057 KB/s,"{'current': '8.944336 KB', 'peak': '13.452148 KB'}",2.500000 %,128
+encryption,0.389799 s,0.320678 KB/s,"{'current': '4.947266 KB', 'peak': '15.720703 KB'}",0.000000 %,128
+decryption,2.443531 s,0.051155 KB/s,"{'current': '2.622070 KB', 'peak': '13.452148 KB'}",1.300000 %,128
+encryption,0.653161 s,0.319958 KB/s,"{'current': '79.453125 KB', 'peak': '85.291992 KB'}",0.000000 %,214
+decryption,2.471678 s,0.084552 KB/s,"{'current': '100.391602 KB', 'peak': '102.892578 KB'}",1.900000 %,214
+encryption,0.650205 s,0.321413 KB/s,"{'current': '6.511719 KB', 'peak': '17.144531 KB'}",0.000000 %,214
+decryption,2.444437 s,0.085494 KB/s,"{'current': '2.889648 KB', 'peak': '13.389648 KB'}",1.200000 %,214
+encryption,0.650307 s,0.321363 KB/s,"{'current': '4.535156 KB', 'peak': '15.332031 KB'}",0.000000 %,214
+decryption,2.441350 s,0.085602 KB/s,"{'current': '2.706055 KB', 'peak': '13.639648 KB'}",0.600000 %,214
+encryption,0.678400 s,0.308055 KB/s,"{'current': '9.427734 KB', 'peak': '15.332031 KB'}",2.100000 %,214
+decryption,2.411287 s,0.086669 KB/s,"{'current': '3.385742 KB', 'peak': '13.639648 KB'}",0.000000 %,214
+encryption,0.650553 s,0.321241 KB/s,"{'current': '4.535156 KB', 'peak': '15.582031 KB'}",0.000000 %,214
+decryption,2.435549 s,0.085806 KB/s,"{'current': '2.706055 KB', 'peak': '13.639648 KB'}",0.000000 %,214
+encryption,1.538581 s,0.324975 KB/s,"{'current': '87.265625 KB', 'peak': '96.362305 KB'}",1.000000 %,512
+decryption,2.735695 s,0.076392 KB/s,"{'current': '228.970703 KB', 'peak': '232.892578 KB'}",10.100000 %,214
+encryption,1.544722 s,0.323683 KB/s,"{'current': '11.714844 KB', 'peak': '23.663086 KB'}",0.000000 %,512
+decryption,2.645819 s,0.078987 KB/s,"{'current': '7.780273 KB', 'peak': '22.320312 KB'}",9.800000 %,214
+encryption,1.539740 s,0.324730 KB/s,"{'current': '5.039062 KB', 'peak': '17.108398 KB'}",0.000000 %,512
+decryption,2.644769 s,0.079018 KB/s,"{'current': '8.711914 KB', 'peak': '23.251953 KB'}",8.100000 %,214
+encryption,1.559594 s,0.320596 KB/s,"{'current': '4.609375 KB', 'peak': '16.928711 KB'}",0.000000 %,512
+decryption,2.637009 s,0.079251 KB/s,"{'current': '11.131836 KB', 'peak': '25.671875 KB'}",8.700000 %,214
+encryption,1.540725 s,0.324522 KB/s,"{'current': '4.609375 KB', 'peak': '16.678711 KB'}",1.000000 %,512
+decryption,2.673687 s,0.078163 KB/s,"{'current': '10.663086 KB', 'peak': '25.203125 KB'}",8.600000 %,214
+encryption,0.651092 s,0.320975 KB/s,"{'current': '61.624023 KB', 'peak': '66.890625 KB'}",4.300000 %,214
+decryption,2.512633 s,0.083173 KB/s,"{'current': '264.086914 KB', 'peak': '266.507812 KB'}",3.000000 %,214
+encryption,0.647981 s,0.322516 KB/s,"{'current': '5.857422 KB', 'peak': '18.285156 KB'}",2.200000 %,214
+decryption,2.484202 s,0.084125 KB/s,"{'current': '12.936523 KB', 'peak': '19.982422 KB'}",3.100000 %,214
+encryption,0.677942 s,0.308263 KB/s,"{'current': '2.927734 KB', 'peak': '15.519531 KB'}",0.000000 %,214
+decryption,2.478643 s,0.084314 KB/s,"{'current': '6.819336 KB', 'peak': '18.213867 KB'}",3.700000 %,214
+encryption,0.649346 s,0.321838 KB/s,"{'current': '4.039062 KB', 'peak': '15.332031 KB'}",0.000000 %,214
+decryption,2.506075 s,0.083391 KB/s,"{'current': '6.819336 KB', 'peak': '17.510742 KB'}",2.400000 %,214
+encryption,0.680106 s,0.307282 KB/s,"{'current': '6.599609 KB', 'peak': '15.519531 KB'}",0.000000 %,214
+decryption,2.511861 s,0.083199 KB/s,"{'current': '11.999023 KB', 'peak': '19.271484 KB'}",6.700000 %,214
+encryption,0.659322 s,0.319931 KB/s,"{'current': '35.247070 KB', 'peak': '41.347656 KB'}",0.000000 %,216
+decryption,2.417423 s,0.086449 KB/s,"{'current': '33.139648 KB', 'peak': '46.633789 KB'}",0.600000 %,214
+encryption,0.661401 s,0.318925 KB/s,"{'current': '5.786133 KB', 'peak': '17.229492 KB'}",0.000000 %,216
+decryption,2.445233 s,0.085466 KB/s,"{'current': '2.776367 KB', 'peak': '17.622070 KB'}",0.600000 %,214
+encryption,0.659334 s,0.319925 KB/s,"{'current': '3.606445 KB', 'peak': '15.620117 KB'}",0.000000 %,216
+decryption,2.418903 s,0.086396 KB/s,"{'current': '2.678711 KB', 'peak': '17.413086 KB'}",1.300000 %,214
+encryption,0.661133 s,0.319054 KB/s,"{'current': '4.991211 KB', 'peak': '15.620117 KB'}",0.000000 %,216
+decryption,2.445627 s,0.085452 KB/s,"{'current': '114.783203 KB', 'peak': '129.628906 KB'}",0.000000 %,214
+encryption,0.663311 s,0.318007 KB/s,"{'current': '3.770508 KB', 'peak': '15.620117 KB'}",0.000000 %,216
+decryption,2.470696 s,0.084585 KB/s,"{'current': '2.592773 KB', 'peak': '17.415039 KB'}",0.000000 %,214
+encryption,0.861970 s,0.326287 KB/s,"{'current': '68.032227 KB', 'peak': '74.946289 KB'}",1.700000 %,288
+decryption,2.449768 s,0.085308 KB/s,"{'current': '66.900391 KB', 'peak': '72.367188 KB'}",0.600000 %,214
+encryption,0.889049 s,0.316349 KB/s,"{'current': '7.042969 KB', 'peak': '17.860352 KB'}",0.000000 %,288
+decryption,2.446376 s,0.085426 KB/s,"{'current': '7.627930 KB', 'peak': '13.452148 KB'}",0.000000 %,214
+encryption,0.869894 s,0.323315 KB/s,"{'current': '4.679688 KB', 'peak': '15.618164 KB'}",0.000000 %,288
+decryption,2.422755 s,0.086259 KB/s,"{'current': '3.583008 KB', 'peak': '13.702148 KB'}",1.900000 %,214
+encryption,0.887539 s,0.316887 KB/s,"{'current': '4.679688 KB', 'peak': '15.618164 KB'}",0.000000 %,288
+decryption,2.416153 s,0.086495 KB/s,"{'current': '7.627930 KB', 'peak': '13.452148 KB'}",0.600000 %,214
+encryption,0.891493 s,0.315482 KB/s,"{'current': '4.679688 KB', 'peak': '15.618164 KB'}",0.000000 %,288
+decryption,2.443414 s,0.085530 KB/s,"{'current': '2.307617 KB', 'peak': '13.452148 KB'}",3.100000 %,214
+encryption,0.653320 s,0.319880 KB/s,"{'current': '85.270508 KB', 'peak': '90.732422 KB'}",2.200000 %,214
+decryption,2.453417 s,0.085181 KB/s,"{'current': '103.791992 KB', 'peak': '106.323242 KB'}",1.900000 %,214
+encryption,0.681298 s,0.306744 KB/s,"{'current': '7.812500 KB', 'peak': '18.341797 KB'}",0.000000 %,214
+decryption,2.444049 s,0.085507 KB/s,"{'current': '2.866211 KB', 'peak': '13.702148 KB'}",0.000000 %,214
+encryption,0.651261 s,0.320892 KB/s,"{'current': '5.468750 KB', 'peak': '15.888672 KB'}",0.000000 %,214
+decryption,2.441602 s,0.085593 KB/s,"{'current': '7.752930 KB', 'peak': '13.452148 KB'}",0.000000 %,214
+encryption,0.649970 s,0.321529 KB/s,"{'current': '6.744141 KB', 'peak': '15.888672 KB'}",0.000000 %,214
+decryption,2.439372 s,0.085671 KB/s,"{'current': '2.706055 KB', 'peak': '13.702148 KB'}",1.200000 %,214
+encryption,0.649581 s,0.321722 KB/s,"{'current': '9.085938 KB', 'peak': '16.138672 KB'}",2.200000 %,214
+decryption,2.443685 s,0.085520 KB/s,"{'current': '3.338867 KB', 'peak': '13.702148 KB'}",0.600000 %,214
+encryption,2.948923 s,0.002318 KB/s,"{'current': '27.086914 KB', 'peak': '209.105469 KB'}",7.800000 %,7
+encryption,2.824816 s,0.002420 KB/s,"{'current': '34.764648 KB', 'peak': '211.311523 KB'}",10.300000 %,7
+encryption,2.997128 s,0.002281 KB/s,"{'current': '29.577148 KB', 'peak': '211.561523 KB'}",8.700000 %,7
+encryption,1.469354 s,0.004652 KB/s,"{'current': '29.147461 KB', 'peak': '307.439453 KB'}",0.000000 %,7
+encryption,1.428657 s,0.004785 KB/s,"{'current': '29.155273 KB', 'peak': '307.438477 KB'}",1.100000 %,7
+encryption,1.439318 s,0.004749 KB/s,"{'current': '29.514648 KB', 'peak': '307.485352 KB'}",0.000000 %,7
+decryption,2.465209 s,0.016242 KB/s,"{'current': '28.279297 KB', 'peak': '48.123047 KB'}",0.600000 %,41
+encryption,2.596651 s,0.002633 KB/s,"{'current': '29.397461 KB', 'peak': '308.439453 KB'}",1.200000 %,7
+decryption,2.439476 s,0.016413 KB/s,"{'current': '37.099609 KB', 'peak': '57.391602 KB'}",1.200000 %,41
+encryption,2.636369 s,0.002593 KB/s,"{'current': '34.702148 KB', 'peak': '308.525391 KB'}",2.300000 %,7
+encryption,0.141105 s,0.166099 KB/s,"{'current': '31.331055 KB', 'peak': '308.401367 KB'}",0.000000 %,24
+decryption,2.467841 s,0.016224 KB/s,"{'current': '33.033203 KB', 'peak': '54.869141 KB'}",0.600000 %,41
+decryption,2.493653 s,0.016056 KB/s,"{'current': '39.529297 KB', 'peak': '61.365234 KB'}",0.600000 %,41
+encryption,0.148677 s,0.157640 KB/s,"{'current': '12.950195 KB', 'peak': '302.264648 KB'}",0.000000 %,24
+decryption,2.470228 s,0.017395 KB/s,"{'current': '3.637695 KB', 'peak': '27.965820 KB'}",0.600000 %,44
+encryption,0.358665 s,0.065347 KB/s,"{'current': '34.299805 KB', 'peak': '319.328125 KB'}",57.700000 %,24
+decryption,2.528835 s,0.049430 KB/s,"{'current': '32.766602 KB', 'peak': '72.982422 KB'}",3.000000 %,128
+decryption,2.567168 s,0.048692 KB/s,"{'current': '32.766602 KB', 'peak': '73.255859 KB'}",3.600000 %,128
+encryption,0.346161 s,0.067707 KB/s,"{'current': '9.815430 KB', 'peak': '313.622070 KB'}",57.700000 %,24
+decryption,2.516370 s,0.046570 KB/s,"{'current': '3.758789 KB', 'peak': '65.501953 KB'}",3.600000 %,120
+encryption,0.360217 s,0.065065 KB/s,"{'current': '36.506836 KB', 'peak': '320.989258 KB'}",59.200000 %,24
+decryption,2.560194 s,0.048824 KB/s,"{'current': '42.705078 KB', 'peak': '73.232422 KB'}",2.400000 %,128
+encryption,0.348025 s,0.067344 KB/s,"{'current': '17.327148 KB', 'peak': '326.232422 KB'}",61.600000 %,24
+decryption,2.507444 s,0.049852 KB/s,"{'current': '3.555664 KB', 'peak': '65.505859 KB'}",3.000000 %,128
+encryption,0.343386 s,0.068254 KB/s,"{'current': '4.372070 KB', 'peak': '308.887695 KB'}",57.700000 %,24
+decryption,2.526920 s,0.049467 KB/s,"{'current': '3.875977 KB', 'peak': '65.505859 KB'}",3.000000 %,128
+encryption,1.541750 s,0.324307 KB/s,"{'current': '86.980469 KB', 'peak': '95.840820 KB'}",0.000000 %,512
+decryption,2.730596 s,0.045778 KB/s,"{'current': '229.729492 KB', 'peak': '233.735352 KB'}",9.500000 %,128
+encryption,0.802752 s,0.311429 KB/s,"{'current': '12.589844 KB', 'peak': '23.438477 KB'}",0.000000 %,256
+encryption,0.801148 s,0.312052 KB/s,"{'current': '4.773438 KB', 'peak': '16.731445 KB'}",0.000000 %,256
+encryption,0.771672 s,0.323972 KB/s,"{'current': '4.367188 KB', 'peak': '16.301758 KB'}",1.900000 %,256
+encryption,0.802668 s,0.311461 KB/s,"{'current': '84.038086 KB', 'peak': '89.477539 KB'}",3.600000 %,256
+decryption,2.567132 s,0.081408 KB/s,"{'current': '219.026367 KB', 'peak': '221.334961 KB'}",5.400000 %,214
+encryption,0.776265 s,0.322055 KB/s,"{'current': '11.503906 KB', 'peak': '22.924805 KB'}",3.700000 %,256
+decryption,2.518271 s,0.082987 KB/s,"{'current': '19.319336 KB', 'peak': '27.046875 KB'}",4.800000 %,214
+encryption,0.803390 s,0.311181 KB/s,"{'current': '5.065430 KB', 'peak': '16.857422 KB'}",3.600000 %,256
+decryption,2.514786 s,0.083102 KB/s,"{'current': '6.974609 KB', 'peak': '17.795898 KB'}",2.400000 %,214
+encryption,0.653063 s,0.320007 KB/s,"{'current': '61.999023 KB', 'peak': '67.265625 KB'}",0.000000 %,214
+encryption,0.680053 s,0.307306 KB/s,"{'current': '61.920898 KB', 'peak': '67.187500 KB'}",2.100000 %,214
+encryption,0.651880 s,0.320587 KB/s,"{'current': '3.052734 KB', 'peak': '15.394531 KB'}",0.000000 %,214
+encryption,0.649839 s,0.321594 KB/s,"{'current': '3.052734 KB', 'peak': '15.394531 KB'}",2.200000 %,214
+encryption,0.806090 s,0.310139 KB/s,"{'current': '84.108398 KB', 'peak': '89.547852 KB'}",0.000000 %,256
+decryption,2.568193 s,0.081374 KB/s,"{'current': '224.227539 KB', 'peak': '226.536133 KB'}",3.600000 %,214
+encryption,0.775528 s,0.322361 KB/s,"{'current': '11.550781 KB', 'peak': '23.174805 KB'}",0.000000 %,256
+encryption,0.774201 s,0.322913 KB/s,"{'current': '4.773438 KB', 'peak': '17.065430 KB'}",1.900000 %,256
+encryption,1.546337 s,0.323345 KB/s,"{'current': '84.600586 KB', 'peak': '92.317383 KB'}",1.000000 %,512
+decryption,2.734711 s,0.076419 KB/s,"{'current': '229.958008 KB', 'peak': '233.879883 KB'}",10.100000 %,214
+encryption,1.538343 s,0.325025 KB/s,"{'current': '12.019531 KB', 'peak': '23.467773 KB'}",1.000000 %,512
+encryption,1.538976 s,0.324891 KB/s,"{'current': '5.289062 KB', 'peak': '17.108398 KB'}",0.000000 %,512
+encryption,0.806591 s,0.309947 KB/s,"{'current': '84.108398 KB', 'peak': '89.463867 KB'}",7.300000 %,256
+decryption,2.572681 s,0.048587 KB/s,"{'current': '230.581055 KB', 'peak': '233.090820 KB'}",4.800000 %,128
+encryption,0.804795 s,0.310638 KB/s,"{'current': '11.503906 KB', 'peak': '22.840820 KB'}",1.800000 %,256
+decryption,2.562470 s,0.048781 KB/s,"{'current': '6.860352 KB', 'peak': '17.799805 KB'}",3.600000 %,128
+encryption,0.803304 s,0.311215 KB/s,"{'current': '5.394531 KB', 'peak': '17.079102 KB'}",0.000000 %,256
+decryption,2.506958 s,0.049861 KB/s,"{'current': '6.894531 KB', 'peak': '17.799805 KB'}",2.400000 %,128
+encryption,2.572053 s,0.328045 KB/s,"{'current': '27.333008 KB', 'peak': '56.572266 KB'}",0.600000 %,864
+decryption,2.443440 s,0.345312 KB/s,"{'current': '34.133789 KB', 'peak': '78.623047 KB'}",0.600000 %,864
+encryption,2.572635 s,0.327971 KB/s,"{'current': '6.868164 KB', 'peak': '47.650391 KB'}",0.600000 %,864
+decryption,2.471831 s,0.341346 KB/s,"{'current': '44.532227 KB', 'peak': '89.091797 KB'}",0.000000 %,864
+decryption,2.442119 s,0.345499 KB/s,"{'current': '11.264648 KB', 'peak': '55.894531 KB'}",0.600000 %,864
+encryption,2.589080 s,0.325888 KB/s,"{'current': '8.313477 KB', 'peak': '47.181641 KB'}",1.200000 %,864
+decryption,2.471812 s,0.341349 KB/s,"{'current': '4.622070 KB', 'peak': '49.251953 KB'}",1.200000 %,864
+encryption,1.048875 s,0.320284 KB/s,"{'current': '67.615234 KB', 'peak': '75.349609 KB'}",0.000000 %,344
+decryption,2.474153 s,0.101045 KB/s,"{'current': '77.465820 KB', 'peak': '83.136719 KB'}",0.600000 %,256
+decryption,2.468041 s,0.101295 KB/s,"{'current': '2.915039 KB', 'peak': '13.702148 KB'}",0.000000 %,256
+decryption,2.469394 s,0.101239 KB/s,"{'current': '3.758789 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+encryption,1.052209 s,0.319269 KB/s,"{'current': '68.176758 KB', 'peak': '75.864258 KB'}",1.400000 %,344
+decryption,2.444626 s,0.102265 KB/s,"{'current': '67.412109 KB', 'peak': '72.974609 KB'}",1.200000 %,256
+decryption,2.468976 s,0.101257 KB/s,"{'current': '3.008789 KB', 'peak': '13.452148 KB'}",0.600000 %,256
+decryption,2.468930 s,0.101258 KB/s,"{'current': '2.708008 KB', 'peak': '13.452148 KB'}",0.000000 %,256
+encryption,0.775573 s,0.322342 KB/s,"{'current': '67.442383 KB', 'peak': '73.644531 KB'}",0.000000 %,256
+decryption,2.566231 s,0.097419 KB/s,"{'current': '264.178711 KB', 'peak': '266.625000 KB'}",4.800000 %,256
+encryption,0.804842 s,0.310620 KB/s,"{'current': '6.756836 KB', 'peak': '18.659180 KB'}",0.000000 %,256
+decryption,2.510197 s,0.099594 KB/s,"{'current': '15.086914 KB', 'peak': '22.359375 KB'}",3.700000 %,256
+encryption,0.805813 s,0.310246 KB/s,"{'current': '3.148438 KB', 'peak': '15.476562 KB'}",1.800000 %,256
+decryption,2.524102 s,0.099045 KB/s,"{'current': '15.082031 KB', 'peak': '22.393555 KB'}",3.000000 %,256
+encryption,0.802209 s,0.311640 KB/s,"{'current': '61.961914 KB', 'peak': '68.031250 KB'}",0.000000 %,256
+decryption,2.566512 s,0.097408 KB/s,"{'current': '261.340820 KB', 'peak': '263.740234 KB'}",3.600000 %,256
+encryption,0.801436 s,0.311940 KB/s,"{'current': '6.464844 KB', 'peak': '18.367188 KB'}",1.800000 %,256
+decryption,2.503149 s,0.099874 KB/s,"{'current': '7.625977 KB', 'peak': '17.963867 KB'}",2.400000 %,256
+encryption,0.773299 s,0.323290 KB/s,"{'current': '3.273438 KB', 'peak': '15.601562 KB'}",0.000000 %,256
+decryption,2.501557 s,0.099938 KB/s,"{'current': '13.515625 KB', 'peak': '20.459961 KB'}",1.800000 %,256
+encryption,0.419742 s,0.297802 KB/s,"{'current': '61.563477 KB', 'peak': '66.300781 KB'}",0.000000 %,128
+decryption,2.567160 s,0.048692 KB/s,"{'current': '263.904297 KB', 'peak': '266.225586 KB'}",4.200000 %,128
+encryption,0.418395 s,0.298761 KB/s,"{'current': '5.468750 KB', 'peak': '17.929688 KB'}",3.200000 %,128
+decryption,2.536179 s,0.049287 KB/s,"{'current': '7.708008 KB', 'peak': '17.963867 KB'}",1.800000 %,128
+encryption,0.389541 s,0.320891 KB/s,"{'current': '2.960938 KB', 'peak': '15.164062 KB'}",0.000000 %,128
+decryption,2.541035 s,0.049193 KB/s,"{'current': '6.985352 KB', 'peak': '18.213867 KB'}",3.000000 %,128
+encryption,0.653802 s,0.319645 KB/s,"{'current': '69.487305 KB', 'peak': '77.569336 KB'}",0.000000 %,214
+decryption,2.565118 s,0.081472 KB/s,"{'current': '274.280273 KB', 'peak': '276.755859 KB'}",3.600000 %,214
+encryption,0.673725 s,0.310192 KB/s,"{'current': '6.162109 KB', 'peak': '18.785156 KB'}",0.000000 %,214
+decryption,2.528024 s,0.082667 KB/s,"{'current': '15.252930 KB', 'peak': '22.525391 KB'}",2.400000 %,214
+encryption,0.649106 s,0.321957 KB/s,"{'current': '3.177734 KB', 'peak': '16.019531 KB'}",0.000000 %,214
+decryption,2.530616 s,0.082582 KB/s,"{'current': '7.358398 KB', 'peak': '17.963867 KB'}",2.400000 %,214
+encryption,1.538169 s,0.325062 KB/s,"{'current': '62.157227 KB', 'peak': '70.753906 KB'}",0.000000 %,512
+decryption,2.556438 s,0.195585 KB/s,"{'current': '273.932617 KB', 'peak': '276.726562 KB'}",3.000000 %,512
+encryption,1.537862 s,0.325127 KB/s,"{'current': '13.820312 KB', 'peak': '25.402344 KB'}",1.000000 %,512
+decryption,2.533220 s,0.197377 KB/s,"{'current': '7.711914 KB', 'peak': '17.963867 KB'}",2.400000 %,512
+encryption,1.542431 s,0.324164 KB/s,"{'current': '3.523438 KB', 'peak': '16.128906 KB'}",1.000000 %,512
+decryption,2.538320 s,0.196981 KB/s,"{'current': '12.288086 KB', 'peak': '19.724609 KB'}",3.600000 %,512
+encryption,0.392045 s,0.059783 KB/s,"{'current': '36.377930 KB', 'peak': '320.767578 KB'}",51.700000 %,24
+decryption,2.559749 s,0.081643 KB/s,"{'current': '32.338867 KB', 'peak': '72.732422 KB'}",1.800000 %,214
+encryption,0.344426 s,0.068048 KB/s,"{'current': '10.995117 KB', 'peak': '314.625977 KB'}",57.600000 %,24
+decryption,2.557430 s,0.081717 KB/s,"{'current': '3.827148 KB', 'peak': '65.751953 KB'}",3.000000 %,214
+encryption,0.373918 s,0.062681 KB/s,"{'current': '15.520508 KB', 'peak': '325.036133 KB'}",53.600000 %,24
+decryption,2.541043 s,0.082244 KB/s,"{'current': '2.948242 KB', 'peak': '65.505859 KB'}",3.000000 %,214
+encryption,0.352665 s,0.066458 KB/s,"{'current': '4.622070 KB', 'peak': '309.720703 KB'}",57.700000 %,24
+decryption,2.532883 s,0.082509 KB/s,"{'current': '4.387695 KB', 'peak': '65.505859 KB'}",3.600000 %,214
+encryption,0.341084 s,0.068715 KB/s,"{'current': '4.184570 KB', 'peak': '308.971680 KB'}",57.700000 %,24
+decryption,2.534578 s,0.082453 KB/s,"{'current': '3.112305 KB', 'peak': '65.505859 KB'}",2.400000 %,214
+encryption,0.354259 s,0.066159 KB/s,"{'current': '36.127930 KB', 'peak': '320.059570 KB'}",57.700000 %,24
+decryption,2.506238 s,0.099751 KB/s,"{'current': '43.325195 KB', 'peak': '73.694336 KB'}",3.000000 %,256
+encryption,0.338096 s,0.069322 KB/s,"{'current': '10.995117 KB', 'peak': '314.667969 KB'}",59.900000 %,24
+decryption,2.513085 s,0.099479 KB/s,"{'current': '4.282227 KB', 'peak': '65.505859 KB'}",3.000000 %,256
+encryption,0.344222 s,0.068088 KB/s,"{'current': '4.622070 KB', 'peak': '309.762695 KB'}",59.900000 %,24
+decryption,2.486183 s,0.100556 KB/s,"{'current': '4.083008 KB', 'peak': '65.755859 KB'}",4.900000 %,256
+encryption,0.354880 s,0.066043 KB/s,"{'current': '36.307617 KB', 'peak': '320.265625 KB'}",55.500000 %,24
+decryption,2.488517 s,0.200923 KB/s,"{'current': '43.575195 KB', 'peak': '73.701172 KB'}",2.500000 %,512
+encryption,0.344599 s,0.068014 KB/s,"{'current': '10.995117 KB', 'peak': '314.943359 KB'}",57.700000 %,24
+decryption,2.512175 s,0.199031 KB/s,"{'current': '7.633789 KB', 'peak': '69.261719 KB'}",3.600000 %,512
+encryption,0.372375 s,0.062941 KB/s,"{'current': '4.622070 KB', 'peak': '310.041016 KB'}",55.500000 %,24
+decryption,2.483396 s,0.201337 KB/s,"{'current': '3.911133 KB', 'peak': '65.505859 KB'}",2.500000 %,512
+encryption,0.387405 s,0.060499 KB/s,"{'current': '36.127930 KB', 'peak': '321.180664 KB'}",51.700000 %,24
+decryption,2.533549 s,0.333031 KB/s,"{'current': '32.973633 KB', 'peak': '73.232422 KB'}",2.400000 %,864
+encryption,0.339110 s,0.069115 KB/s,"{'current': '10.745117 KB', 'peak': '314.540039 KB'}",65.400000 %,24
+decryption,2.487998 s,0.339128 KB/s,"{'current': '4.297852 KB', 'peak': '65.505859 KB'}",2.500000 %,864
+encryption,0.371024 s,0.063170 KB/s,"{'current': '4.122070 KB', 'peak': '309.881836 KB'}",55.500000 %,24
+decryption,2.513839 s,0.335642 KB/s,"{'current': '11.485352 KB', 'peak': '65.505859 KB'}",2.400000 %,864
+encryption,0.179912 s,0.130272 KB/s,"{'current': '36.127930 KB', 'peak': '312.319336 KB'}",13.400000 %,24
+decryption,2.467967 s,0.050649 KB/s,"{'current': '37.254883 KB', 'peak': '60.700195 KB'}",1.200000 %,128
+encryption,0.166227 s,0.140997 KB/s,"{'current': '10.245117 KB', 'peak': '306.178711 KB'}",14.300000 %,24
+decryption,2.428948 s,0.051463 KB/s,"{'current': '4.157227 KB', 'peak': '38.732422 KB'}",0.000000 %,128
+encryption,0.132518 s,0.176863 KB/s,"{'current': '4.122070 KB', 'peak': '301.523438 KB'}",23.100000 %,24
+decryption,2.437632 s,0.051279 KB/s,"{'current': '10.680664 KB', 'peak': '40.958984 KB'}",1.900000 %,128
+encryption,0.150797 s,0.155424 KB/s,"{'current': '36.377930 KB', 'peak': '312.904297 KB'}",15.300000 %,24
+decryption,2.471155 s,0.084570 KB/s,"{'current': '32.651367 KB', 'peak': '56.011719 KB'}",0.600000 %,214
+encryption,0.132853 s,0.176417 KB/s,"{'current': '10.495117 KB', 'peak': '306.512695 KB'}",8.300000 %,24
+decryption,2.457924 s,0.085025 KB/s,"{'current': '4.077148 KB', 'peak': '38.986328 KB'}",1.200000 %,214
+encryption,0.174653 s,0.134195 KB/s,"{'current': '3.872070 KB', 'peak': '301.359375 KB'}",13.300000 %,24
+decryption,2.456625 s,0.085070 KB/s,"{'current': '3.549805 KB', 'peak': '38.736328 KB'}",1.900000 %,214
+encryption,0.136415 s,0.171811 KB/s,"{'current': '3.020508 KB', 'peak': '301.359375 KB'}",15.400000 %,24
+decryption,2.451265 s,0.085256 KB/s,"{'current': '4.387695 KB', 'peak': '38.728516 KB'}",1.200000 %,214
+encryption,0.184732 s,0.126873 KB/s,"{'current': '3.872070 KB', 'peak': '301.358398 KB'}",13.400000 %,24
+decryption,2.453875 s,0.085165 KB/s,"{'current': '10.366211 KB', 'peak': '38.982422 KB'}",1.200000 %,214
+encryption,0.132039 s,0.177505 KB/s,"{'current': '37.096680 KB', 'peak': '312.419922 KB'}",16.600000 %,24
+decryption,2.476617 s,0.100944 KB/s,"{'current': '44.137695 KB', 'peak': '69.533203 KB'}",0.600000 %,256
+encryption,0.163022 s,0.143769 KB/s,"{'current': '10.495117 KB', 'peak': '306.302734 KB'}",14.300000 %,24
+decryption,2.457498 s,0.101729 KB/s,"{'current': '3.844727 KB', 'peak': '38.736328 KB'}",3.100000 %,256
+encryption,0.134514 s,0.174238 KB/s,"{'current': '3.872070 KB', 'peak': '301.398438 KB'}",24.900000 %,24
+decryption,2.454032 s,0.101873 KB/s,"{'current': '3.473633 KB', 'peak': '38.736328 KB'}",1.200000 %,256
+encryption,0.427001 s,0.292739 KB/s,"{'current': '78.760742 KB', 'peak': '84.265625 KB'}",0.000000 %,128
+decryption,2.441114 s,0.051206 KB/s,"{'current': '102.127930 KB', 'peak': '104.544922 KB'}",0.600000 %,128
+decryption,2.468139 s,0.050645 KB/s,"{'current': '3.243164 KB', 'peak': '13.389648 KB'}",1.200000 %,128
+decryption,2.464843 s,0.050713 KB/s,"{'current': '10.083008 KB', 'peak': '14.507812 KB'}",1.200000 %,128
+encryption,0.393311 s,0.317814 KB/s,"{'current': '79.432617 KB', 'peak': '84.703125 KB'}",3.600000 %,128
+decryption,2.440834 s,0.051212 KB/s,"{'current': '103.542969 KB', 'peak': '106.014648 KB'}",2.500000 %,128
+decryption,2.465830 s,0.050693 KB/s,"{'current': '14.165039 KB', 'peak': '19.071289 KB'}",1.200000 %,128
+decryption,2.466014 s,0.050689 KB/s,"{'current': '2.872070 KB', 'peak': '13.389648 KB'}",0.000000 %,128
+encryption,0.659042 s,0.317103 KB/s,"{'current': '63.651367 KB', 'peak': '68.941406 KB'}",0.000000 %,214
+decryption,2.564227 s,0.081500 KB/s,"{'current': '264.280273 KB', 'peak': '266.685547 KB'}",4.200000 %,214
+encryption,0.680063 s,0.307302 KB/s,"{'current': '6.162109 KB', 'peak': '18.285156 KB'}",0.000000 %,214
+decryption,2.506754 s,0.083369 KB/s,"{'current': '7.791992 KB', 'peak': '18.416992 KB'}",3.700000 %,214
+encryption,0.651769 s,0.320642 KB/s,"{'current': '4.642578 KB', 'peak': '15.582031 KB'}",0.000000 %,214
+decryption,2.501681 s,0.083538 KB/s,"{'current': '7.358398 KB', 'peak': '18.213867 KB'}",2.500000 %,214
+encryption,0.650258 s,0.321387 KB/s,"{'current': '4.453125 KB', 'peak': '15.769531 KB'}",0.000000 %,214
+decryption,2.530548 s,0.082585 KB/s,"{'current': '14.553711 KB', 'peak': '21.865234 KB'}",2.400000 %,214
+encryption,0.648769 s,0.322124 KB/s,"{'current': '3.177734 KB', 'peak': '15.519531 KB'}",2.200000 %,214
+decryption,2.537787 s,0.082349 KB/s,"{'current': '7.069336 KB', 'peak': '17.760742 KB'}",3.000000 %,214
+encryption,0.631738 s,0.330808 KB/s,"{'current': '61.999023 KB', 'peak': '67.265625 KB'}",2.300000 %,214
+decryption,2.434029 s,0.085859 KB/s,"{'current': '264.553711 KB', 'peak': '266.974609 KB'}",5.700000 %,214
+encryption,0.634930 s,0.329145 KB/s,"{'current': '5.857422 KB', 'peak': '18.347656 KB'}",0.000000 %,214
+decryption,2.402663 s,0.086980 KB/s,"{'current': '15.643555 KB', 'peak': '22.978516 KB'}",4.500000 %,214
+encryption,0.636046 s,0.328568 KB/s,"{'current': '3.177734 KB', 'peak': '15.519531 KB'}",0.000000 %,214
+decryption,2.404182 s,0.086925 KB/s,"{'current': '13.440430 KB', 'peak': '20.380859 KB'}",4.500000 %,214
+encryption,0.632839 s,0.330233 KB/s,"{'current': '4.500000 KB', 'peak': '15.519531 KB'}",0.000000 %,214
+decryption,2.389540 s,0.087458 KB/s,"{'current': '11.420898 KB', 'peak': '19.569336 KB'}",3.200000 %,214
+encryption,0.633177 s,0.330057 KB/s,"{'current': '3.177734 KB', 'peak': '15.519531 KB'}",0.000000 %,214
+decryption,2.405065 s,0.086893 KB/s,"{'current': '13.440430 KB', 'peak': '20.384766 KB'}",4.400000 %,214
+encryption,0.403856 s,0.309516 KB/s,"{'current': '79.486328 KB', 'peak': '84.756836 KB'}",0.000000 %,128
+decryption,2.318229 s,0.053920 KB/s,"{'current': '103.448242 KB', 'peak': '105.919922 KB'}",3.300000 %,128
+encryption,0.402023 s,0.310928 KB/s,"{'current': '6.224609 KB', 'peak': '16.976562 KB'}",0.000000 %,128
+decryption,2.317131 s,0.053946 KB/s,"{'current': '3.141602 KB', 'peak': '13.889648 KB'}",2.600000 %,128
+encryption,0.404303 s,0.309174 KB/s,"{'current': '4.138672 KB', 'peak': '15.164062 KB'}",3.100000 %,128
+decryption,2.336854 s,0.053491 KB/s,"{'current': '5.055664 KB', 'peak': '13.889648 KB'}",1.300000 %,128
+encryption,0.805337 s,0.310429 KB/s,"{'current': '79.611328 KB', 'peak': '86.213867 KB'}",0.000000 %,256
+decryption,2.472494 s,0.101112 KB/s,"{'current': '91.815430 KB', 'peak': '94.271484 KB'}",0.600000 %,256
+encryption,0.820944 s,0.304528 KB/s,"{'current': '12.583984 KB', 'peak': '18.956055 KB'}",0.000000 %,256
+decryption,2.440833 s,0.102424 KB/s,"{'current': '2.895508 KB', 'peak': '13.389648 KB'}",0.000000 %,256
+encryption,0.804736 s,0.310661 KB/s,"{'current': '4.810547 KB', 'peak': '15.664062 KB'}",0.000000 %,256
+decryption,2.440043 s,0.102457 KB/s,"{'current': '3.031250 KB', 'peak': '13.389648 KB'}",0.000000 %,256
+encryption,0.777376 s,0.321595 KB/s,"{'current': '80.584961 KB', 'peak': '87.484375 KB'}",1.800000 %,256
+decryption,2.474617 s,0.101026 KB/s,"{'current': '102.198242 KB', 'peak': '104.740234 KB'}",0.600000 %,256
+encryption,0.774185 s,0.322920 KB/s,"{'current': '7.009766 KB', 'peak': '17.226562 KB'}",0.000000 %,256
+decryption,2.470295 s,0.101202 KB/s,"{'current': '3.129883 KB', 'peak': '13.389648 KB'}",0.600000 %,256
+encryption,0.800088 s,0.312466 KB/s,"{'current': '4.826172 KB', 'peak': '15.414062 KB'}",1.700000 %,256
+decryption,2.468842 s,0.101262 KB/s,"{'current': '8.785156 KB', 'peak': '13.389648 KB'}",1.200000 %,256
+encryption,0.685350 s,0.304931 KB/s,"{'current': '79.532227 KB', 'peak': '85.371094 KB'}",2.000000 %,214
+decryption,2.458382 s,0.085009 KB/s,"{'current': '92.110352 KB', 'peak': '94.541016 KB'}",0.000000 %,214
+encryption,0.649736 s,0.321645 KB/s,"{'current': '6.480469 KB', 'peak': '17.144531 KB'}",0.000000 %,214
+decryption,2.439096 s,0.085681 KB/s,"{'current': '3.163086 KB', 'peak': '13.389648 KB'}",2.500000 %,214
+encryption,0.654154 s,0.319473 KB/s,"{'current': '4.785156 KB', 'peak': '15.332031 KB'}",0.000000 %,214
+decryption,2.469081 s,0.084641 KB/s,"{'current': '6.791992 KB', 'peak': '13.389648 KB'}",0.600000 %,214
+encryption,0.676076 s,0.309114 KB/s,"{'current': '5.951172 KB', 'peak': '15.332031 KB'}",0.000000 %,214
+decryption,2.470104 s,0.084606 KB/s,"{'current': '2.956055 KB', 'peak': '13.389648 KB'}",0.600000 %,214
+encryption,0.650295 s,0.321369 KB/s,"{'current': '4.785156 KB', 'peak': '15.582031 KB'}",2.100000 %,214
+decryption,2.469075 s,0.084641 KB/s,"{'current': '6.702148 KB', 'peak': '13.389648 KB'}",1.200000 %,214
+encryption,0.160015 s,0.250221 KB/s,"{'current': '78.020508 KB', 'peak': '82.166992 KB'}",0.000000 %,41
+encryption,0.387231 s,0.060526 KB/s,"{'current': '36.530273 KB', 'peak': '320.859375 KB'}",48.400000 %,24
+decryption,2.563580 s,0.015618 KB/s,"{'current': '44.212891 KB', 'peak': '76.824219 KB'}",3.600000 %,41
