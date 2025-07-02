@@ -3,14 +3,12 @@ import hashlib
 import gmpy2
 from gmpy2 import mpz, powmod, invert, mul, add
 from Crypto.Util.number import getPrime
-import time
 import json
 import base64
 from pymongo import MongoClient
 import os
 from bson.objectid import ObjectId
-import tracemalloc
-import time
+
 
 # Use environment variable for Mongo URI
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.60:27017/")
@@ -116,16 +114,12 @@ class CPABEOptimized:
     
     def setup(self):
         """Optimized setup with precomputation tables"""
-        start = time.perf_counter()
 
         p = mpz(4464270263374726220383382728005838210553525937701928444691995439752736524183894075764150447600404916226547098502385524310781809859834986817084694262120212253753083378137579168884399455000035748853155752858594463321727679405089978526783142124281603356922419365345530904256180126238643295967950629946111060271492125827291683009104517254567126504400553409342228697784910268301556218130430987911074131949421163567621926305782291022883323373394442363177320868204438080510764422927448758432564430631786334618035373363895460505316538137899852077930000600716681037715870111610292387303929637649189715495957320069660754017381546374296101287529016857192768211736017137061000485429959909197471200905308312248175234516171184789554969844956659847608119974037666711326803651096763442983672511939653657883906901189765689237461772262063610998074306419033430329320233738749819932569740847335856983635064938959290479692602070857623189113282176041945698150432315127253812501433609791027492795547126634422910606212415460331723420656170395740216762337264231925264410071594193115133825461060581812024620190319101353580072396399986660259027743895025450970122392358298068966363389593699916926193941820268931875972917525299425471341251949440298904599212329245518484769549060773589175560431621995797754868950065138675591807118906710568285965520478015787836747946719243625359445545361766703392598613338273588173158783108134237166157575960836173679394160406262343384913744244005347801676853328583843678192846919199769496593118614031961624239855637145315794564668400055972276654471112964553474854894556994549883542565920125984411705985705601243328477530223946320198751488765459847383233677662349222637050667079411929939868945113490799132642269000655761665249079079127079829235834541032260937648607244038487695987384959914718532961325715690670374651108426075088995437878368930276558623519039525771744661980742023909612637600887983838681029669460402255839055675205501458744687919888270504450398791590004292806238551814307897636603419506217062259834218097367403200757299080555112691287883500185096688090778578057195316598474017510145994492950867343890223985198640796466622214713255114355159)
         
         print(len(p))
         p_minus_1 = p - 1
         
-        print(f"Prime generation: {(time.perf_counter() - start)*1000:.0f}ms")
-        
-        param_start = time.perf_counter()
         
         # Use fixed small generator for consistency and speed
         g = mpz(2)
@@ -163,8 +157,6 @@ class CPABEOptimized:
                 except:
                     continue  # Skip if inverse doesn't exist
         
-        print(f"Parameter generation: {(time.perf_counter() - param_start)*1000:.0f}ms")
-        
         public_key = {
             'g': g, 'h': h, 'e_gg_alpha': e_gg_alpha, 'p': p,
             'p_minus_1': p_minus_1
@@ -184,7 +176,6 @@ class CPABEOptimized:
         p_minus_1 = public_key['p_minus_1']
         beta_inv = master_key['beta_inv']
         
-        start = time.perf_counter()
         
         # Generate r with coprimality guarantee
         max_attempts = 1000
@@ -231,7 +222,7 @@ class CPABEOptimized:
                 Dj[attr] = powmod(g, r_hash_inv, p)
                 Dj_prime[attr] = powmod(g, hash_inv, p)
         
-        print(f"Key generation: {(time.perf_counter() - start)*1000:.0f}ms")
+        
         
         return {'D': D, 'Dj': Dj, 'Dj_prime': Dj_prime, 'attributes': set(attributes)}
     
@@ -243,8 +234,7 @@ class CPABEOptimized:
         e_gg_alpha = public_key['e_gg_alpha']
         p_minus_1 = public_key['p_minus_1']
         
-        start = time.perf_counter()
-        
+                
         # Efficient message conversion with bounds checking
         message_bytes = message.encode('utf-8')
         if len(message_bytes) * 8 >= p.bit_length():
@@ -289,8 +279,7 @@ class CPABEOptimized:
             Cj[attr] = h_to_s  # Same for all attributes
             Cj_prime[attr] = results_cj_prime[g]  # All computed with same base
         
-        print(f"Encryption: {(time.perf_counter() - start)*1000:.0f}ms")
-        
+               
         return {
             'policy': set(policy_attrs),
             'C': C,
@@ -303,7 +292,7 @@ class CPABEOptimized:
     
     def decrypt(self, public_key, ciphertext, secret_key, master_key):
         """Ultra-optimized direct decryption"""
-        start = time.perf_counter()
+        
         
         # Fast policy satisfaction check
         if not ciphertext['policy'].issubset(secret_key['attributes']):
@@ -326,7 +315,6 @@ class CPABEOptimized:
             message_bytes = int(message_int).to_bytes(length, byteorder='big')
             result = message_bytes.decode('utf-8')
             
-            print(f"Decryption: {(time.perf_counter() - start)*1000:.1f}ms")
             return result
         except Exception as e:
             print(f"Decryption failed: {e}")
