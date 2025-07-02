@@ -156,8 +156,8 @@ class EncryptionGUI:
                     self.entries[field] = entry
 
                 elif field == "Doctor's Notes":
-                    text_widget = tk.Text(self.form_frame, height=7)
-                    text_widget.pack(fill="both", expand=True, padx=10, pady=5)
+                    text_widget = tk.Text(self.form_frame, height=3)
+                    text_widget.pack(fill="both", expand=True, padx=5, pady=5)
                     self.limit_text(text_widget, limit)
                     self.entries[field] = text_widget
                 else:
