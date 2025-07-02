@@ -2,10 +2,6 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes, serialization
 from Crypto.Cipher import AES
-import base64
-import pandas as pd
-import csv
-from modules.db_manager import save_key, load_key, load_patient  # Import MongoDB functions
 
 # ------------------- ECC KEY GENERATION -------------------
 

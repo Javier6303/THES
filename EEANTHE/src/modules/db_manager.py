@@ -2,7 +2,6 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 from base64 import b64encode, b64decode
-import json
 from bson.binary import Binary
 import pickle
 

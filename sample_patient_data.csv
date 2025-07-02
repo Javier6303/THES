@@ -1,2 +1,2 @@
-"Name","Age","Sex","Address","Contact Number","Email","Birthday","Height","Blood Pressure","Blood Type","Allergies","History of Medical Illnesses"
+"Name","Age","Sex","Address","Contact Number","Email","Birthday","Height","Blood Pressure","Blood Type","History of Medical Illnesses","Last Appointment Date","Next Appointment Date","Doctor's Notes"
 "John","35","Male","123 Elm Street Springfield","123-456-7890","johndoe@example.com","1988-04-12","175","120/80","O+","Peanuts","Diabetes"

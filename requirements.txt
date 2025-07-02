@@ -2,12 +2,13 @@
 
 python-dotenv
 
+
 # -- NFC functionality --
 pyscard
 
 # --CSV functionality--
 pandas
-
+csv
 # --AES/RSA/AES and RSA--
 pycryptodome
 
@@ -20,8 +21,25 @@ numpy
 # --DATABASE-- 
 pymongo
 
-# Notes:
-# - It's best if each algorithm has their own directory in your project,
-# since the section of the codes that reads data from the CSV will always 
-# assume the CSV is one level up. Additionally it helps in organization of 
-# pem and bin files.
+# --CP-ABE--
+gmpy2
+hashlib
+random
+
+# --GUI--
+tkinter
+datetime
+
+# --EMAIL--
+smtplib
+email
+
+# --BACKEND--
+logging
+os
+sys
+tracemalloc
+time
+psutil
+pickle
+base64
