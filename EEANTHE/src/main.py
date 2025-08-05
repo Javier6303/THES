@@ -29,7 +29,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("encryption.log"),
+        logging.FileHandler("metrics_result.log"),
         logging.StreamHandler(sys.stdout)
     ]
 )
@@ -183,7 +183,8 @@ def save_metrics_to_csv(metrics, operation):
             writer.writeheader()
         writer.writerow(row)
 
-def measure_performance(operation, encryption_func, decryption_func, patient_id, config_func,  nfc_write_func, nfc_read_func, asymmetric=False):
+def measure_performance(operation, encryption_func, decryption_func, patient_id, config_func,  
+                        nfc_write_func, nfc_read_func, asymmetric=False):
     metrics = {}
 
     decryption_keys = {

@@ -778,3 +778,5 @@ decryption,2.469075 s,0.084641 KB/s,"{'current': '6.702148 KB', 'peak': '13.3896
 encryption,0.160015 s,0.250221 KB/s,"{'current': '78.020508 KB', 'peak': '82.166992 KB'}",0.000000 %,41
 encryption,0.387231 s,0.060526 KB/s,"{'current': '36.530273 KB', 'peak': '320.859375 KB'}",48.400000 %,24
 decryption,2.563580 s,0.015618 KB/s,"{'current': '44.212891 KB', 'peak': '76.824219 KB'}",3.600000 %,41
+encryption,0.152124 s,0.263201 KB/s,"{'current': '78.510742 KB', 'peak': '82.657227 KB'}",0.000000 %,41
+decryption,2.463856 s,0.016251 KB/s,"{'current': '103.636719 KB', 'peak': '105.968750 KB'}",1.900000 %,41
