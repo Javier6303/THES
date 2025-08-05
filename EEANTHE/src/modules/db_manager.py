@@ -9,7 +9,7 @@ import pickle
 load_dotenv()
 
 # Update MongoDB details
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.60:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.74:27017/")
 DB_NAME = "encryption_db"
 COLLECTION_NAME = "keys"
 

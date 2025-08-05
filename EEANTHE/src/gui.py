@@ -13,6 +13,7 @@ from modules.rsa import rsa_encryption, rsa_decryption
 from modules.hill_cipher import hill_cipher_encryption, hill_cipher_decryption
 from modules.ecc import ecc_xor_encryption, ecc_xor_decryption
 from modules.ecdh_aes import ecdh_aes_encryption, ecdh_aes_decryption
+from modules.cpabe import cpabe_encryption, cpabe_decryption
 from main import measure_performance, CONFIG_PATH, write_to_nfc_card_as_ndef, read_from_nfc_card
 from modules.db_manager import save_new_patient, update_patient
 from modules.email import send_email
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # ----------------- LOAD ENV -----------------
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.0.74:27017/")
 DB_NAME = "encryption_db"
 PATIENTS_COLLECTION = "patients"
 
@@ -36,37 +37,6 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 patients_collection = db[PATIENTS_COLLECTION]
 
-# ----------------- LOGIN -----------------
-class LoginWindow:
-    def __init__(self, master, on_success):
-        self.master = master
-        self.on_success = on_success
-
-        self.master.title("Login")
-        self.master.geometry("300x200")
-
-        ttk.Label(master, text="Username").pack(pady=5)
-        self.username_entry = ttk.Entry(master)
-        self.username_entry.pack()
-
-        ttk.Label(master, text="Password").pack(pady=5)
-        self.password_entry = ttk.Entry(master, show="*")
-        self.password_entry.pack()
-
-        ttk.Button(master, text="Login", command=self.authenticate).pack(pady=10)
-
-    def authenticate(self):
-        username = self.username_entry.get().strip()
-        password = self.password_entry.get().strip()
-
-        user = db["users"].find_one({"username": username, "password": password})
-        if user:
-            messagebox.showinfo("Login Success", f"Welcome, {username}!")
-            self.master.destroy()
-            self.on_success(user)  # Pass the user info to the main GUI
-        else:
-            messagebox.showerror("Login Failed", "Invalid credentials")
-
 
 # ----------------- GUI CLASS -----------------
 class EncryptionGUI:
@@ -74,6 +44,23 @@ class EncryptionGUI:
         self.root = root
         self.root.title("Patient Encryption System")
         self.root.geometry("800x1000")
+
+        self.field_limits = {
+            "Name": 13,
+            "Age": 3,
+            "Sex": 1,
+            "Address": 21,
+            "Contact Number": 12,
+            "Email": 25,
+            "Birthday": 9,
+            "Height": 4,
+            "Blood Pressure": 7,
+            "Blood Type": 3,
+            "History of Medical Illnesses": 142,
+            "Last Appointment Date": 10,
+            "Next Appointment Date": 10,
+            "Doctor's Notes": 595
+        }
 
         # ----- Notebook Tabs -----
         self.notebook = ttk.Notebook(self.root)
@@ -124,23 +111,6 @@ class EncryptionGUI:
         if initial_patient_type:
             self.render_form()
 
-        self.field_limits = {
-            "Name": 50,
-            "Age": 3,
-            "Sex": 1,
-            "Address": 80,
-            "Contact Number": 15,
-            "Email": 50,
-            "Birthday": 10,
-            "Height": 4,
-            "Blood Pressure": 7,
-            "Blood Type": 3,
-            "History of Medical Illnesses": 80,
-            "Last Appointment Date": 10,
-            "Next Appointment Date": 10,
-            "Doctor's Notes": 350
-        }
-
 
     def limit_entry(self, entry_widget, limit):
         def validate_input(new_value):
@@ -186,9 +156,9 @@ class EncryptionGUI:
                     self.entries[field] = entry
 
                 elif field == "Doctor's Notes":
-                    text_widget = tk.Text(self.form_frame, height=7)
-                    text_widget.pack(fill="both", expand=True, padx=10, pady=5)
-                    self.limit_text(text_widget, limit)                    
+                    text_widget = tk.Text(self.form_frame, height=3)
+                    text_widget.pack(fill="both", expand=True, padx=5, pady=5)
+                    self.limit_text(text_widget, limit)
                     self.entries[field] = text_widget
                 else:
                     entry = ttk.Entry(self.form_frame)
@@ -199,7 +169,7 @@ class EncryptionGUI:
             # Encryption label + dropdown
             ttk.Label(self.form_frame, text="Select Algorithm For Encryption:").pack(pady=5)
             self.encryption_choice = ttk.Combobox(self.form_frame, values=[
-                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES", "CP-ABE"
             ], state="readonly")
             self.encryption_choice.pack()
 
@@ -220,7 +190,7 @@ class EncryptionGUI:
             # Encryption label + dropdown
             ttk.Label(self.form_frame, text="Select Algorithm Used During Encryption:").pack(pady=5)
             self.encryption_choice = ttk.Combobox(self.form_frame, values=[
-                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES"
+                "AES", "RSA", "AES-RSA", "Hill Cipher", "ECC XOR", "ECDH-AES", "CP-ABE"
             ], state="readonly")
             self.encryption_choice.pack()
 
@@ -257,7 +227,8 @@ class EncryptionGUI:
             "AES-RSA": aes_rsa_encryption,
             "Hill Cipher": hill_cipher_encryption,
             "ECC XOR": ecc_xor_encryption,
-            "ECDH-AES": ecdh_aes_encryption
+            "ECDH-AES": ecdh_aes_encryption,
+            "CP-ABE": cpabe_encryption
         }.get(method)
 
         try:
@@ -313,7 +284,8 @@ class EncryptionGUI:
             "AES-RSA": aes_rsa_decryption,
             "Hill Cipher": hill_cipher_decryption,
             "ECC XOR": ecc_xor_decryption,
-            "ECDH-AES": ecdh_aes_decryption
+            "ECDH-AES": ecdh_aes_decryption,
+            "CP-ABE": cpabe_decryption
         }.get(method)
 
         try:
@@ -360,7 +332,7 @@ class EncryptionGUI:
                     entry.insert(0, today)
                     entry.configure(state="readonly")
                     entry.pack()
-                    self.entries[field] = entry  
+                    self.entries[field] = entry    
                 else:
                     entry = ttk.Entry(self.form_frame)
                     entry.insert(0, value)
@@ -379,8 +351,7 @@ class EncryptionGUI:
             # Add Update & Encrypt button
             self.update_btn = ttk.Button(self.form_frame, text="Update & Encrypt", command=self.update_and_encrypt)
             self.update_btn.pack(pady=15)
-
-              
+    
         except Exception as e:
             messagebox.showerror("Decryption Error", str(e))
 
@@ -421,7 +392,8 @@ class EncryptionGUI:
                 "AES-RSA": aes_rsa_encryption,
                 "Hill Cipher": hill_cipher_encryption,
                 "ECC XOR": ecc_xor_encryption,
-                "ECDH-AES": ecdh_aes_encryption
+                "ECDH-AES": ecdh_aes_encryption,
+                "CP-ABE": cpabe_encryption
             }.get(method)
 
             metrics = {
@@ -475,7 +447,6 @@ class EncryptionGUI:
         tree.column("Value", width=400, anchor="w")
         tree.pack(fill="x", padx=10)
 
-        # Dynamically collect all short fields
         # Dynamically collect all short fields, including nested memory metrics
         for key, value in metrics.items():
             if isinstance(value, dict) and key in ["encryption_memory_usage", "decryption_memory_usage"]:
@@ -529,6 +500,7 @@ class EncryptionGUI:
                 text_box.insert(tk.END, decoded)
                 text_box.config(state="disabled")
                 text_box.pack(fill="x", padx=10)
+
 
 
     def read_nfc_info(self):
@@ -629,13 +601,7 @@ class EncryptionGUI:
 
 
 # ----------------- LAUNCH -----------------
-def launch_gui(user_info):
+if __name__ == "__main__":
     root = tk.Tk()
     app = EncryptionGUI(root)
-    app.user_info = user_info  # Optional: store user role
     root.mainloop()
-
-if __name__ == "__main__":
-    login_root = tk.Tk()
-    LoginWindow(login_root, on_success=launch_gui)
-    login_root.mainloop()
