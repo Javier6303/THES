@@ -28,26 +28,13 @@
   - python-dotenv  
   - pyscard  
   - pandas  
-  - csv  
   - pycryptodome  
   - cryptography  
   - numpy  
   - pymongo  
   - gmpy2  
-  - hashlib  
-  - random  
-  - tkinter  
   - datetime  
-  - smtplib  
-  - email  
-  - logging  
-  - os  
-  - sys  
-  - tracemalloc  
-  - time  
   - psutil  
-  - pickle  
-  - base64
 
 ## Running the Program
 
