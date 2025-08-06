@@ -27,6 +27,5 @@ gmpy2
 datetime
 
 # --BACKEND--
-logging
 psutil
 
