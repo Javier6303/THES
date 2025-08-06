@@ -2,13 +2,12 @@
 
 python-dotenv
 
-
 # -- NFC functionality --
 pyscard
 
 # --CSV functionality--
 pandas
-csv
+
 # --AES/RSA/AES and RSA--
 pycryptodome
 
@@ -23,23 +22,11 @@ pymongo
 
 # --CP-ABE--
 gmpy2
-hashlib
-random
 
 # --GUI--
-tkinter
 datetime
-
-# --EMAIL--
-smtplib
-email
 
 # --BACKEND--
 logging
-os
-sys
-tracemalloc
-time
 psutil
-pickle
-base64
+
